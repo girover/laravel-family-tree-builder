@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Girover\Tree\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class TreeCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'tree';
 
     public $description = 'My command';
 

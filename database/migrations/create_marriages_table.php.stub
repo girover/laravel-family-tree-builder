@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateMarriagesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('marriages', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('node_husband_id')->unsigned()->nullable();
+            $table->bigInteger('node_wife_id')->unsigned()->nullable();
+            $table->date('date_of_marriage')->nullable();
+            $table->string('marriage_desc', '500')->nullable();
+            $table->timestamps();
+
+            $table->unique(['node_husband_id', 'node_wife_id']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('marriages');
+    }
+}

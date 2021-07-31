@@ -1,6 +1,6 @@
 <?php
 
-namespace VendorName\Skeleton\Tests;
+namespace Girover\Tree\Tests;
 
 class ExampleTest extends TestCase
 {
