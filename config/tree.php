@@ -40,9 +40,11 @@
         | string : Table Name that tree gets nodes data from
         |
         */
-        'nodes_table' => 'nodes',
+        'nodes_table' => [
+            'name' => 'nodes',
+            'location_field' => 'location',
+        ],
 
-        
         /*
         |--------------------------------------------------------------------------
         | Nodes loading limitation
@@ -60,7 +62,25 @@
         | Ops: These should not be changed, but only 'model' may be changed 
         | if your model is in another folder than the default folder.
         */
-        'eager_relationships'=> [
+        'tree_relationships'=> [
+            'root' => [
+                'model' => \Girover\Tree\Models\Node::class,
+                'with'  => 'root', // name of relationship that should be eager loaded
+            ],
+            'nodes' => [
+                'model' => \Girover\Tree\Models\Node::class,
+                'with'  => 'nodes', // name of relationship that should be eager loaded
+            ],
+        ], 
+        /*
+        |--------------------------------------------------------------------------
+        | Eager loading Relationships with Model 'Node'
+        |--------------------------------------------------------------------------
+        |
+        | Ops: These should not be changed, but only 'model' may be changed 
+        | if your model is in another folder than the default folder.
+        */
+        'node_relationships'=> [
             'wives' => [
                 'model' => \Girover\Tree\Models\Marriage::class,
                 'with'  => 'wives', // name of relationship that should be eager loaded

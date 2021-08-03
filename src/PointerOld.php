@@ -22,8 +22,10 @@ namespace Girover\Tree;
 use Girover\Tree\Exceptions\TreeException;
 use BadMethodCallException;
 use Girover\Tree\Models\Node;
+use Girover\Tree\Models\Tree;
+use Illuminate\Support\Facades\DB;
 
-class Pointer
+class PointerOld
 {
     /**----------------------------------------------------------------------------------
      * Instance of Girover\Tree\FamilyTree
@@ -56,7 +58,7 @@ class Pointer
     }
 
     /**
-     * Calling methods of class Girover\Tree\Models\Node
+     * Calling some methods when calling undefined methods
      * 
      * @param String $name method name
      * @param Array $args parameters that passed to the called method
@@ -65,23 +67,22 @@ class Pointer
     public function __call($name, $args)
     {
         if($this->node() instanceof Node){
-
             if(method_exists($this->node(), $name)){
-                return call_user_func(array($this->node(), $name), ...$args);
+                $this->node()->{$name}($args);
             }
         }
-
-        throw new BadMethodCallException('Call undefined Methode [ '.$name.' ] on class: '.Node::class);    
     }
 
-    /**
+    /**----------------------------------------------------------------------------------
     * Model of nodes 
+    * ----------------------------------------------------------------------------------
+    * 
     * 
     * @return String Girove\Tree\Models\Node::class
-    */
+    * ----------------------------------------------------------------------------------*/
     public function model()
     {
-        return config('tree.node_model');
+        return $this->tree->nodeModel();
     }
 
     /**
@@ -137,11 +138,6 @@ class Pointer
      */
     public function to($location)
     {
-        if(is_a($location, $this->model())){
-            $this->node = $location;
-            return $this;
-        }
-
         Location::validate($location);
 
         $node =  $this->find($location);
@@ -150,6 +146,24 @@ class Pointer
             throw new TreeException("Error: Node with location '".$location."' Not Found in The tree: ".$this->tree->properties()->name, 1);
         }
 
+        $this->node = $node;
+
+        return $this;
+    }
+    /**
+     * Move the Pointer to the given location or node, but not inside database table.
+     * It means that no loading data from database is happed.
+     * Only assign property $node to an allready loaded node
+     * 
+     * @param Girover\Tree\Models\Node $node
+     * @return Girover\Tree\Pointer $this
+     * @throws Girover\Tree\Exceptions\TreeException
+     */
+    public function silentlyTo($node)
+    {
+        if(!is_a($node, $this->model())){
+            throw new TreeException("Error: Given node is not instance of: ".$this->model(), 1);
+        }
         $this->node = $node;
 
         return $this;
@@ -222,7 +236,7 @@ class Pointer
             throw new TreeException("Error: Node has no children to move to the first one.", 1);            
         }
 
-        return $this->to($first_child);
+        return $this->silentlyTo($first_child);
     }
 
     /**
@@ -237,7 +251,7 @@ class Pointer
             throw new TreeException("Error: Node has no children to move to the last.", 1);            
         }
 
-        return $this->to($last_child);
+        return $this->silentlyTo($last_child);
     }
 
     /**
@@ -273,7 +287,31 @@ class Pointer
         return $this->tree->allFromPointer();
     }
 
-    
+    /**
+     * Get the node that the pointer is indicating to if no location is given.
+     * Or go to the given location and return the node
+     * 
+     * @return Girover\Tree\Models\Node
+     */
+    public function get($location = null)
+    {
+        return is_null($location)
+              ? $this->node
+              : $this->to($location)->node;
+    }
+
+    /**----------------------------------------------------------------------------------
+     * Get the node that the pointer is indicating to if no location is given.
+     * Or go to the given location and return the node
+     * ----------------------------------------------------------------------------------
+     * 
+     * @return App\Node
+     * ----------------------------------------------------------------------------------*/
+    // public function wives()
+    // {
+    //     return $this->node->wives;
+    // }
+
     /**
      * Get the logest location in the tree that starts from the pointer
      *
@@ -286,7 +324,7 @@ class Pointer
                     ->orderByRaw('LENGTH(location) DESC')
                     ->orderBy('location', 'desc')
                     ->first();
-    }
+}
 
     /**
      * Get the location of the father of the current node
@@ -302,6 +340,47 @@ class Pointer
         }
         // return father location of node that pointer is indicating to
         return Location::father($this->location());
+    }
+    
+    /**
+     * Get the grandfather node of the node that the Pointer indicates to
+     * 
+     * @return Girover\Tree\Models\Node | Null
+     */
+    public function grandfather()
+    {
+        return $this->node()->grandfather();
+    }
+    
+    /**
+     * Get the father node of the node that the Pointer indicates to
+     * 
+     * separate location of current node by last "."
+     *
+     * @return Girover\Tree\Models\Node | Null
+     */
+    public function father()
+    {
+        return $this->node()->father();
+    }
+
+    /**
+     *  Get Uncles of current node
+     *
+     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     */
+    public function uncles(){
+        return $this->node()->uncles();
+    }
+
+    /**
+     * Get all aunts of this node
+     * 
+     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     */
+    public function aunts()
+    {
+        return $this->node()->aunts();
     }
 
     /**
@@ -330,6 +409,140 @@ class Pointer
     {
         $location_pattern = str_replace(Location::SEPARATOR, '\\'.Location::SEPARATOR, $this->location());
         return $covered ? '(^'.$location_pattern.'$)' : $location_pattern;
+    }
+
+    /**
+     * Get All siblings of node that the Pointer is indicating to
+     *
+     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     */
+    public function siblings()
+    {
+        return  $this->node()->siblings();
+    }
+
+    /**
+     * Get the first sibling of node that the Pointer is indicating to
+     *
+     * @return Girover\Tree\Models\Node
+     */
+    public function firstSibling()
+    {
+        return  $this->node()->firstSibling();
+    }
+
+    /**
+     * Get last sibling of node that the Pointer is indicating to
+     *
+     * @return Girover\Tree\Models\Node
+     */
+    public function lastSibling()
+    {
+        return  $this->node()->lastSibling();
+    }
+
+    /**
+     * Get next sibling of node that the Pointer is indicating to
+     *
+     * @return Girover\Tree\Models\Node
+     */
+    public function nextSibling()
+    {
+        return  $this->node()->nextSibling();
+    }
+
+    /**
+     * Get previous sibling of node that the Pointer is indicating to
+     *
+     * @return Girover\Tree\Models\Node
+     */
+    public function prevSibling()
+    {
+        return  $this->node()->prevSibling();
+    }
+
+    /**
+     *  Get children of the node that the pointer indicates to
+     *
+     * @param string|null $gender
+     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     */
+    public function children($gender = null){
+
+        return  $this->node()->children($gender);
+    }
+
+    /**
+     *  Get The First child of the node that the pointer indicates to
+     *
+     * @return Girover\Tree\Models\Node
+     */
+    public function firstChild()
+    {
+        return  $this->node()->firstChild();
+    }
+
+    /**
+     *  Get The last child of the node that the pointer indicates to
+     *
+     * @return Girover\Tree\Models\Node
+     */
+    public function lastChild()
+    {
+        return  $this->node()->lastChild();
+    }
+
+    /**
+     * Determine if the node, that the Pointer indicates to, has children
+     * 
+     * @return Boolean
+     */
+    function hasChildren()
+    {
+        return $this->node()->hasChildren();
+    }
+
+    /**
+     * Generate new child location for the current location if no param is given
+     * Generate new child location for the given location as parameter
+     * 
+     * @param String $location
+     * @return string
+     */
+    // public function newChildLocation(){
+
+    //     $last_child = $this->lastChild();
+    //     if($last_child == null){
+    //         return $this->location().Location::SEPARATOR.Location::firstPossibleSegment();
+    //     }
+    //     return Location::nextSibling($last_child->location);
+    // }
+
+    /**
+     * Generate new child location for the current location if no param is given
+     * Generate new child location for the given location as parameter
+     * 
+     * @param String $location
+     * @return string
+     */
+    public function newSiblingLocation(){
+
+        $last_sibling = $this->lastSibling();
+        if($last_sibling == null){
+            return $this->location().Location::SEPARATOR.Location::firstPossibleSegment();
+        }
+        return Location::nextSibling($last_sibling->location);
+    }
+
+    /**
+     * Getting all ancestors nodes from the location where the Pointer indicates to
+     *
+     * 
+     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     */
+    public function ancestors()
+    {
+        return $this->node()->ancestors();
     }
 
     /**
@@ -380,12 +593,66 @@ class Pointer
      * to make the tree instanse loads its own nodes from Pointer's node location
      * 
      * @param Integer|null $generations
-     * @return Girover\Tree\Pointer
+     * @return App\MHF\tree\Pointer
      */
     public function load($generations = null)
     {
         $this->tree->load($generations);
         return $this;
+    }
+
+    /**
+     * to make the tree instanse draw its own nodes from Pointer's node location
+     * 
+     * 
+     * @return String html text
+     */
+    public function draw()
+    {
+        return $this->tree->draw();
+    }
+
+    /**
+     * ---------------------------------------------
+     * Draw the current tree and return it as HTML.
+     * ---------------------------------------------
+     * @return String
+     */
+    public function toHtml(){
+        return $this->tree->draw();
+    }
+
+    /**
+     * cut current node with its children
+     * and move it to be child of the given location
+     *
+     * @param String $location: location to move node to it
+     * @return Girover\Tree\Pointer
+     */
+    public function makeSonTo($location){
+        return $this->node()->makeSonTo($location);
+    }
+
+
+    /**
+     * Delete the node, that the pointer indicates to, with its children.
+     * 
+     * @return Integre 
+     */
+    // public function deleteWithChildren()
+    // {
+    //     return $this->query()->where('location', 'like', $this->location().'%')->delete();
+    // }
+
+    /**
+     * Delete the node, that the pointer indicates to, and move
+     * all its children to be children for the its father.
+     * 
+     * @return Integre 
+     */
+    public function deleteAndShiftChildren()
+    {
+        
     }
 
 }

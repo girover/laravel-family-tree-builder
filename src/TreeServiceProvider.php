@@ -23,5 +23,9 @@ class TreeServiceProvider extends PackageServiceProvider
                             'create_nodes_table',
                             'create_trees_table');
             // ->hasCommand(SkeletonCommand::class);
+
+        $this->app->bind('FamilyTree', function($app){
+            return new FamilyTree();
+        });
     }
 }

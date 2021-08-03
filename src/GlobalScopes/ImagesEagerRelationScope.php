@@ -17,8 +17,8 @@ class ImagesEagerRelationScope implements Scope{
      */
     public function apply(Builder $builder, Model $model)
     {
-        if(isset(config('tree.eager_relationships')['images']['with'])){
-            $builder->with(config('tree.eager_relationships')['images']['with']);
+        if(isset(config('tree.node_relationships')['images']['with'])){
+            $builder->with(config('tree.node_relationships')['images']['with']);
         }
     }
 }

@@ -19,58 +19,26 @@
 
 namespace Girover\Tree;
 
-use Girover\Tree\Node;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Exceptions\TreeNotActiveException;
 use BadMethodCallException;
+use Girover\Tree\Models\Node;
+use Girover\Tree\Models\Tree;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
-class Tree
+use function PHPUnit\Framework\isNull;
+
+class FamilyTree
 {
     /**
-    * The id of the tree
+    * The Tree model to bulid the familyTree from
     *
-    * @var Integer
+    * @var Girover\Tree\Models\Tree
     */
-    protected $id;
+    protected $tree;
+   
 
-    /**
-    * The Model of trees in databse
-    *
-    * String : the name of model that contains data of trees in database
-    *
-    * it depends on config('tree.node_model')
-    * @var string
-    */
-    protected $tree_model;
-
-    /** 
-    *
-    * Model class name
-    *
-    * Model : the name of the model that contains nodes
-    * it gets it`s value from config/tree.php 
-    * config('tree.node_model')
-    * @var string 
-    */
-    protected  $node_model;
-    
-    /** 
-    * The Model of nodes images in databse
-    *
-    * String : the name of model that contains data of nodes images in database
-    * it depends on config('tree.images_model')
-    * @var string
-    */
-    protected $images_model;
-
-    /**
-    * Properties
-    *
-    * @var App\Tree model: all properties of this tree
-    */
-    protected $properties;
     
     /**
     * The pointer that runs between the nodes of the this tree
@@ -79,21 +47,7 @@ class Tree
     */
     public $pointer;
 
-    /*
-    |--------------------------------------------------------------------------
-    | The Node location to start drow the tree from it.
-    |--------------------------------------------------------------------------
-    |
-    */
-    // public $location; // {string}   location number {start building from this location/node}
     
-    /**
-    * Database table name
-    *
-    * string : the name of the table that the nodes are stored in.
-    * @var string the name of the table that contains nodes
-    */
-    public $nodes_table;
 
     /*
     |--------------------------------------------------------------------------
@@ -103,31 +57,13 @@ class Tree
     | App\Node instance : current node with all data such as: location, name, etc.
     |
     */
-    public $node = null;  // {stdClass} current node;
+    // public $node = null;  // {stdClass} current node;
 
     
     public $treeExists = false;
     
-    public  $transfereModel;
-    /*
-    |--------------------------------------------------------------------------
-    | Nodes
-    |--------------------------------------------------------------------------
-    |
-    | Collection of Nodes : collection of models that this tree has.
-    |
-    */
-    protected $nodes;
-    /*
-    |--------------------------------------------------------------------------
-    | Loading nodes limitation
-    |--------------------------------------------------------------------------
-    |
-    | indicates how many nodes have to be loaded from database table
-    |
-    */
-    public $loading_amount;
     
+    protected $nodes;    
 
     public $nodesCount = 1;
     
@@ -138,14 +74,7 @@ class Tree
 
     public $tree_photos_path = 'images/photos/';
 
-    /*
-    |--------------------------------------------------------------------------
-    | Configurations
-    |--------------------------------------------------------------------------
-    | array of configuratins from file config/tree.php
-    |
-    */
-    protected $configs;
+    
 
     /**----------------------------------------------------------------------------------
      * Methods that are not defined and will be called by magic method __call()
@@ -176,25 +105,50 @@ class Tree
      * 
      * @return void
      */
-    function __construct($tree_id){
-        if(is_null($tree_id)){
-            return;
-        }
-        $this->id    = $tree_id;
+    // function __construct($tree_id){
+    //     if(is_null($tree_id)){
+    //         return;
+    //     }
+    //     $this->id    = $tree_id;
         
-        $this->initConfigs();
-        $this->configs = config('tree');
+    //     $this->initConfigs();
+    //     $this->configs = config('tree');
         
-        // Load properties of this tree
-        $this->makeProperties();
-        
-        // Load all nodes and put them in property $nodes
-        // $this->load();
+    //     // Load properties of this tree
+    //     $this->makeProperties();
 
-        // Make tree pointer and set it on the root node
-        $this->makePointer();
+    //     // Make tree pointer and set it on the root node
+    //     $this->makePointer();
+    // }
+    function __construct(){
+        
+        // // Make tree pointer and set it on the root node
+        
     }
 
+    /**
+     * Make family tree from Tree model or Node model
+     */
+    public function make($tree)
+    {
+        $node = null;
+
+        if($tree instanceof Tree){
+            $this->tree = $tree;
+            // $this->node = $tree->root()->first();
+            $node = $tree->root()->first();
+        }
+
+        if($tree instanceof Node){
+            $this->tree = config('tree.tree_model')::find($tree->tree_id);
+            // $this->node = $tree;
+            $node = $tree;
+        }
+
+        $this->makePointer($node);
+
+        return $this;
+    }
     
     /**
     * Create pointer for this tree and put it on root node of this tree
@@ -205,8 +159,8 @@ class Tree
     */
     public function makeProperties()
     {
-        if(! $this->properties = $this->tree_model::find($this->id)){
-            throw new TreeException("Tree with id : ".$this->id.' not found', 1);            
+        if(! $this->properties = config('tree.tree_model')::find($this->tree->id)){
+            throw new TreeException("Tree with id : ".$this->tree->id.' not found', 1);            
         }
 
         if(!$this->isActive()){
@@ -219,11 +173,13 @@ class Tree
     *
     * Create pointer for this tree and put it on root node of this tree
     * and then pass the tree instance to the pointer
+    *
+    * @param Girover\Tree\Models\Node $indicated_node
     * @return void
     */
-    public function makePointer()
+    public function makePointer(Node $indicated_node = null)
     {
-        $this->pointer = new Pointer($this);
+        $this->pointer = new Pointer($this, $indicated_node);         
     }
 
     /**
@@ -233,47 +189,17 @@ class Tree
     */
     public function properties()
     {
-        return $this->properties;
-    }
-    /**
-    * Initializing the tree configurations
-    *
-    * get configs from the file config/tree.php
-    * @return void
-    */
-    public function initConfigs()
-    {
-        $this->tree_model                   = config('tree.tree_model');
-        $this->node_model                   = config('tree.node_model');
-        $this->images_model                 = config('tree.images_model');
-        $this->transferModel                = config('tree.transferModel');
-        $this->nodes_table                  = config('tree.nodes_table');
-        $this->loading_amount               = config('tree.loading_amount');
+        return $this->tree;
     }
 
-    /**
-     * Get config
-     * 
-     * @param String name of coniguration
-     * @return Mixed
-     */
-    public function config($key)
+    public function pointer()
     {
-        if(!isset($this->configs[$key])){
-            return null;
+        if (null === $this->pointer) {
+            throw new TreeException('This tree has no pointer, or the tree is empty');
         }
-        return $this->configs[$key];
+        return $this->pointer;
     }
-
-    /**
-     * Get all configs
-     * 
-     * @return Array
-     */
-    public function configsList()
-    {
-        return $this->configs;
-    }
+    
 
     /**
      * Check if this tree is active
@@ -282,7 +208,7 @@ class Tree
      */
     public function isActive()
     {
-        return $this->properties()->active;
+        return $this->tree->active;
     }
     
     /**
@@ -294,7 +220,7 @@ class Tree
     */
     public function treeModel()
     {
-        return $this->tree_model;
+        return config('tree.tree_model');
     }
 
     /**
@@ -306,7 +232,7 @@ class Tree
     */
     public function nodeModel()
     {
-        return $this->node_model;
+        return config('tree.node_model');
     }
 
     /**
@@ -318,7 +244,7 @@ class Tree
     */
     public function nodesTable()
     {
-        return $this->nodes_table;
+        return config('tree.nodes_table.name');
     }
 
     /**
@@ -375,7 +301,7 @@ class Tree
     */
     public function treeQuery()
     {
-        return $this->tree_model::where('id', $this->id);
+        return config('tree.tree_model')::where('id', $this->tree->id);
     }
     /**
     * Make database query for The Node model to start other queries from this point
@@ -384,7 +310,7 @@ class Tree
     */
     public function nodesQuery()
     {
-        return $this->node_model::where('tree_id', $this->id);
+        return config('tree.node_model')::where('tree_id', $this->tree->id);
     }
 
     /**
@@ -648,12 +574,12 @@ class Tree
      *
      * @param string $location : location of node
      * @return integer [1, 0]
-     * ----------------------------------------------------------
+     *
      */
     public function has($location)
     {
         return $this->nodesQuery()
-                        ->where('location', $location)->count();
+                    ->where('location', $location)->count();
     }
 
     /**
@@ -749,7 +675,7 @@ class Tree
 
         $newNode = ($role === 'wife')? new Wife(): new Concurrent();
 
-        $newNode->tree_id = $this->id;
+        $newNode->tree_id = $this->tree->id;
         $newNode->location = $this->getNewChildLocation();
         $newNode->name = $request->firstName;
         $newNode->f_name = $request->fatherName;
@@ -763,8 +689,8 @@ class Tree
 
         if($role === 'father'){
             $newNode->location = '1';
-            Concurrent::where('tree_id', $this->id)->update(['location'=>DB::raw('CONCAT("1.", location)')]);
-            Wife::where('tree_id', $this->id)->update(['location'=>DB::raw('CONCAT("1.", location)')]);
+            Concurrent::where('tree_id', $this->tree->id)->update(['location'=>DB::raw('CONCAT("1.", location)')]);
+            Wife::where('tree_id', $this->tree->id)->update(['location'=>DB::raw('CONCAT("1.", location)')]);
         }
         if($role === 'wife'){
             $newNode->location = $request->location;
@@ -782,13 +708,13 @@ class Tree
     public function delete(){
 //        $deletedNodes = Node::where('tree_id', $this->id)->where('location', '=', $this->location)->orWhere('location', 'REGEXP' , '(^'.$this->location.'[0-9\.]+)')->delete();
         $regexpLocation = str_replace(Location::SEPARATOR, '\\'.Location::SEPARATOR, $this->location);
-        $deletedNodes = Concurrent::where('tree_id', $this->id)
+        $deletedNodes = Concurrent::where('tree_id', $this->tree->id)
                 ->where(function($query) use ($regexpLocation){
                     $query->where('location', '=', $this->location)
                             ->orWhere('location', 'REGEXP' , '(^'.$regexpLocation.'\\'.Location::SEPARATOR.'[^\\'.Location::SEPARATOR.']+$)');
                 })->delete();
 //        $deletedWives = Wife::where('tree_id', $this->id)->where('location', '=', $this->location)->orWhere('location', 'REGEXP' , '(^'.$this->location.'[0-9\.]+)')->delete();
-                $deletedWives = Wife::where('tree_id', $this->id)
+                $deletedWives = Wife::where('tree_id', $this->tree->id)
                 ->where(function($query) use ($regexpLocation){
                     $query->where('location', '=', $this->location)
                             ->orWhere('location', 'REGEXP' , '(^'.$this->location.'\.[^\.]+$)');
@@ -829,7 +755,7 @@ class Tree
         "UPDATE `".$this->nodes_table."`
           SET `location` =
              CONCAT('".$newLocation."' , SUBSTRING(location FROM ".($length + 1)."))
-         WHERE `tree_id` = ".$this->id."
+         WHERE `tree_id` = ".$this->tree->id."
          AND   `location` like '".$oldLocation."%'";
         // dd($statement);
         $updated = DB::update($statement);
@@ -899,11 +825,11 @@ class Tree
      * @return array
      */
     public function deleteTree(){
-        $deletedNodes = Concurrent::where('tree_id', $this->id)->delete();
+        $deletedNodes = Concurrent::where('tree_id', $this->tree->id)->delete();
 
-        $deletedWives = Wife::where('tree_id', $this->id)->delete();
+        $deletedWives = Wife::where('tree_id', $this->tree->id)->delete();
 
-        $deletedTree  = TreeRecord::where('id', $this->id)->delete();
+        $deletedTree  = TreeRecord::where('id', $this->tree->id)->delete();
         return [
             'deleted_nodes' => $deletedNodes,
             'deleted_wives' => $deletedWives,
@@ -1208,7 +1134,7 @@ class Tree
      * @return String
      */
     public function changeBasicNode($location){
-        if($this->tree_model::where('id', $this->properties()->id)->update(['basic_node'=>$location])){
+        if(config('tree.tree_model')::where('id', $this->properties()->id)->update(['basic_node'=>$location])){
             $this->properties->basic_node = $location;
             return $this->properties();
         }

@@ -17,8 +17,8 @@ class WivesEagerRelationScope implements Scope{
      */
     public function apply(Builder $builder, Model $model)
     {
-        if(isset(config('tree.eager_relationships')['wives']['with'])){
-            $builder->with(config('tree.eager_relationships')['wives']['with']);
+        if(null !== config('tree.node_relationships.wives.with')){
+            $builder->with(config('tree.node_relationships.wives.with'));
         }
     }
 }

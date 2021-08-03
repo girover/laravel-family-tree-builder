@@ -53,7 +53,7 @@
                 "Girover\\Tree\\TreeServiceProvider"
             ],
             "aliases": {
-                "Tree": "Girover\\Tree\\TreeFacade"
+                "FamilyTree": "Girover\\Tree\\Facades\\FamilyTree"
             }
         }
     },
