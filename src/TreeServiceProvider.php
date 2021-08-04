@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Girover\Tree;
 
@@ -18,13 +18,15 @@ class TreeServiceProvider extends PackageServiceProvider
             ->name('tree')
             ->hasConfigFile('tree')
             // ->hasViews()
-            ->hasMigrations('create_node_images_table',
-                            'create_marriages_table',
-                            'create_nodes_table',
-                            'create_trees_table');
-            // ->hasCommand(SkeletonCommand::class);
+            ->hasMigrations(
+                'create_node_images_table',
+                'create_marriages_table',
+                'create_nodes_table',
+                'create_trees_table'
+            );
+        // ->hasCommand(SkeletonCommand::class);
 
-        $this->app->bind('FamilyTree', function($app){
+        $this->app->bind('FamilyTree', function ($app) {
             return new FamilyTree();
         });
     }

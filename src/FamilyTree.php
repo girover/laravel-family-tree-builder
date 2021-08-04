@@ -5,29 +5,27 @@
 * the tree consists of nodes which are connected to make a tree.
 * and the nodes has defferent locations
 *
-* Location is a set of segments which are 
-* 
+* Location is a set of segments which are
+*
 * The tree has Pointer that indicates to nodes in database. This Pointer does not indicates
-* to loaded nodes in the tree propery `$nodes`, so when you load tree nodes 
-* and after that you move the Pointer to another location and try to draw the tree, 
+* to loaded nodes in the tree propery `$nodes`, so when you load tree nodes
+* and after that you move the Pointer to another location and try to draw the tree,
 * it will draw the loaded nodes. Therefor to draw the tree from location that the pointer
 * indicates to, you have to load the tree nodes again.
-* 
+*
 * @author  Majed Girover girover.mhf@gmail.com
-* @license MIT 
+* @license MIT
 * */
 
 namespace Girover\Tree;
 
+use BadMethodCallException;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Exceptions\TreeNotActiveException;
-use BadMethodCallException;
 use Girover\Tree\Models\Node;
 use Girover\Tree\Models\Tree;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-
-use function PHPUnit\Framework\isNull;
 
 class FamilyTree
 {
@@ -37,9 +35,9 @@ class FamilyTree
     * @var Girover\Tree\Models\Tree
     */
     protected $tree;
-   
 
-    
+
+
     /**
     * The pointer that runs between the nodes of the this tree
     *
@@ -47,7 +45,7 @@ class FamilyTree
     */
     public $pointer;
 
-    
+
 
     /*
     |--------------------------------------------------------------------------
@@ -59,50 +57,50 @@ class FamilyTree
     */
     // public $node = null;  // {stdClass} current node;
 
-    
+
     public $treeExists = false;
-    
-    
-    protected $nodes;    
+
+
+    protected $nodes;
 
     public $nodesCount = 1;
-    
+
     public $ancestors = []; // array holding ancestries of location
 
-   
+
 
 
     public $tree_photos_path = 'images/photos/';
 
-    
+
 
     /**----------------------------------------------------------------------------------
      * Methods that are not defined and will be called by magic method __call()
      * ---------------------------------------------------------------------------------
-     * 
+     *
      *----------------------------------------------------------------------------------*/
     protected $methods = [
-        'draw'=>[ // Indicates how many generations to draw from the pointer
-            'drawEntire'            => null,
-            'drawOneGeneration'     => 1,
-            'drawTwoGenerations'    => 2,
-            'drawThreeGenerations'  => 3,
-            'drawFourGenerations'   => 4,
-            'drawFifeGenerations'   => 5,
-            'drawSixGenerations'    => 6,
-            'drawSevenGenerations'  => 7,
-            'drawEightGenerations'  => 8,
-            'drawNineGenerations'   => 9,
-            'drawTenGenerations'    => 10,
+        'draw' => [ // Indicates how many generations to draw from the pointer
+            'drawEntire' => null,
+            'drawOneGeneration' => 1,
+            'drawTwoGenerations' => 2,
+            'drawThreeGenerations' => 3,
+            'drawFourGenerations' => 4,
+            'drawFifeGenerations' => 5,
+            'drawSixGenerations' => 6,
+            'drawSevenGenerations' => 7,
+            'drawEightGenerations' => 8,
+            'drawNineGenerations' => 9,
+            'drawTenGenerations' => 10,
         ],
     ];
 
 
     /**
      * Initializing the object instance of class Tree
-     * 
-     * @param integer|null tree_id
-     * 
+     *
+     * @param int|null tree_id
+     *
      * @return void
      */
     // function __construct($tree_id){
@@ -110,20 +108,20 @@ class FamilyTree
     //         return;
     //     }
     //     $this->id    = $tree_id;
-        
+
     //     $this->initConfigs();
     //     $this->configs = config('tree');
-        
+
     //     // Load properties of this tree
     //     $this->makeProperties();
 
     //     // Make tree pointer and set it on the root node
     //     $this->makePointer();
     // }
-    function __construct(){
-        
+    public function __construct()
+    {
+
         // // Make tree pointer and set it on the root node
-        
     }
 
     /**
@@ -133,13 +131,13 @@ class FamilyTree
     {
         $node = null;
 
-        if($tree instanceof Tree){
+        if ($tree instanceof Tree) {
             $this->tree = $tree;
             // $this->node = $tree->root()->first();
             $node = $tree->root()->first();
         }
 
-        if($tree instanceof Node){
+        if ($tree instanceof Node) {
             $this->tree = config('tree.tree_model')::find($tree->tree_id);
             // $this->node = $tree;
             $node = $tree;
@@ -149,7 +147,7 @@ class FamilyTree
 
         return $this;
     }
-    
+
     /**
     * Create pointer for this tree and put it on root node of this tree
     * and then pass the tree instance to the pointer
@@ -159,12 +157,12 @@ class FamilyTree
     */
     public function makeProperties()
     {
-        if(! $this->properties = config('tree.tree_model')::find($this->tree->id)){
-            throw new TreeException("Tree with id : ".$this->tree->id.' not found', 1);            
+        if (! $this->properties = config('tree.tree_model')::find($this->tree->id)) {
+            throw new TreeException("Tree with id : ".$this->tree->id.' not found', 1);
         }
 
-        if(!$this->isActive()){
-            throw new TreeNotActiveException("Error: The tree with name `".$this->properties->name."` is not active", 1);           
+        if (! $this->isActive()) {
+            throw new TreeNotActiveException("Error: The tree with name `".$this->properties->name."` is not active", 1);
         }
     }
 
@@ -179,7 +177,7 @@ class FamilyTree
     */
     public function makePointer(Node $indicated_node = null)
     {
-        $this->pointer = new Pointer($this, $indicated_node);         
+        $this->pointer = new Pointer($this, $indicated_node);
     }
 
     /**
@@ -197,22 +195,22 @@ class FamilyTree
         if (null === $this->pointer) {
             throw new TreeException('This tree has no pointer, or the tree is empty');
         }
+
         return $this->pointer;
     }
-    
 
     /**
      * Check if this tree is active
-     * 
+     *
      * @return bool
      */
     public function isActive()
     {
         return $this->tree->active;
     }
-    
+
     /**
-    * Tree Model 
+    * Tree Model
     *
     * Get The Tree model
     *
@@ -224,7 +222,7 @@ class FamilyTree
     }
 
     /**
-    * Node Model 
+    * Node Model
     *
     * Get The node model
     *
@@ -236,7 +234,7 @@ class FamilyTree
     }
 
     /**
-    * Database nodes Table 
+    * Database nodes Table
     *
     * Get The database table name that the nodes are stored in
     *
@@ -249,7 +247,7 @@ class FamilyTree
 
     /**
      * To set nodes smothly without querying database.
-     * 
+     *
      * @param Illuminate\Support\Collection | Girover\Tree\TreeCollection
      * @return void
      */
@@ -260,17 +258,17 @@ class FamilyTree
 
     /**
      * Determine if there are nodes in this tree
-     * 
+     *
      * @return bool
      */
     public function isEmptyTree()
     {
-        return ($this->nodesQuery()->count() == 0)?true:false;
+        return ($this->nodesQuery()->count() == 0) ? true : false;
     }
 
     /**
      * Determine if the nodes of this tree are allready loaded.
-     * 
+     *
      * @return bool
      */
     public function isLoaded()
@@ -278,11 +276,10 @@ class FamilyTree
         return $this->nodes !== null ? true : false;
     }
 
-
     /**
     * Load specific number of generation of this tree
     *
-    * @param integer number of generations to load. 
+    * @param int number of generations to load.
     * @return Illuminate\Database\Eloquent\Collection
     */
     protected function loadGenerations($number_of_generations)
@@ -293,7 +290,6 @@ class FamilyTree
                                     ->get();
     }
 
-
     /**
     * Make database query for The Tree model to start other queries from this point
     *
@@ -303,6 +299,7 @@ class FamilyTree
     {
         return config('tree.tree_model')::where('id', $this->tree->id);
     }
+
     /**
     * Make database query for The Node model to start other queries from this point
     *
@@ -318,18 +315,18 @@ class FamilyTree
     *
     * determines if the node location is valide and has the correct style
     * of three chars or digits followed by separator and so on.
-    * 
+    *
     * @param string $location ocation to validate
     * @return bool | TreeException
     */
     public function validateLocation($location)
     {
         return Location::validate($location);
-    }    
+    }
 
     /**
      * Get all Nodes in this Tree from database Table 'nodes'
-     * 
+     *
      * @return Illuminate\Database\Eloquent\Collection
      */
     public function all()
@@ -341,7 +338,7 @@ class FamilyTree
 
     /**
      * Get all Nodes in this Tree from database Table 'nodes'
-     * 
+     *
      * @return Illuminate\Database\Eloquent\Collection
      */
     public function allFromPointer()
@@ -354,7 +351,7 @@ class FamilyTree
 
     /**
      * Get all loaded nodes in this tree
-     * 
+     *
      * @param App\Girover\Database\Eloquent\TreeCollection
      */
     public function nodes()
@@ -364,7 +361,7 @@ class FamilyTree
 
     /**
      * To count the tree nodes that are allready loaded
-     * 
+     *
      * @return integer;
      */
     protected function countLoadedNodes()
@@ -374,13 +371,13 @@ class FamilyTree
 
     /**
      * To count the tree nodes that are allready loaded
-     * 
+     *
      * @return integer;
      */
     protected function countDatabaseNodes()
     {
         return $this->nodesQuery()
-                    ->where('location', 'like' , $this->pointer->location().'%')
+                    ->where('location', 'like', $this->pointer->location().'%')
                     ->count();
     }
 
@@ -392,7 +389,7 @@ class FamilyTree
      * If there are no nodes then query the database
      * if there are nodes count them from $nodes
      *
-     * @return integer
+     * @return int
      */
     public function count()
     {
@@ -402,30 +399,29 @@ class FamilyTree
     }
 
     /**
-    * Load tree nodes 
+    * Load tree nodes
     *
-    * Get all Nodes of this tree from database 
+    * Get all Nodes of this tree from database
     * and set them in the variable $nodes
     *
     * @return App\Girover\Database\Eloquent\TreeCollection
     */
     public function load($number_of_generations = null)
     {
-        if(!is_numeric($number_of_generations) && !is_null($number_of_generations)){
+        if (! is_numeric($number_of_generations) && ! is_null($number_of_generations)) {
             throw new TreeException("Error: The given generation '".$number_of_generations."' is not a number", 1);
-            
         }
         $this->nodes = $number_of_generations
                        ? $this->loadGenerations($number_of_generations)
                        : $this->allFromPointer();
-        
+
         return $this;
     }
 
     /**
      * Load the tree nodes from preloaded collection
      * no need to querying database.
-     * 
+     *
      * @param Illuminate\Support\Collection | Girover\Tree\TreeCollection
      * @return Girover\Tree\Tree
      */
@@ -433,18 +429,18 @@ class FamilyTree
     {
         $this->nodes = $collection;
         $this->pointer->silentlyTo($collection->first());
-       
+
         return $this;
     }
 
     /**
-     * To unload this tree. 
-     * 
+     * To unload this tree.
+     *
      * @return void
      */
     public function unload()
     {
-        $this->nodes  = null;
+        $this->nodes = null;
         $this->pointer->toRoot();
     }
 
@@ -453,7 +449,8 @@ class FamilyTree
      *
      * @return string
      */
-    public function toHtml(){
+    public function toHtml()
+    {
         return $this->draw();
     }
 
@@ -464,71 +461,68 @@ class FamilyTree
      *
      * @return string
      */
-    public function draw(){
+    public function draw()
+    {
 
         // Determine if nodes of this tree are loaded before starting to draw it.
         // if no nodes are loaded And there are nodes in database, so load them.
-        if($this->nodes == null){
-            if(!$this->isEmptyTree()){
+        if ($this->nodes == null) {
+            if (! $this->isEmptyTree()) {
                 $this->load();
-                // throw new TreeException("Error: Load The tree '".$this->properties()->name."' has nodes but they are not loaded. \n You Can call the method load() before draw() method to load the tree nodes", 1);                
-            }else{
+            // throw new TreeException("Error: Load The tree '".$this->properties()->name."' has nodes but they are not loaded. \n You Can call the method load() before draw() method to load the tree nodes", 1);
+            } else {
                 return $this->emptyTree();
             }
         }
 
-        if( ($nodes_count = $this->count() ) == 0){
+        if (($nodes_count = $this->count()) == 0) {
             return $this->emptyTree();
         }
         $fathers = [];
         $close_status = false;
         $is_node_father = false;
         $tree_html = ' ' ;
-        
+
         //=============================
-        // Start drawing the tree from the pointer 
+        // Start drawing the tree from the pointer
         $tree_html .= ' <div id="tree" class="tree"><ul>' ;
         //=============================
-        For ( $i = 0; $i < $nodes_count; $i++  )
-        {
-            $node           = $this->nodes[ $i ] ;             
-            $next_node      = isset($this->nodes[$i+1])? $this->nodes[ $i +1 ]:null;
+        for ($i = 0; $i < $nodes_count; $i++) {
+            $node = $this->nodes[ $i ] ;
+            $next_node = isset($this->nodes[$i + 1]) ? $this->nodes[ $i + 1 ] : null;
             $is_node_father = $this->areFatherAndSon($node, $next_node);
 
-            if($close_status){
+            if ($close_status) {
                 $father_loop_count = count($fathers);
-                for ( $j = $father_loop_count ; $j >0; $j-- )
-                {
-                    $node_father = array_pop( $fathers);
-                    if ($this->areSiblings($node, $node_father ) )
-                    {
+                for ($j = $father_loop_count ; $j > 0; $j--) {
+                    $node_father = array_pop($fathers);
+                    if ($this->areSiblings($node, $node_father)) {
                         $i--;
                         $close_status = false ;
+
                         break;
-                    }else{
-                        $tree_html  .= ' </ul></li> ' ;
+                    } else {
+                        $tree_html .= ' </ul></li> ' ;
                     }
                 }
                 $close_status = false ;
-            }else{
+            } else {
                 $tree_html .= ' <li> '.$this->getNodeStyled($node, $is_node_father) ;
-                if ( $this->areFatherAndSon($node, $next_node) )
-                {
+                if ($this->areFatherAndSon($node, $next_node)) {
                     $tree_html .= ' <ul> ' ;
                     $fathers[] = $node;
-                }else{
-                    if ( $this->areSiblings( $node, $next_node ) )
-                    {
+                } else {
+                    if ($this->areSiblings($node, $next_node)) {
                         $tree_html .= ' </li> ' ;
-                    }else{
+                    } else {
                         $tree_html .= ' </li></ul></li> ' ;
                         $close_status = true;
                     }
                 }
-            }  
-        }    
+            }
+        }
         $tree_html .= '</ul></div>';
-        
+
         return $tree_html;
     }
 
@@ -537,7 +531,8 @@ class FamilyTree
      *
      * @return string
      */
-    public function emptyTree(){
+    public function emptyTree()
+    {
         return '<div id="tree" class="tree"><ul>'
                 . '<li>'
                 . '<a class="node" data-id=""  data-location="0" data-tree="" data-id="" data-name="" data-geder="" data-role="empty">
@@ -555,17 +550,16 @@ class FamilyTree
         return Location::firstPossibleSegment();
     }
 
-
     /**
      * Move the pointer of the tree to a given location
      *
      * @param string $location
      * @return $this
      */
-    public function goTo($location){
-
+    public function goTo($location)
+    {
         $this->pointer->to($location);
-        
+
         return $this;
     }
 
@@ -573,7 +567,7 @@ class FamilyTree
      * Determine if the Tree has node with this given location
      *
      * @param string $location : location of node
-     * @return integer [1, 0]
+     * @return int [1, 0]
      *
      */
     public function has($location)
@@ -592,9 +586,10 @@ class FamilyTree
      */
     public function areFatherAndSon($father, $son)
     {
-        if($father === null || $son === null){
+        if ($father === null || $son === null) {
             return false;
         }
+
         return Location::areFatherAndSon($father->location, $son->location);
     }
 
@@ -604,10 +599,12 @@ class FamilyTree
      * @param string $locaction
      * @return Node
      */
-    public  function getNode($locaction){
-        foreach ($this->nodes as $node){
-            if($node->location == $locaction)
+    public function getNode($locaction)
+    {
+        foreach ($this->nodes as $node) {
+            if ($node->location == $locaction) {
                 return $node;
+            }
         }
     }
 
@@ -617,10 +614,11 @@ class FamilyTree
      * @param string $location [ location of node to get father's location ]
      * @return string [ location of the father of given location]
      */
-    public function fatherOf($location){
-
+    public function fatherOf($location)
+    {
         return $this->pointer->to($location)->father();
     }
+
     /**
      *---------------------------------------------------
      *      Get the Wives node of the given location
@@ -628,8 +626,8 @@ class FamilyTree
      * @param string $location
      * @return Illuminate\Support\Collection colection of wives
      */
-    public function wivesOf($location){
-
+    public function wivesOf($location)
+    {
         return $this->pointer->to($location)->wives();
     }
 
@@ -639,29 +637,25 @@ class FamilyTree
      * @param string $location [ location of node to get father's location ]
      * @return Node
      */
-    public function getMother($location){
-
+    public function getMother($location)
+    {
         return Wife::where('tree_id', '=', Session::get('tree_id'))->where('location', '=', $location)->get()->first();
-
     }
 
-
     /**
-     * Get all ancestors nodes of the given location in this tree. 
+     * Get all ancestors nodes of the given location in this tree.
      *
      * @param String $location
      * @return Illuminate\Support\Collection
      */
-    public function ancestorsOf($location){
-
+    public function ancestorsOf($location)
+    {
         return $this->pointer->to($location)->ancestors();
     }
 
-
-
     public function parseNumber($location)
     {
-        return substr($location, strrpos($location, Location::SEPARATOR)+1);
+        return substr($location, strrpos($location, Location::SEPARATOR) + 1);
     }
 
     /**
@@ -671,9 +665,9 @@ class FamilyTree
      * @param String $role
      * @return Node
      */
-    public function add(Request $request, $role = ''){
-
-        $newNode = ($role === 'wife')? new Wife(): new Concurrent();
+    public function add(Request $request, $role = '')
+    {
+        $newNode = ($role === 'wife') ? new Wife() : new Concurrent();
 
         $newNode->tree_id = $this->tree->id;
         $newNode->location = $this->getNewChildLocation();
@@ -684,18 +678,19 @@ class FamilyTree
         $newNode->birth_date = $request->birthdate;
         $newNode->gender = $request->gender;
         $photo = $request->file('photo');
-        $fileName =($photo) ? basename($photo->store('images/photos')) : '';
+        $fileName = ($photo) ? basename($photo->store('images/photos')) : '';
         $newNode->photo = $fileName;
 
-        if($role === 'father'){
+        if ($role === 'father') {
             $newNode->location = '1';
-            Concurrent::where('tree_id', $this->tree->id)->update(['location'=>DB::raw('CONCAT("1.", location)')]);
-            Wife::where('tree_id', $this->tree->id)->update(['location'=>DB::raw('CONCAT("1.", location)')]);
+            Concurrent::where('tree_id', $this->tree->id)->update(['location' => DB::raw('CONCAT("1.", location)')]);
+            Wife::where('tree_id', $this->tree->id)->update(['location' => DB::raw('CONCAT("1.", location)')]);
         }
-        if($role === 'wife'){
+        if ($role === 'wife') {
             $newNode->location = $request->location;
         }
         $newNode->save();
+
         return $newNode;
     }
 
@@ -705,20 +700,22 @@ class FamilyTree
      *
      * @return Array
      */
-    public function delete(){
+    public function delete()
+    {
 //        $deletedNodes = Node::where('tree_id', $this->id)->where('location', '=', $this->location)->orWhere('location', 'REGEXP' , '(^'.$this->location.'[0-9\.]+)')->delete();
         $regexpLocation = str_replace(Location::SEPARATOR, '\\'.Location::SEPARATOR, $this->location);
         $deletedNodes = Concurrent::where('tree_id', $this->tree->id)
-                ->where(function($query) use ($regexpLocation){
+                ->where(function ($query) use ($regexpLocation) {
                     $query->where('location', '=', $this->location)
-                            ->orWhere('location', 'REGEXP' , '(^'.$regexpLocation.'\\'.Location::SEPARATOR.'[^\\'.Location::SEPARATOR.']+$)');
+                            ->orWhere('location', 'REGEXP', '(^'.$regexpLocation.'\\'.Location::SEPARATOR.'[^\\'.Location::SEPARATOR.']+$)');
                 })->delete();
 //        $deletedWives = Wife::where('tree_id', $this->id)->where('location', '=', $this->location)->orWhere('location', 'REGEXP' , '(^'.$this->location.'[0-9\.]+)')->delete();
-                $deletedWives = Wife::where('tree_id', $this->tree->id)
-                ->where(function($query) use ($regexpLocation){
+        $deletedWives = Wife::where('tree_id', $this->tree->id)
+                ->where(function ($query) use ($regexpLocation) {
                     $query->where('location', '=', $this->location)
-                            ->orWhere('location', 'REGEXP' , '(^'.$this->location.'\.[^\.]+$)');
+                            ->orWhere('location', 'REGEXP', '(^'.$this->location.'\.[^\.]+$)');
                 })->delete();
+
         return [
             'deleted_nodes' => $deletedNodes,
             'deleted_wives' => $deletedWives,
@@ -775,10 +772,11 @@ class FamilyTree
 
         $this->nodesQuery()
                     // ->where('location', 'like', $this->node->getLocation().'%')
-                    ->where('location', 'REGEXP' , '(^'.$regexpLocation.'\.[^\.]+$)')
+                    ->where('location', 'REGEXP', '(^'.$regexpLocation.'\.[^\.]+$)')
                     ->where('location', '!=', $this->node->getLocation())
-                    ->update(['encouraging_number'=>$this->node->data()->card_number]);
+                    ->update(['encouraging_number' => $this->node->data()->card_number]);
     }
+
     /**
      * --------------------------------------------------------------------------------
      * Transfer data from deleted node to the another table
@@ -790,17 +788,17 @@ class FamilyTree
      */
     public function transferData($node)
     {
-        $transferNode = new $this->transferModel;
-        $transferNode->game_id            = $node->game_id;
-        $transferNode->user_id            = $node->user_id;
-        $transferNode->card_number        = $node->card_number;
+        $transferNode = new $this->transferModel();
+        $transferNode->game_id = $node->game_id;
+        $transferNode->user_id = $node->user_id;
+        $transferNode->card_number = $node->card_number;
         $transferNode->encouraging_number = $node->encouraging_number;
-        $transferNode->subscription_date  = $node->subscription_date;
-        $transferNode->full_name          = $node->full_name;
-        $transferNode->birth_place        = $node->birth_place;
-        $transferNode->address            = $node->address;
-        $transferNode->phone              = $node->phone;
-        $transferNode->email              = $node->email;
+        $transferNode->subscription_date = $node->subscription_date;
+        $transferNode->full_name = $node->full_name;
+        $transferNode->birth_place = $node->birth_place;
+        $transferNode->address = $node->address;
+        $transferNode->phone = $node->phone;
+        $transferNode->email = $node->email;
 
         $transferNode->save();
     }
@@ -819,17 +817,20 @@ class FamilyTree
         Concurrent_old_key::where('con_id', $node->id)
                           ->delete();
     }
+
     /**
      * Delete tree from database with all nodes in this tree and all wives
      *
      * @return array
      */
-    public function deleteTree(){
+    public function deleteTree()
+    {
         $deletedNodes = Concurrent::where('tree_id', $this->tree->id)->delete();
 
         $deletedWives = Wife::where('tree_id', $this->tree->id)->delete();
 
-        $deletedTree  = TreeRecord::where('id', $this->tree->id)->delete();
+        $deletedTree = TreeRecord::where('id', $this->tree->id)->delete();
+
         return [
             'deleted_nodes' => $deletedNodes,
             'deleted_wives' => $deletedWives,
@@ -844,9 +845,12 @@ class FamilyTree
      * @param App\Node $next_node
      * @return bool
      */
-    public function areSiblings($node, $next_node){
-        if($node == null || $next_node === null)
+    public function areSiblings($node, $next_node)
+    {
+        if ($node == null || $next_node === null) {
             return false;
+        }
+
         return Location::areSiblings($node->location, $next_node->location);
     }
 
@@ -857,25 +861,27 @@ class FamilyTree
      * @param Node $is_node_father
      * @return string [ Html code ]
      */
-    public function getNodeStyled($node, $is_node_father){
+    public function getNodeStyled($node, $is_node_father)
+    {
         $node_html = '';
         // $wives = (isset($this->wives[$item->location]))?$this->wives[$item->location]:[];
         $wives = $node->wives->all();
-        if($is_node_father){
+        if ($is_node_father) {
             // Get wives of this father/node
             $node_html .= '<div class="h">';
             $node_html .= $this->getHusbandHtml($node);
             $node_html .= $this->getWivesHtml($node, $wives);
             $node_html .= '</div>';
         // }else if(isset($this->wives[$node->location])){
-        }else if(!empty($wives)){
+        } elseif (! empty($wives)) {
             $node_html .= '<div class="h">';
             $node_html .= $this->getHusbandHtml($node, ' no-children');
             $node_html .= $this->getWivesHtml($node, $wives);
             $node_html .= '</div>';
-        }else{
+        } else {
             $node_html .= $this->getChildHtml($node);
         }
+
         return $node_html;
     }
 
@@ -884,11 +890,11 @@ class FamilyTree
      *
      * @param Node $node
      * @param String $classes
-     * 
+     *
      * @return String
      */
-    public function getHusbandHtml($node, $classes = ''){
-
+    public function getHusbandHtml($node, $classes = '')
+    {
         return $this->getNodeHtml($node, 'husband'.$classes);
     }
 
@@ -898,8 +904,8 @@ class FamilyTree
      * @param Node $node
      * @return String
      */
-    public function getChildHtml($node){
-
+    public function getChildHtml($node)
+    {
         return $this->getNodeHtml($node, 'child');
     }
 
@@ -909,14 +915,16 @@ class FamilyTree
      * @param Array $wives
      * @return String
      */
-    public function getWivesHtml($item, $wives){
-            $wivesCount = count($wives);
-            if($wivesCount > 0){
-                $firstWife = array_shift($wives);
-                return $this->getNodeHtml($firstWife, 'wife', $wives);
-            }else{
-                // Return Html For Undefiend Wife
-                return  '<div class="wives-group">'
+    public function getWivesHtml($item, $wives)
+    {
+        $wivesCount = count($wives);
+        if ($wivesCount > 0) {
+            $firstWife = array_shift($wives);
+
+            return $this->getNodeHtml($firstWife, 'wife', $wives);
+        } else {
+            // Return Html For Undefiend Wife
+            return  '<div class="wives-group">'
                          . '<a class="node empty" data-counter="'.$this->nodesCount++.'"  data-tree="" data-location="0" data-husband_location="'.$item->location.'" data-id="0" data-name="wife" data-f_name="wife" data-l_name="wife" data-m_name="wife" data-gender="2">
                             <div class="female-node wife">
                                 <div class="node-img"><img src="'.url(config('tree.tree_profiles').'icon_female.png').'"></div>
@@ -925,8 +933,8 @@ class FamilyTree
                             </div>
                             </a>
                         </div>';
-            }
-            //            return $this->getNodeHtml($firstWife, 'wife', $wives);
+        }
+        //            return $this->getNodeHtml($firstWife, 'wife', $wives);
     }
 
     /**
@@ -935,10 +943,11 @@ class FamilyTree
      * @param Array $wives
      * @return string
      */
-    public function getOtherWivesStyled($wives){
+    public function getOtherWivesStyled($wives)
+    {
         $id = 2;
         $hText = '';
-        foreach($wives as $wife){
+        foreach ($wives as $wife) {
             $photo = public_path($this->tree_photos_path . $wife->photo);
             $photo = (file_exists($photo) and ! is_dir($photo)) ? $wife->photo : $this->photoIcon($wife->gender);
 
@@ -964,8 +973,8 @@ class FamilyTree
      * @return array of arrays
      */
 //     public function getWifesAsArray(){
-// //        $wives = Wife::where('tree_id',$this->id)->where('location','=', $this->location)->orWhere('location', 'REGEXP' , '(^'.$this->location.'[0-9\.]+)')->orderBy('location')->get();
-// //        $wives = Wife::where('tree_id',$tree_id)->where('location','>=',$location_start)->orderBy('location')->get();
+    // //        $wives = Wife::where('tree_id',$this->id)->where('location','=', $this->location)->orWhere('location', 'REGEXP' , '(^'.$this->location.'[0-9\.]+)')->orderBy('location')->get();
+    // //        $wives = Wife::where('tree_id',$tree_id)->where('location','>=',$location_start)->orderBy('location')->get();
 //         $regexpLocation = str_replace('.', '\.', $this->location);
 //         $wives = Wife::where('tree_id', $this->id)
 //                 ->where(function($query){
@@ -997,35 +1006,37 @@ class FamilyTree
      * @param Array  $wives
      * @return string
      */
-    public function getNodeHtml($node = null, $role = 'husband no-cildren' ,$wives = []){
+    public function getNodeHtml($node = null, $role = 'husband no-cildren', $wives = [])
+    {
+        if ($node === null) {
+            return '';
+        }
 
-        if($node === null) return '';
-        
         $photo = public_path($this->tree_photos_path.$node->photo);
         $photo = (file_exists($photo) and ! is_dir($photo))
                   ? $node->photo
-                  :$this->photoIcon($node->gender);
+                  : $this->photoIcon($node->gender);
         $node_class = ($node->gender == 'm') ? 'male-node' : 'female-node';
 //        $active_class = ($item->location == '1')?'active-node':'';
-        $active_class = ((Session::get('activeNode') == $node->id)AND($role != 'wife'))?'active-node':'';
+        $active_class = ((Session::get('activeNode') == $node->id) and ($role != 'wife')) ? 'active-node' : '';
 //        $location = ($role =='wife')?$item->location:$item->location;
-        
-        $addFather  = ((strpos($node->location, Location::SEPARATOR) === false)AND($role != 'wife') )?'<div id="add-father" data-location="'.$node->location.'" data-toggle="modal" data-target="#addChildModal" alt="add Father"><i class="fa fa-plus"></i></div>':'';
-        $showFather = (($node->location == $this->pointer->location())AND($role != 'wife')AND(strpos($node->location, Location::SEPARATOR)>0) )?'<div id="show-father" data-location="'.$node->location.'"  title="show Father"><i class="fa fa-arrow-up"></i></div>':'';
-        $nodeCollapse  = ($role === 'husband')? '<div class="node-collapse down"><i class="fa fa-chevron-circle-up"></i></div>':'';
-        
-        $html = ($role == 'wife')?'<div class="wives-group">':'';
+
+        $addFather = ((strpos($node->location, Location::SEPARATOR) === false) and ($role != 'wife')) ? '<div id="add-father" data-location="'.$node->location.'" data-toggle="modal" data-target="#addChildModal" alt="add Father"><i class="fa fa-plus"></i></div>' : '';
+        $showFather = (($node->location == $this->pointer->location()) and ($role != 'wife') and (strpos($node->location, Location::SEPARATOR) > 0)) ? '<div id="show-father" data-location="'.$node->location.'"  title="show Father"><i class="fa fa-arrow-up"></i></div>' : '';
+        $nodeCollapse = ($role === 'husband') ? '<div class="node-collapse down"><i class="fa fa-chevron-circle-up"></i></div>' : '';
+
+        $html = ($role == 'wife') ? '<div class="wives-group">' : '';
         $html .= '<a class="node '.$active_class.'" data-id="'.$node->id.'" data-counter="' . $this->nodesCount++ . '"
                      data-tree="'.$node->tree_id.'" data-location="'.$node->location.'" data-id="'.$node->id.'" data-name="'.$node->name.'" data-f_name="'.$node->f_name.'" data-l_name="'.$node->l_name.'" data-m_name="'.$node->m_name.'" data-birthdate="'.$node->birth_date.'" data-gender="'.$node->gender.'" data-role="'.$role.'">
                     '.$addFather.$showFather.$nodeCollapse.
                     '<div class="'.$node_class.' '.$role.'">	    
                         <div class="node-img"><img src="'.asset(config('tree.tree_profiles').$photo).'"></div>
                         <div class="node-info">'.$node->name.'</div>
-                        '.(($role ==='wife')?'<div class="wife-number">1</div>':'').'
+                        '.(($role === 'wife') ? '<div class="wife-number">1</div>' : '').'
                     </div> 
                 </a>'.($this->getOtherWivesStyled($wives));
-        $html = ($role == 'wife')?$html.'</div>':$html;
-        
+        $html = ($role == 'wife') ? $html.'</div>' : $html;
+
         return $html;
     }
 
@@ -1035,10 +1046,10 @@ class FamilyTree
      * @param int $gender
      * @return string
      */
-    public static function photoIcon($gender = 'm'){
-        return ($gender === 'm')?'icon_male.png':'icon_female.png';
+    public static function photoIcon($gender = 'm')
+    {
+        return ($gender === 'm') ? 'icon_male.png' : 'icon_female.png';
     }
-
 
     /**
      * Get the logest location in this tree
@@ -1047,9 +1058,10 @@ class FamilyTree
      */
     public function longestLocation()
     {
-        if($row = $this->nodesQuery()->orderByRaw('LENGTH(location) DESC')->first()){
+        if ($row = $this->nodesQuery()->orderByRaw('LENGTH(location) DESC')->first()) {
             return $row->location;
         }
+
         return null;
     }
 
@@ -1081,9 +1093,10 @@ class FamilyTree
      */
     public function totalGenerations()
     {
-        if($location = $this->longestLocation()){
+        if ($location = $this->longestLocation()) {
             return Location::generation($location);
         }
+
         return 0;
     }
 
@@ -1093,27 +1106,25 @@ class FamilyTree
      * @param int $generation
      * @return Array of Node
      */
-    public function generation($generation = 1){
-
+    public function generation($generation = 1)
+    {
         return $this->nodesQuery()->where('location', 'REGEXP', Location::singleGenerationREGEXP($generation))
                            ->get();
-
     }
-
 
     /**
      * Get Information about the current tree
      *
      * @return Array
      */
-    public function getTreeInfo(){
-
+    public function getTreeInfo()
+    {
         return [
-            'userName'    => $this->treeModel->user()[0]->name,
-            'treeName'    => $this->treeModel->name,
+            'userName' => $this->treeModel->user()[0]->name,
+            'treeName' => $this->treeModel->name,
             'members' => $this->treeModel->nodesCount(),
-            'wives'   => $this->treeModel->wivesCount(),
-            'males'   => $this->treeModel->genderCount(1),
+            'wives' => $this->treeModel->wivesCount(),
+            'males' => $this->treeModel->genderCount(1),
             'females' => $this->treeModel->genderCount(2),
             'generations' => $this->totalGenerations(),
             'settings' => $this->treeModel->getSettingsAsArray(),
@@ -1125,17 +1136,21 @@ class FamilyTree
      *
      * @return String
      */
-    public function getBasicNode(){
+    public function getBasicNode()
+    {
         return $this->properties()->basic_node;
     }
+
     /**
      * Change the location of basic node in the current tree
      *
      * @return String
      */
-    public function changeBasicNode($location){
-        if(config('tree.tree_model')::where('id', $this->properties()->id)->update(['basic_node'=>$location])){
+    public function changeBasicNode($location)
+    {
+        if (config('tree.tree_model')::where('id', $this->properties()->id)->update(['basic_node' => $location])) {
             $this->properties->basic_node = $location;
+
             return $this->properties();
         }
     }
@@ -1145,27 +1160,28 @@ class FamilyTree
      *
      * @return Array of Tree
      */
-    public function getDeletedTrees(){
+    public function getDeletedTrees()
+    {
         return TreeRecord::onlyTrashed()->get();
     }
-    public function getDeletedNodes(){
+
+    public function getDeletedNodes()
+    {
     }
-
-
 
     /**
      * Calling some methods when calling undefined methods
-     * 
+     *
      * @param String $name method name
      * @param Array $args parameters that passed to the called method
      * @return Void
-     */   
+     */
     public function __call($name, $args)
     {
-        if(array_key_exists($name, $this->methods['draw'])){
+        if (array_key_exists($name, $this->methods['draw'])) {
             return $this->load($this->methods['draw'][$name])->draw();
         }
 
-        throw new BadMethodCallException("Trying to call undefined metode $name ", 1);  
+        throw new BadMethodCallException("Trying to call undefined metode $name ", 1);
     }
 }

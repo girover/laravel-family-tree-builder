@@ -2,13 +2,9 @@
 
 namespace Girover\Tree\Traits;
 
-use Girover\Tree\EagerTree;
-use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\GlobalScopes\TreeWithRootNodeScope;
 use Girover\Tree\Models\Node;
 use Girover\Tree\Models\Tree;
 use Girover\Tree\Pointer;
-use Illuminate\Support\Facades\DB;
 
 /**
  *  The model `Tree` has to use this trait
@@ -17,14 +13,13 @@ trait Treeable
 {
     /**
      * represent a node in the tree [current node]
-     *  
+     *
      * @var Girover\Tree\Models\Node
      */
     private $pointer = null;
-    
+
     public static function bootTreeable()
     {
-        
     }
 
     public function initializeTreeable()
@@ -35,7 +30,7 @@ trait Treeable
 
     /**
      * Tree has a pointer. create and make it free
-     * 
+     *
      * @return Girover\Tree\Pointer
      */
     private function makePointer()
@@ -49,10 +44,13 @@ trait Treeable
         return $this->pointer;
     }
 
-    public function nodeModel(){
+    public function nodeModel()
+    {
         return Node::class;
     }
-    public function treeModel(){
+
+    public function treeModel()
+    {
         return Tree::class;
     }
 
@@ -64,19 +62,17 @@ trait Treeable
         $model = (null !== config('tree.tree_relationships.root.model'))
                 ? config('tree.tree_relationships.root.model')
                 : \Girover\Tree\Models\Node::class;
-        
+
         return $this->hasOne($model);
     }
 
     /**
      * Relationship to get all nodes of this tree
-     * 
+     *
      * @return illuminate\Database\Eloquent\Relationship
      */
     public function nodes()
     {
         return $this->hasMany(Node::class);
-    }   
-    
-    
+    }
 }

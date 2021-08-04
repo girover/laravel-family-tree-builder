@@ -9,12 +9,12 @@ trait IsNode
 {
     /**
      * asign the node to this property of authenticated user
-     * 
+     *
      * @var null | Girover\Tree\Models\Node
      */
     protected $node = null;
 
-    public function asignNode(){
-        
+    public function asignNode()
+    {
     }
 }

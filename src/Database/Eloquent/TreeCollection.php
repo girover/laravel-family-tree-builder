@@ -6,11 +6,11 @@ use Girover\Tree\EagerTree;
 use Girover\Tree\Exceptions\TreeException;
 use Illuminate\Database\Eloquent\Collection;
 
-class TreeCollection extends Collection{
-
+class TreeCollection extends Collection
+{
     /**
      * determine if there are nodes in the collection
-     * 
+     *
      * @return bool
      */
     protected function isEmptyCollection()
@@ -20,7 +20,7 @@ class TreeCollection extends Collection{
 
     /**
      * determine if there is only one node in the collection
-     * 
+     *
      * @return bool
      */
     protected function hasOnlyOneNode()
@@ -31,23 +31,25 @@ class TreeCollection extends Collection{
     /**
      * Determine if the collection is correctly sorted.
      * this means if the nodes are sorted ASC.
-     * 
+     *
      * @return bool
      */
     protected function isCorrectlySorted()
     {
-        if(!$this->isEmptyCollection()){
-            if($this->hasOnlyOneNode()){
+        if (! $this->isEmptyCollection()) {
+            if ($this->hasOnlyOneNode()) {
                 return true;
             }
+
             return $this[0]->location < $this[1]->location ? true : false;
         }
+
         return true;
     }
 
     /**
-     * Get the collection as tree Html 
-     * 
+     * Get the collection as tree Html
+     *
      * @return string tree as Html text
      */
     public function toHtml()
@@ -56,8 +58,8 @@ class TreeCollection extends Collection{
     }
 
     /**
-     * Get the collection as tree Html 
-     * 
+     * Get the collection as tree Html
+     *
      * @return string tree as Html text
      */
     public function draw()
@@ -66,19 +68,19 @@ class TreeCollection extends Collection{
     }
 
     /**
-     * Get the collection as tree Html 
-     * 
+     * Get the collection as tree Html
+     *
      * @return string tree as Html text
      */
     public function toTree()
     {
-        if($this->count() == 0){
+        if ($this->count() == 0) {
             return (new EagerTree(null))->emptyTree();
         }
-        if(!$this->isCorrectlySorted()){
-            throw new TreeException("Error: Tree nodes must be correctly sorted before trying to build it.", 1);           
+        if (! $this->isCorrectlySorted()) {
+            throw new TreeException("Error: Tree nodes must be correctly sorted before trying to build it.", 1);
         }
+
         return (new EagerTree($this->first()->tree_id))->silentLoad($this)->draw();
     }
-
 }

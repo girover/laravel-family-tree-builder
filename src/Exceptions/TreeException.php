@@ -4,6 +4,6 @@ namespace Girover\Tree\Exceptions;
 
 use Exception;
 
-class TreeException extends Exception{
-
+class TreeException extends Exception
+{
 }

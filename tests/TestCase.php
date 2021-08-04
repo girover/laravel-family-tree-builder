@@ -2,9 +2,9 @@
 
 namespace Girover\Tree\Tests;
 
+use Girover\Tree\TreeServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Girover\Tree\TreeServiceProvider;
 
 class TestCase extends Orchestra
 {

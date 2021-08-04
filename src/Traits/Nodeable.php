@@ -2,26 +2,24 @@
 
 namespace Girover\Tree\Traits;
 
+use Girover\Tree\Database\Eloquent\TreeCollection;
+use Girover\Tree\Database\Eloquent\TreeEloquentBuilder;
+use Girover\Tree\Exceptions\TreeException;
+use Girover\Tree\Facades\FamilyTree;
 use Girover\Tree\GlobalScopes\ImagesEagerRelationScope;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\Builder as Query;
-use Girover\Tree\Database\Eloquent\TreeEloquentBuilder;
-use Girover\Tree\Database\Eloquent\TreeCollection;
-use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Facades\FamilyTree;
 use Girover\Tree\Location;
 use Illuminate\Support\Facades\DB;
 
 /**
- * 
+ *
  */
 trait Nodeable
 {
     /**
      * massassignment fillable properties
-     * 
+     *
      * @var array
      */
     protected static $fillable_cols = [
@@ -38,63 +36,64 @@ trait Nodeable
 
     /**
      * Eager loading relationships
-     * 
+     *
      * @var array // from config file tree.php
      */
     // protected static $bound_relationships = [];
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * @param Illuminate\Databse\Query\Builder
      * @return Girover\Tree\Database\TreeQueryBuilder
      */
     public function newEloquentBuilder($query)
-    {        
+    {
         return new TreeEloquentBuilder($query);
     }
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * @return Girover\Tree\Database\Eloquent\TreeCollection
      */
-    public function newCollection(array $models = array())
-    { 
+    public function newCollection(array $models = [])
+    {
         return new TreeCollection($models);
     }
 
-    public static function bootNodeable(){
+    public static function bootNodeable()
+    {
 
         // Adding global scope o the model
-        static::addGlobalScope(new OrderByLocationScope);
-        static::addGlobalScope(new WivesEagerRelationScope);
-        static::addGlobalScope(new ImagesEagerRelationScope);
+        static::addGlobalScope(new OrderByLocationScope());
+        static::addGlobalScope(new WivesEagerRelationScope());
+        static::addGlobalScope(new ImagesEagerRelationScope());
 
-        static::saving(function($model){
+        static::saving(function ($model) {
             // dd($model);
         });
 
         // When model is deleted
-        static::deleted(function($model){
+        static::deleted(function ($model) {
 
             // if the model has shift_children property is not setted
             // then delete children, otherwise delete just the node
-            if($model->shift_children === null){
+            if ($model->shift_children === null) {
                 return static::tree($model->tree_id)
                 ->where('location', 'like', $model->location.'%')
                 ->delete();
             }
-
         });
     }
 
     /**
      * This method is called when new instance of Node is initialized
-     * 
+     *
      * @return void
      */
-    public function initializeNodeable(){
+    public function initializeNodeable()
+    {
 
         // Adding mass assignment fields to fillable array
         $this->fillable = array_merge($this->fillable, static::$fillable_cols);
@@ -104,59 +103,60 @@ trait Nodeable
     {
         return FamilyTree::make($this);
     }
-    
+
     /**
      * Relationship for Getting wives og the node.
-     * 
+     *
      * @return Girover\Tree\Database\Eloquent\TreeCollection
      */
     public function wives()
-    {  
+    {
         $model = (null !== config('tree.node_relationships.wives.model'))
                 ? config('tree.node_relationships.wives.model')
                 : 'Girover\Tree\Models\Marriage';
-        
-        return $this->belongsToMany(get_class(), $model, 'node_husband_id','node_wife_id');
+
+        return $this->belongsToMany(get_class(), $model, 'node_husband_id', 'node_wife_id');
     }
+
     /**
      * Relationship for Getting images og the node.
-     * 
+     *
      * @return Girover\Tree\Database\Eloquent\TreeCollection
      */
     public function images()
-    {  
+    {
         $model = (null !== config('tree.node_relationships.images.model'))
                 ? config('tree.node_relationships.images.model')
                 : 'Girover\Tree\Models\images';
-        
-        return $this->hasMany($model, 'node_id','id');
+
+        return $this->hasMany($model, 'node_id', 'id');
     }
 
     /**
      * Determine if the node is Root in the tree
-     * 
-     * @return bool 
+     *
+     * @return bool
      */
     public function isRoot()
-    { 
-        if(Location::isRoot($this->location)){
+    {
+        if (Location::isRoot($this->location)) {
             return true;
         }
         $father_location = Location::father($this->location);
 
         return (static::tree($this->tree_id)->location($father_location)->count())
-                ? false 
+                ? false
                 : true;
     }
 
     /**
      * Determine if the node has parent in the tree
-     * 
+     *
      * @return Girover\Tree\Models\Node | null
      */
     public function hasParent()
     {
-        if(Location::isRoot($this->location)){
+        if (Location::isRoot($this->location)) {
             return false;
         }
         $father_location = Location::father($this->location);
@@ -168,7 +168,7 @@ trait Nodeable
 
     /**
      * Determine if the node has children
-     * 
+     *
      * @return Girover\Tree\Models\Node | null
      */
     public function hasChildren()
@@ -176,12 +176,12 @@ trait Nodeable
         return static::tree($this->tree_id)
                      ->locationREGEXP(Location::childrenREGEXP($this->location))
                      ->count()
-                     ?true:false;
+                     ? true : false;
     }
 
     /**
      * Determine if the node has siblings
-     * 
+     *
      * @return bool
      */
     public function hasSiblings()
@@ -189,27 +189,28 @@ trait Nodeable
         return static::tree($this->tree_id)
                      ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
                      ->count() > 1
-                     ?true:false;
+                     ? true : false;
     }
 
     /**
      * Get the Root of this node
-     * 
+     *
      * @param Girover\Tree\Models\Node
      */
     public function root()
-    {     
+    {
         return static::tree($this->tree_id)
                      ->location(Location::firstPossibleSegment())
                      ->first();
     }
+
     /**
      * Get the father of this node
-     * 
+     *
      * @param Girover\Tree\Models\Node
      */
     public function father()
-    {     
+    {
         return static::tree($this->tree_id)
                      ->location(Location::father($this->location))
                      ->first();
@@ -217,7 +218,7 @@ trait Nodeable
 
     /**
      * Get grandfather of this node
-     * 
+     *
      * @param Girover\Tree\Models\Node
      */
     public function grandfather()
@@ -230,14 +231,15 @@ trait Nodeable
     /**
      * Get the ancestor with given number of this node
      * if NULL given get father
-     * 
+     *
      * @param Girover\Tree\Models\Node
      */
     public function ancestor($ancestor = null)
     {
-        if($ancestor === null){
+        if ($ancestor === null) {
             return $this->father();
         }
+
         return static::tree($this->tree_id)
                      ->location(Location::ancestor($this->location, $ancestor))
                      ->first();
@@ -258,7 +260,7 @@ trait Nodeable
 
     /**
      * Get all uncles and/or aunts of this node.
-     * 
+     *
      * @return App\Girover\Tree\Database\Eloquent\TreeCollection
      */
     protected function allFatherSiblings()
@@ -272,15 +274,16 @@ trait Nodeable
     /**
      * Get all uncles and/or aunts of this node
      * dependes on the given gender
-     * 
+     *
      * @param Illuminate\Support\TreeCollection
      * @return App\Girover\Tree\Database\Eloquent\TreeCollection
      */
     public function fatherSiblings($gender = null)
     {
-        if(is_null($gender)){
+        if (is_null($gender)) {
             return $this->allFatherSiblings();
         }
+
         return static::tree($this->tree_id)
                     ->locationNot(Location::father($this->location))
                     ->locationREGEXP(Location::withSiblingsREGEXP(Location::father($this->location)))
@@ -290,7 +293,7 @@ trait Nodeable
 
     /**
      * Get all uncles of this node
-     * 
+     *
      * @return Girover\Tree\Database\Eloquent\TreeCollection
      */
     public function uncles()
@@ -300,7 +303,7 @@ trait Nodeable
 
     /**
      * Get all aunts of this node
-     * 
+     *
      * @return Girover\Tree\Database\Eloquent\TreeCollection
      */
     public function aunts()
@@ -310,7 +313,7 @@ trait Nodeable
 
     /**
      * Get all children of this node.
-     * 
+     *
      * @return Girover\Tree\Database\Eloquent\TreeCollection
      */
     protected function allChildren()
@@ -323,14 +326,15 @@ trait Nodeable
     /**
      * Get all direct children of this node
      * without descendants
-     * 
+     *
      * @param Girover\Tree\Database\Eloquent\TreeCollection
      */
     public function children($gender = null)
     {
-        if(is_null($gender)){
+        if (is_null($gender)) {
             return $this->allChildren();
         }
+
         return static::tree($this->tree_id)
                     ->locationREGEXP(Location::childrenREGEXP($this->location))
                     ->where('gender', $gender)
@@ -340,7 +344,7 @@ trait Nodeable
     /**
      * Get all direct sons of this node
      * without descendants
-     * 
+     *
      * @param Girover\Tree\Database\Eloquent\TreeCollection
      */
     public function sons()
@@ -351,7 +355,7 @@ trait Nodeable
     /**
      * Get all direct sons of this node
      * without descendants
-     * 
+     *
      * @param Girover\Tree\Database\Eloquent\TreeCollection
      */
     public function daughters()
@@ -361,8 +365,8 @@ trait Nodeable
 
     /**
      * Count children of this node.
-     * 
-     * @return integer
+     *
+     * @return int
      */
     protected function countAllChildren()
     {
@@ -373,12 +377,12 @@ trait Nodeable
 
     /**
      * Count children of this node by gender.
-     * 
-     * @return integer
+     *
+     * @return int
      */
     public function countChildren($gender = null)
     {
-        if(is_null($gender)){
+        if (is_null($gender)) {
             return $this->countAllChildren();
         }
 
@@ -390,8 +394,8 @@ trait Nodeable
 
     /**
      * Count sons of this node.
-     * 
-     * @return integer
+     *
+     * @return int
      */
     public function countSons()
     {
@@ -400,8 +404,8 @@ trait Nodeable
 
     /**
      * Count daughters of this node.
-     * 
-     * @return integer
+     *
+     * @return int
      */
     public function countDaughters()
     {
@@ -410,8 +414,8 @@ trait Nodeable
 
     /**
      * Count siblings of this node.
-     * 
-     * @return integer
+     *
+     * @return int
      */
     protected function countAllSiblings()
     {
@@ -423,13 +427,13 @@ trait Nodeable
 
     /**
      * Count siblings of this node by gender.
-     * 
+     *
      * @param '0'|'1'|null $gender the gender of sibling
-     * @return integer
+     * @return int
      */
     public function countSiblings($gender = null)
     {
-        if(is_null($gender)){
+        if (is_null($gender)) {
             return $this->countAllSiblings();
         }
 
@@ -442,8 +446,8 @@ trait Nodeable
 
     /**
      * count brothers of this node.
-     * 
-     * @return integer
+     *
+     * @return int
      */
     public function countBrothers()
     {
@@ -452,8 +456,8 @@ trait Nodeable
 
     /**
      * count sisters of the node.
-     * 
-     * @return integer
+     *
+     * @return int
      */
     public function countSisters()
     {
@@ -462,8 +466,8 @@ trait Nodeable
 
     /**
      * Count all descendants of the node.
-     * 
-     * @return integer
+     *
+     * @return int
      */
     protected function countAllDescendants()
     {
@@ -475,13 +479,13 @@ trait Nodeable
 
     /**
      * Count all descendants of the node by gender.
-     * 
+     *
      * @param '0'|'1'|null $gender the gender of sibling
-     * @return integer
+     * @return int
      */
     public function countDescendants($gender = null)
     {
-        if(is_null($gender)){
+        if (is_null($gender)) {
             return $this->countAllDescendants();
         }
 
@@ -494,8 +498,8 @@ trait Nodeable
 
     /**
      * Count all male descendants of this node.
-     * 
-     * @return integer
+     *
+     * @return int
      */
     public function countMaleDescendants()
     {
@@ -504,8 +508,8 @@ trait Nodeable
 
     /**
      * Count all female descendants oc this node.
-     * 
-     * @return integer
+     *
+     * @return int
      */
     public function countFemaleDescendants()
     {
@@ -514,7 +518,7 @@ trait Nodeable
 
     /**
      * Get the first child of this node
-     * 
+     *
      * @param Girover\Tree\Models\Node
      */
     public function firstChild()
@@ -527,7 +531,7 @@ trait Nodeable
 
     /**
      * Get the last child of this node
-     * 
+     *
      * @param Girover\Tree\Models\Node
      */
     public function lastChild()
@@ -541,7 +545,7 @@ trait Nodeable
     /**
      * Get all siblings of this node
      * without the node static
-     * 
+     *
      * @param Illuminate\Support\TreeCollection
      */
     public function siblings()
@@ -551,10 +555,11 @@ trait Nodeable
                     ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
                     ->get();
     }
+
     /**
      * Get all siblings of this node
      * including the node
-     * 
+     *
      * @param Illuminate\Support\TreeCollection
      */
     public function siblingsAndSelf()
@@ -566,7 +571,7 @@ trait Nodeable
 
     /**
      * Get the next sibling that is younger than this node
-     * 
+     *
      * @param Illuminate\Support\TreeCollection
      */
     public function nextSibling()
@@ -580,7 +585,7 @@ trait Nodeable
 
     /**
      * Get all siblings those are younger than this node
-     * 
+     *
      * @param Illuminate\Support\TreeCollection
      */
     public function nextSiblings()
@@ -594,7 +599,7 @@ trait Nodeable
 
     /**
      * Get the previous sibling og this node.
-     * 
+     *
      * @param Girover\Tree\Models\Node
      */
     public function prevSibling()
@@ -610,7 +615,7 @@ trait Nodeable
 
     /**
      * Get all siblings those are older than this node
-     * 
+     *
      * @param Illuminate\Support\TreeCollection
      */
     public function prevSiblings()
@@ -652,49 +657,49 @@ trait Nodeable
 
     /**
      * Create new node
-     * 
+     *
      * @param array|Griover\Models\Node $data data for the new node
      * @param string $location the location of the new [child|sibling|...]
      */
     protected function createNewNode($data, $location, $gender = 'm')
     {
         Location::validate($location);
-        if($data instanceof static){
-
-            $data->tree_id  = $this->tree_id;
+        if ($data instanceof static) {
+            $data->tree_id = $this->tree_id;
             $data->location = $location;
-            $data->gender   = $gender;
+            $data->gender = $gender;
             $data->save();
 
             return $data;
         }
-        if(!is_array($data)){
-            throw new TreeException("Bad argument type. The argument passed to ".__METHOD__." must be an array or an instance of [".static::class."]. ".gettype($data)." is given", 1);           
+        if (! is_array($data)) {
+            throw new TreeException("Bad argument type. The argument passed to ".__METHOD__." must be an array or an instance of [".static::class."]. ".gettype($data)." is given", 1);
         }
-        
-        $data['tree_id']  = $this->tree_id;
+
+        $data['tree_id'] = $this->tree_id;
         $data['location'] = $location;
-        $data['gender']   = $gender;
-        
+        $data['gender'] = $gender;
+
         return static::create($data);
     }
+
     /**
      * Create new sibling for this node
      * by default the new node is son.
-     * 
+     *
      * @param array|static data for the new sibling
      * @param string gender of the new sibling
      * @return Girover\Tree\Models\Node|null
      */
     public function newSibling($data, $gender = 'm')
     {
-        if($this->isRoot()){
+        if ($this->isRoot()) {
             throw new TreeException("Cannot add sibling to the Root of the tree.", 1);
         }
-        
-        if($this->hasSiblings()){
+
+        if ($this->hasSiblings()) {
             $new_sibling_location = Location::generateNextLocation($this->lastSibling()->location);
-        }else{
+        } else {
             $new_sibling_location = Location::generateNextLocation($this->location);
         }
 
@@ -702,9 +707,10 @@ trait Nodeable
 
         return $this->createNewNode($data, $new_sibling_location, $gender);
     }
+
     /**
      * Create new brother for this node
-     * 
+     *
      * @param array|static data for the new sibling
      * @return Girover\Tree\Models\Node|null
      */
@@ -712,10 +718,11 @@ trait Nodeable
     {
         return $this->newSibling($data, 'm');
     }
+
     /**
      * Create new sister for this node
      * depending on the gender of 0 passed to `createNew` method
-     * 
+     *
      * @param array|static data for the new sister
      * @return Girover\Tree\Models\Node|null
      */
@@ -726,7 +733,7 @@ trait Nodeable
 
     /**
      * Create new child for this node
-     * 
+     *
      * @param array|static data for the new child
      * @return Girover\Tree\Models\Node|null
      */
@@ -734,19 +741,20 @@ trait Nodeable
     {
         $last_child = $this->lastChild();
 
-        if($last_child == null){
+        if ($last_child == null) {
             $new_child_location = $this->location.Location::SEPARATOR.Location::firstPossibleSegment();
-        }else{
-            $new_child_location = Location::generateNextLocation($last_child->location);   
+        } else {
+            $new_child_location = Location::generateNextLocation($last_child->location);
         }
 
         Location::validate($new_child_location);
 
         return $this->createNewNode($data, $new_child_location, $gender);
     }
+
     /**
      * Create new son for this node
-     * 
+     *
      * @param array|static data for the new son
      * @return Girover\Tree\Models\Node|null
      */
@@ -754,9 +762,10 @@ trait Nodeable
     {
         return $this->newChild($data, 'm');
     }
+
     /**
      * Create new son for this node
-     * 
+     *
      * @param array|static data for the new daughter
      * @return Girover\Tree\Models\Node|null
      */
@@ -772,26 +781,26 @@ trait Nodeable
      * @param string $location: location to move node to it
      * @return Girover\Tree\Models\Node
      */
-    public function makeSonTo($location){
+    public function makeSonTo($location)
+    {
         // check if the location is exists and load it if exsits
-        if(!($node = static::find($location))){
+        if (! ($node = static::find($location))) {
             throw new TreeException("Error: The location `".$location."` not found in this tree.", 1);
-            
         }
         // make new child location
         $current_location = $this->location;
         // move the pointer to the loaded node
-        $new_location = (!$last_child = $this->lastChild())
+        $new_location = (! $last_child = $this->lastChild())
                       ? $current_location.Location::SEPARATOR.Location::firstPossibleSegment()
                       : Location::nextSibling($last_child->location);
-        
+
         $table = config('tree.nodes_table.name');
         $statement =
             "UPDATE `".$table."`
             SET `location` = CONCAT('".$new_location."' , SUBSTRING(location FROM ".(strlen($current_location) + 1)."))
             WHERE `tree_id` = ".$this->tree_id."
             AND   `location` like '".$current_location."%'";
-        
+
         DB::update($statement);
 
         return $this;
@@ -799,18 +808,19 @@ trait Nodeable
 
     /**
      * Create father for the root node in the tree
-     * 
+     *
      * @param array $data data for the new father
      * @return mixed
      */
     public function createFather($data)
     {
-        if(!$this->isRoot()){
-            throw new TreeException("Error: Can't make father for node:[ ".$this->location." ]. node should be root to make father for it.", 1);            
+        if (! $this->isRoot()) {
+            throw new TreeException("Error: Can't make father for node:[ ".$this->location." ]. node should be root to make father for it.", 1);
         }
 
         DB::beginTransaction();
-        try {            
+
+        try {
             // update all nodes location in this tree
             // first prepend all locations with sepataror '.'
             $affected_rows = static::tree($this->tree_id)
@@ -818,28 +828,29 @@ trait Nodeable
             // then prepend all locations with 'aaa'
             $affected_rows = static::tree($this->tree_id)
             ->update(['location' => DB::raw(' CONCAT("'.Location::firstPossibleSegment().'", `location`) ')]);
-            
+
             // create th new root node with given data
             $this->createNewNode($data, Location::firstPossibleSegment());
 
             DB::commit();
 
-            return $affected_rows;            
+            return $affected_rows;
         } catch (\Throwable $th) {
             // Rollback the database changes
             DB::rollBack();
-            throw new TreeException("Error: ".$th->getMessage(), 1);            
+
+            throw new TreeException("Error: ".$th->getMessage(), 1);
         }
     }
 
     /**
      * Get all siblings those are older than this node
-     * 
+     *
      * @param Illuminate\Support\TreeCollection
      */
     public function husband()
     {
-        if($this->gender == 'm'){
+        if ($this->gender == 'm') {
             return null;
         }
         // return $this->tree($this->tree_id)
@@ -849,11 +860,10 @@ trait Nodeable
         //             ->get();
     }
 
-
     /**
      * Save new node as root in the tree
-     * 
-     * @param 
+     *
+     * @param
      */
     public function saveAsRoot()
     {
@@ -861,12 +871,12 @@ trait Nodeable
 
         return $this->save();
     }
-    
+
     /**
      * Delete the node, and move
      * all its children to be children for the its father.
-     * 
-     * @return Integre 
+     *
+     * @return Integre
      */
     public function deleteAndShiftChildren()
     {
@@ -880,7 +890,7 @@ trait Nodeable
 
     /**
      * Generate Tree Html code from this node
-     * 
+     *
      * @return string html code for the tree from this node
      */
     public function toTree()
@@ -891,7 +901,7 @@ trait Nodeable
 
     /**
      * Generate Tree Html code from this node
-     * 
+     *
      * @return string html code for the tree from this node
      */
     public function toHtml()
@@ -901,7 +911,7 @@ trait Nodeable
 
     /**
      * Generate Tree Html code from this node
-     * 
+     *
      * @return string html code for the tree from this node
      */
     public function draw()
