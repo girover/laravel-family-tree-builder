@@ -329,7 +329,7 @@ class Pointer
      * Convert the current location to REGEXP pattern
      * If the given parameter is true so wrap the pattern with begin and end flags
      *
-     * @param Boolen to cover the pattern or not
+     * @param bool to cover the pattern or not
      * example aaa.bbb = aaa\.bbb
      * if $covered==true aaa.bbb = (^aaa\.bbb$)
      * @return REGEXP pattern
