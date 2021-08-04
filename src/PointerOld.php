@@ -257,7 +257,7 @@ class PointerOld
     /**
      * Determine if the node that the pointer is indicating to is the Root node
      *
-     * @return Boolean
+     * @return bool
      */
     public function indicatesToRoot()
     {
@@ -270,7 +270,7 @@ class PointerOld
     /**
      * Determine if pointer is indicating to NULL.
      * 
-     * @return Boolean
+     * @return bool
      */
     public function indicatesToNull()
     {
@@ -495,7 +495,7 @@ class PointerOld
     /**
      * Determine if the node, that the Pointer indicates to, has children
      * 
-     * @return Boolean
+     * @return bool
      */
     function hasChildren()
     {

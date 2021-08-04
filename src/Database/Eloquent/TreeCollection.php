@@ -11,7 +11,7 @@ class TreeCollection extends Collection{
     /**
      * determine if there are nodes in the collection
      * 
-     * @return boolean
+     * @return bool
      */
     protected function isEmptyCollection()
     {
@@ -21,7 +21,7 @@ class TreeCollection extends Collection{
     /**
      * determine if there is only one node in the collection
      * 
-     * @return boolean
+     * @return bool
      */
     protected function hasOnlyOneNode()
     {
@@ -32,7 +32,7 @@ class TreeCollection extends Collection{
      * Determine if the collection is correctly sorted.
      * this means if the nodes are sorted ASC.
      * 
-     * @return boolean
+     * @return bool
      */
     protected function isCorrectlySorted()
     {

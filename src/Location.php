@@ -189,7 +189,7 @@ class Location{
      * it could be one of ['chars' | 'digits']
      * 
      * @throws App\MHF\Tree\Exceptions\TreeException
-     * @return boolean
+     * @return bool
      */
     public static function validateSegmentUnit()
     {
@@ -206,7 +206,7 @@ class Location{
      * 
      * @param string $location ocation to validate
      * @throws App\MHF\Tree\Exceptions\TreeException
-     * @return Boolean | TreeException
+     * @return bool | TreeException
      */
     public static function validate($location)
     {
@@ -276,7 +276,7 @@ class Location{
      * Detrmine if the given location is the root
      * 
      * @param string $location
-     * @return boolean
+     * @return bool
      */
     public static function isRoot($location)
     {
@@ -288,7 +288,7 @@ class Location{
      * and has no separator
      * 
      * @param string $location
-     * @return boolean
+     * @return bool
      */
     public static function isSegment($location)
     {
@@ -498,7 +498,7 @@ class Location{
      *
      * @param string $location_1
      * @param string $location_2
-     * @return boolean
+     * @return bool
      */
     public static function areFatherAndSon($location_1, $location_2){
         if($location_2 === null)
@@ -516,7 +516,7 @@ class Location{
      *
      * @param App\Node $node
      * @param App\Node $next_node
-     * @return Boolean
+     * @return bool
      */
     public static function areSiblings($location_1, $location_2){
         if($location_2 === null || $location_1 == $location_2)

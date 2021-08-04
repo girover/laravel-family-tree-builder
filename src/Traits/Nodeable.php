@@ -135,7 +135,7 @@ trait Nodeable
     /**
      * Determine if the node is Root in the tree
      * 
-     * @return boolean 
+     * @return bool 
      */
     public function isRoot()
     { 
@@ -182,7 +182,7 @@ trait Nodeable
     /**
      * Determine if the node has siblings
      * 
-     * @return boolean
+     * @return bool
      */
     public function hasSiblings()
     {

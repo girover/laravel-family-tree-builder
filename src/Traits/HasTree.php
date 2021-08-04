@@ -82,7 +82,7 @@ trait HasTree
      * determine if this user has tree with the given id as parameter
      * 
      * @param integer id of the tree
-     * @return boolean
+     * @return bool
      */
     public function hasTree($id)
     {

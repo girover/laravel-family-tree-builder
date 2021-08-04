@@ -204,7 +204,7 @@ class FamilyTree
     /**
      * Check if this tree is active
      * 
-     * @return Boolean
+     * @return bool
      */
     public function isActive()
     {
@@ -261,7 +261,7 @@ class FamilyTree
     /**
      * Determine if there are nodes in this tree
      * 
-     * @return Boolean
+     * @return bool
      */
     public function isEmptyTree()
     {
@@ -271,7 +271,7 @@ class FamilyTree
     /**
      * Determine if the nodes of this tree are allready loaded.
      * 
-     * @return Boolean
+     * @return bool
      */
     public function isLoaded()
     {
@@ -320,7 +320,7 @@ class FamilyTree
     * of three chars or digits followed by separator and so on.
     * 
     * @param string $location ocation to validate
-    * @return boolean | TreeException
+    * @return bool | TreeException
     */
     public function validateLocation($location)
     {
@@ -587,7 +587,7 @@ class FamilyTree
      *
      * @param App\Models\Node $father
      * @param App\Models\Node $son
-     * @return boolean
+     * @return bool
      * ----------------------------------------------------------
      */
     public function areFatherAndSon($father, $son)
@@ -842,7 +842,7 @@ class FamilyTree
      *
      * @param App\Node $node
      * @param App\Node $next_node
-     * @return Boolean
+     * @return bool
      */
     public function areSiblings($node, $next_node){
         if($node == null || $next_node === null)
