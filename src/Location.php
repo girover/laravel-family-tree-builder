@@ -456,7 +456,7 @@ class Location
      *
      * Note: Here it does not ditacte if the the next location allready exists or not
      *
-     * @return String new location
+     * @return string new location
      */
     public static function generateNextLocation($location)
     {

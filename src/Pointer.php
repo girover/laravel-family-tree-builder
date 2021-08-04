@@ -53,16 +53,16 @@ class Pointer
     public function __construct(FamilyTree $family_tree, Node $indicated_node = null)
     {
         $this->tree = $family_tree; // This has to be the first init in Poiter, because next line depend on it
-        // $this->node = $family_tree->node;
+        
         $this->node = $indicated_node;
     }
 
     /**
      * Calling methods of class Girover\Tree\Models\Node
      *
-     * @param String $name method name
-     * @param Array $args parameters that passed to the called method
-     * @return Void
+     * @param string $name method name
+     * @param array $args parameters that passed to the called method
+     * @return void
      */
     public function __call($name, $args)
     {
@@ -78,7 +78,7 @@ class Pointer
     /**
     * Model of nodes
     *
-    * @return String Girove\Tree\Models\Node::class
+    * @return string Girove\Tree\Models\Node::class
     */
     public function model()
     {
@@ -120,7 +120,7 @@ class Pointer
     /**
      * Check if the given location found in this tree
      *
-     * @param String location
+     * @param string location
      * @return Girover\Tree\Models\Node | null
      */
     public function find($location)
@@ -133,7 +133,7 @@ class Pointer
     /**
      * Move the Pointer to the given location
      *
-     * @param String location
+     * @param string location
      * @return Girover\Tree\Pointer $this
      * @throws Girover\Tree\Exceptions\TreeException
      */
@@ -284,7 +284,7 @@ class Pointer
     /**
      * Get the logest location in the tree that starts from the pointer
      *
-     * @return String | NULL
+     * @return string | NULL
      */
     public function longestLocation()
     {

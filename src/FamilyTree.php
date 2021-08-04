@@ -645,7 +645,7 @@ class FamilyTree
     /**
      * Get all ancestors nodes of the given location in this tree.
      *
-     * @param String $location
+     * @param string $location
      * @return Illuminate\Support\Collection
      */
     public function ancestorsOf($location)
@@ -662,7 +662,7 @@ class FamilyTree
      * Add new [ child | wife | father ] depending on given role to current tree under current node
      *
      * @param Request $request
-     * @param String $role
+     * @param string $role
      * @return Node
      */
     public function add(Request $request, $role = '')
@@ -698,7 +698,7 @@ class FamilyTree
      * delete nodes form tree with its children begining from given location
      * and delet wives
      *
-     * @return Array
+     * @return array
      */
     public function delete()
     {
@@ -727,7 +727,7 @@ class FamilyTree
      * Delete the node by the given location
      * note: just this node and not its children
      * ----------------------------------------------------------------------
-     * @return Void
+     * @return void
      * ----------------------------------------------------------------------
      */
     public function destroy($location)
@@ -742,7 +742,7 @@ class FamilyTree
      * Change the locations of nodes that starts with the given oldLocation
      * and replace them with the given newLocation as part of location
      * -------------------------------------------------------------------------
-     * @return Void
+     * @return void
      * -------------------------------------------------------------------------
      */
     public function replaceAll($oldLocation, $newLocation)
@@ -763,7 +763,7 @@ class FamilyTree
      * update all related nodes with currunt node
      * set encouraging number of them as card number of current node
      * --------------------------------------------------------------------------------
-     * @return Void
+     * @return void
      * --------------------------------------------------------------------------------
      */
     public function updateChildrenEncouraging()
@@ -783,7 +783,7 @@ class FamilyTree
      * for deleted nodes
      * --------------------------------------------------------------------------------
      * @param Concurrent $node
-     * @return Void
+     * @return void
      * --------------------------------------------------------------------------------
      */
     public function transferData($node)
@@ -809,7 +809,7 @@ class FamilyTree
      *  "concurrent_old_keys"
      * --------------------------------------------------------------
      * @param Concurrent $node
-     * @return Void
+     * @return void
      * --------------------------------------------------------------
      */
     public function deletOldKeys($node)
@@ -889,7 +889,7 @@ class FamilyTree
      * Get Html Code for the given node as husband node
      *
      * @param Node $node
-     * @param String $classes
+     * @param string $classes
      *
      * @return String
      */
@@ -902,7 +902,7 @@ class FamilyTree
      * Get Html Code for the given node as Child node
      *
      * @param Node $node
-     * @return String
+     * @return string
      */
     public function getChildHtml($node)
     {
@@ -912,8 +912,8 @@ class FamilyTree
     /**
      * Get Html Code for items that given as wives
      *
-     * @param Array $wives
-     * @return String
+     * @param array $wives
+     * @return string
      */
     public function getWivesHtml($item, $wives)
     {
@@ -940,7 +940,7 @@ class FamilyTree
     /**
      * Get Wives Html Code from secound wife to the last
      *
-     * @param Array $wives
+     * @param array $wives
      * @return string
      */
     public function getOtherWivesStyled($wives)
@@ -1002,8 +1002,8 @@ class FamilyTree
      * return html for one node
      *
      * @param Node $item
-     * @param String $role
-     * @param Array  $wives
+     * @param string $role
+     * @param array  $wives
      * @return string
      */
     public function getNodeHtml($node = null, $role = 'husband no-cildren', $wives = [])
@@ -1054,7 +1054,7 @@ class FamilyTree
     /**
      * Get the logest location in this tree
      *
-     * @return String | NULL
+     * @return string | NULL
      */
     public function longestLocation()
     {
@@ -1104,7 +1104,7 @@ class FamilyTree
      * Get All Nodes that are in specific generation depending on given number
      *
      * @param int $generation
-     * @return Array of Node
+     * @return array of Node
      */
     public function generation($generation = 1)
     {
@@ -1115,7 +1115,7 @@ class FamilyTree
     /**
      * Get Information about the current tree
      *
-     * @return Array
+     * @return array
      */
     public function getTreeInfo()
     {
@@ -1134,7 +1134,7 @@ class FamilyTree
     /**
      * Get the location of basic node in the current tree
      *
-     * @return String
+     * @return string
      */
     public function getBasicNode()
     {
@@ -1144,7 +1144,7 @@ class FamilyTree
     /**
      * Change the location of basic node in the current tree
      *
-     * @return String
+     * @return string
      */
     public function changeBasicNode($location)
     {
@@ -1158,7 +1158,7 @@ class FamilyTree
     /**
      * Get deleted Trees
      *
-     * @return Array of Tree
+     * @return array of Tree
      */
     public function getDeletedTrees()
     {
@@ -1172,9 +1172,9 @@ class FamilyTree
     /**
      * Calling some methods when calling undefined methods
      *
-     * @param String $name method name
-     * @param Array $args parameters that passed to the called method
-     * @return Void
+     * @param string $name method name
+     * @param array $args parameters that passed to the called method
+     * @return void
      */
     public function __call($name, $args)
     {
