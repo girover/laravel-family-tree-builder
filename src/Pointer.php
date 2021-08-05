@@ -38,6 +38,7 @@ class Pointer
      * ---------------------------------------------------------------------------------
      *  it can be [Object, JSON, Model, Database Record ...]
      *  depending on which tree is using this node
+     * @var \Girover\Tree\Models\Node |null
      *----------------------------------------------------------------------------------*/
     protected $node;
 
@@ -45,8 +46,8 @@ class Pointer
      * Initialize the Pointer and indicate it to the root node
      * of the given tree
      *
-     * @param Girover\Tree\FamilyTree $tree
-     * @param Girover\Tree\Models\Node $indicated_node
+     * @param \Girover\Tree\FamilyTree $tree
+     * @param \Girover\Tree\Models\Node |null $indicated_node
      *
      * @return void
      */
@@ -62,7 +63,7 @@ class Pointer
      *
      * @param string $name method name
      * @param array $args parameters that passed to the called method
-     * @return void
+     * @return mixed
      */
     public function __call($name, $args)
     {
@@ -90,7 +91,7 @@ class Pointer
      *
      * starts with select from `nodes` where tree_id = {current tree id}
      *
-     * @return Illuminate\Database\Eloquent\QueryBuilder
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
      */
     public function query()
     {
@@ -100,9 +101,9 @@ class Pointer
     /**
      * Get the node that the Pointer indicates to
      *
-     * @return Girover\Tree\Models\Node
+     * @return \Girover\Tree\Models\Node|null
      */
-    public function node($node = null)
+    public function node()
     {
         return $this->node;
     }
@@ -110,7 +111,7 @@ class Pointer
     /**
      * Get the location of the node that the pointer indicates to.
      *
-     * @return String
+     * @return mixed
      */
     public function location()
     {
@@ -120,8 +121,8 @@ class Pointer
     /**
      * Check if the given location found in this tree
      *
-     * @param string location
-     * @return Girover\Tree\Models\Node | null
+     * @param string $location
+     * @return \Girover\Tree\Models\Node|Object|null
      */
     public function find($location)
     {
@@ -133,12 +134,14 @@ class Pointer
     /**
      * Move the Pointer to the given location
      *
-     * @param string location
-     * @return Girover\Tree\Pointer $this
-     * @throws Girover\Tree\Exceptions\TreeException
+     * @param mixed $location [\Girover\Tree\Models\Node | string]
+     * @return \Girover\Tree\Pointer $this
+     * 
+     * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function to($location)
     {
+        
         if (is_a($location, $this->model())) {
             $this->node = $location;
 
@@ -161,7 +164,7 @@ class Pointer
     /**
      * Move the Pointer to the Root location of this tree
      *
-     * @return Girover\Tree\Pointer $this
+     * @return \Girover\Tree\Pointer $this
      */
     public function toRoot()
     {
@@ -172,8 +175,8 @@ class Pointer
      * Move the Pointer to the given ancestor.
      *
      * @param int $ancestor
-     * @return Girover\Tree\Pointer $this
-     * @throws Girover\Tree\Exceptions\TreeException
+     * @return \Girover\Tree\Pointer $this
+     * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function toAncestor($ancestor)
     {
@@ -189,8 +192,8 @@ class Pointer
     /**
      * Move the Pointer back two steps to indicate to its own grandfather.
      *
-     * @return Girover\Tree\Pointer $this
-     * @throws Girover\Tree\Exceptions\TreeException
+     * @return \Girover\Tree\Pointer $this
+     * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function toGrandfather()
     {
@@ -206,8 +209,8 @@ class Pointer
     /**
      * Move the Pointer back one step to indicate to its own father.
      *
-     * @return Girover\Tree\Pointer $this
-     * @throws Girover\Tree\Exceptions\TreeException
+     * @return \Girover\Tree\Pointer $this
+     * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function toFather()
     {
@@ -221,7 +224,7 @@ class Pointer
     /**
      * Run the Pointer to indicate to its own last child.
      *
-     * @return Girover\Tree\Pointer $this
+     * @return \Girover\Tree\Pointer $this
      */
     public function toFirstChild()
     {
@@ -235,8 +238,8 @@ class Pointer
     /**
      * Run the Pointer to indicate to last child of the current node.
      *
-     * @return Girover\Tree\Pointer $this
-     * @throws Girover\Tree\Exceptions\TreeException
+     * @return \Girover\Tree\Pointer $this
+     * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function toLastChild()
     {
@@ -274,7 +277,7 @@ class Pointer
     /**
      * To get all nodes from the pointer including the node that pointer indicates to
      *
-     * @return Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function all()
     {
@@ -284,7 +287,7 @@ class Pointer
     /**
      * Get the logest location in the tree that starts from the pointer
      *
-     * @return string | NULL
+     * @return object|null
      */
     public function longestLocation()
     {
@@ -292,7 +295,8 @@ class Pointer
                     ->where('location', 'like', $this->location().Location::SEPARATOR.'%')
                     ->orderByRaw('LENGTH(location) DESC')
                     ->orderBy('location', 'desc')
-                    ->first();
+                    ->first()
+                    ->location;
     }
 
     /**
@@ -329,10 +333,10 @@ class Pointer
      * Convert the current location to REGEXP pattern
      * If the given parameter is true so wrap the pattern with begin and end flags
      *
-     * @param bool to cover the pattern or not
+     * @param bool $covered to cover the pattern or not
      * example aaa.bbb = aaa\.bbb
      * if $covered==true aaa.bbb = (^aaa\.bbb$)
-     * @return REGEXP pattern
+     * @return string REGEXP pattern
      */
     public function getAsRegPattern($covered = false)
     {
@@ -345,7 +349,7 @@ class Pointer
      * How many generation does this tree has {The sub tree from the pointer}
      * Depends on the counting separator in the location
      *
-     * @return Int | NULL
+     * @return int
      */
     public function countGenerationsFromHere()
     {
@@ -368,7 +372,7 @@ class Pointer
     /**
      * How many generation does this tree has {The sub tree from the pointer including pointer`s node}
      *
-     * @return Int | NULL
+     * @return int|null
      */
     public function totalGenerations()
     {
@@ -388,8 +392,8 @@ class Pointer
     /**
      * to make the tree instanse loads its own nodes from Pointer's node location
      *
-     * @param Integer|null $generations
-     * @return Girover\Tree\Pointer
+     * @param int|null $generations
+     * @return \Girover\Tree\Pointer
      */
     public function load($generations = null)
     {

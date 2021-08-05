@@ -6,21 +6,26 @@ use Girover\Tree\EagerTree;
 use Girover\Tree\Location;
 use Illuminate\Database\Eloquent\Builder;
 
-class TreeEloquentBuilder extends Builder
+class NodeEloquentBuilder extends Builder
 {
     /**
-     * @var int id of the tree
+     * to add constraint [models that belongs the given tree number]
+     * to QueryBuilder
+     * to achive where tree_id = $tree_id on QueryBuilder
+     * @param int $tree_id
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
      */
-    private $tree_id;
-
     public function tree($tree_id)
     {
-        $this->where('tree_id', $tree_id);
-        $this->tree_id = $tree_id;
-
-        return $this;
+        return $this->where('tree_id', $tree_id);
     }
 
+    /**
+     * to add constraint [models that have the given location]
+     * to QueryBuilder
+     * @param string $location
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
     public function location($location)
     {
         if ($location != null) {
@@ -32,6 +37,12 @@ class TreeEloquentBuilder extends Builder
         return $this;
     }
 
+    /**
+     * to add constraint [models locations come after the given location]
+     * to QueryBuilder
+     * @param string $location
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
     public function fromLocation($location)
     {
         if ($location != null) {
@@ -43,6 +54,12 @@ class TreeEloquentBuilder extends Builder
         return $this;
     }
 
+    /**
+     * to add constraint [models have not given location]
+     * to QueryBuilder
+     * @param string $location
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
     public function locationNot($location)
     {
         $this->where('location', '!=', $location);
@@ -50,6 +67,12 @@ class TreeEloquentBuilder extends Builder
         return $this;
     }
 
+    /**
+     * to add constraint [models have locations bigger than given location]
+     * to QueryBuilder
+     * @param string $location
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
     public function locationAfter($location)
     {
         $this->where('location', '>', $location);
@@ -57,6 +80,12 @@ class TreeEloquentBuilder extends Builder
         return $this;
     }
 
+    /**
+     * to add constraint [models have location smaller than given location] 
+     * to QueryBuilder
+     * @param string $location
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
     public function locationBefore($location)
     {
         $this->where('location', '<', $location);
@@ -64,6 +93,11 @@ class TreeEloquentBuilder extends Builder
         return $this;
     }
 
+    /**
+     * to add constraint [models have specific regexep] to QueryBuilder
+     * @param string $regexp
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
     public function locationREGEXP($regexp)
     {
         $this->where('location', 'REGEXP', $regexp);
@@ -71,6 +105,10 @@ class TreeEloquentBuilder extends Builder
         return $this;
     }
 
+    /**
+     * to add constraint [models have gender of m] to QueryBuilder
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
     public function male()
     {
         $this->where('gender', 'm');
@@ -78,6 +116,10 @@ class TreeEloquentBuilder extends Builder
         return $this;
     }
 
+    /**
+     * to add constraint [models have gender of f] to QueryBuilder
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
     public function female()
     {
         $this->where('gender', 'f');
@@ -85,6 +127,9 @@ class TreeEloquentBuilder extends Builder
         return $this;
     }
 
+    /**
+     * 
+     */
     public function root()
     {
         return $this->first();
@@ -112,12 +157,12 @@ class TreeEloquentBuilder extends Builder
 
     /**
      * Get how many generations there are in the tree
-     *
-     * @return int count of nodes in the tree
+     * @param int $generation
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
      */
-    public function generations()
+    public function generation($generation)
     {
-        return (new EagerTree($this->tree_id))->totalGenerations();
+        return $this->where('location', 'REGEXP', Location::singleGenerationREGEXP($generation));
     }
 
     /**

@@ -2,8 +2,8 @@
 
 namespace Girover\Tree\Traits;
 
-use Girover\Tree\Database\Eloquent\TreeCollection;
-use Girover\Tree\Database\Eloquent\TreeEloquentBuilder;
+use Girover\Tree\Database\Eloquent\NodeCollection;
+use Girover\Tree\Database\Eloquent\NodeEloquentBuilder;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Facades\FamilyTree;
 use Girover\Tree\GlobalScopes\ImagesEagerRelationScope;
@@ -49,17 +49,17 @@ trait Nodeable
      */
     public function newEloquentBuilder($query)
     {
-        return new TreeEloquentBuilder($query);
+        return new NodeEloquentBuilder($query);
     }
 
     /**
      * {@inheritdoc}
      *
-     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     * @return Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function newCollection(array $models = [])
     {
-        return new TreeCollection($models);
+        return new NodeCollection($models);
     }
 
     public static function bootNodeable()
@@ -99,6 +99,11 @@ trait Nodeable
         $this->fillable = array_merge($this->fillable, static::$fillable_cols);
     }
 
+    /**
+     * Make a FamilyTree instansne from this node
+     * 
+     * @return Girover\Tree\FamilyTree
+     */
     public function myTree()
     {
         return FamilyTree::make($this);
@@ -107,7 +112,7 @@ trait Nodeable
     /**
      * Relationship for Getting wives og the node.
      *
-     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     * @return Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function wives()
     {
@@ -121,7 +126,7 @@ trait Nodeable
     /**
      * Relationship for Getting images og the node.
      *
-     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     * @return Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function images()
     {
@@ -248,7 +253,7 @@ trait Nodeable
     /**
      * Getting all ancestors nodes from the location where the Pointer indicates to
      *
-     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     * @return Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function ancestors()
     {
@@ -261,7 +266,7 @@ trait Nodeable
     /**
      * Get all uncles and/or aunts of this node.
      *
-     * @return App\Girover\Tree\Database\Eloquent\TreeCollection
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
      */
     protected function allFatherSiblings()
     {
@@ -275,8 +280,8 @@ trait Nodeable
      * Get all uncles and/or aunts of this node
      * dependes on the given gender
      *
-     * @param Illuminate\Support\TreeCollection
-     * @return App\Girover\Tree\Database\Eloquent\TreeCollection
+     * @param Illuminate\Support\Collection
+     * @return App\Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function fatherSiblings($gender = null)
     {
@@ -294,7 +299,7 @@ trait Nodeable
     /**
      * Get all uncles of this node
      *
-     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     * @return Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function uncles()
     {
@@ -304,7 +309,7 @@ trait Nodeable
     /**
      * Get all aunts of this node
      *
-     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     * @return Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function aunts()
     {
@@ -314,7 +319,7 @@ trait Nodeable
     /**
      * Get all children of this node.
      *
-     * @return Girover\Tree\Database\Eloquent\TreeCollection
+     * @return Girover\Tree\Database\Eloquent\NodeCollection
      */
     protected function allChildren()
     {
@@ -327,7 +332,7 @@ trait Nodeable
      * Get all direct children of this node
      * without descendants
      *
-     * @param Girover\Tree\Database\Eloquent\TreeCollection
+     * @param Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function children($gender = null)
     {
@@ -345,7 +350,7 @@ trait Nodeable
      * Get all direct sons of this node
      * without descendants
      *
-     * @param Girover\Tree\Database\Eloquent\TreeCollection
+     * @param Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function sons()
     {
@@ -356,7 +361,7 @@ trait Nodeable
      * Get all direct sons of this node
      * without descendants
      *
-     * @param Girover\Tree\Database\Eloquent\TreeCollection
+     * @param Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function daughters()
     {
@@ -546,7 +551,7 @@ trait Nodeable
      * Get all siblings of this node
      * without the node static
      *
-     * @param Illuminate\Support\TreeCollection
+     * @param Illuminate\Support\Collection
      */
     public function siblings()
     {
@@ -560,7 +565,7 @@ trait Nodeable
      * Get all siblings of this node
      * including the node
      *
-     * @param Illuminate\Support\TreeCollection
+     * @param Illuminate\Support\Collection
      */
     public function siblingsAndSelf()
     {
@@ -572,7 +577,7 @@ trait Nodeable
     /**
      * Get the next sibling that is younger than this node
      *
-     * @param Illuminate\Support\TreeCollection
+     * @param Illuminate\Support\Collection
      */
     public function nextSibling()
     {
@@ -586,7 +591,7 @@ trait Nodeable
     /**
      * Get all siblings those are younger than this node
      *
-     * @param Illuminate\Support\TreeCollection
+     * @param Illuminate\Support\Collection
      */
     public function nextSiblings()
     {
@@ -616,7 +621,7 @@ trait Nodeable
     /**
      * Get all siblings those are older than this node
      *
-     * @param Illuminate\Support\TreeCollection
+     * @param Illuminate\Support\Collection
      */
     public function prevSiblings()
     {
@@ -846,7 +851,7 @@ trait Nodeable
     /**
      * Get all siblings those are older than this node
      *
-     * @param Illuminate\Support\TreeCollection
+     * 
      */
     public function husband()
     {

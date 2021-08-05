@@ -20,6 +20,7 @@
 namespace Girover\Tree;
 
 use BadMethodCallException;
+use Girover\Tree\Database\Eloquent\NodeCollection;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Exceptions\TreeNotActiveException;
 use Girover\Tree\Models\Node;
@@ -32,53 +33,48 @@ class FamilyTree
     /**
     * The Tree model to bulid the familyTree from
     *
-    * @var Girover\Tree\Models\Tree
+    * @var \Girover\Tree\Models\Tree|null
     */
     protected $tree;
-
-
 
     /**
     * The pointer that runs between the nodes of the this tree
     *
-    * @var  App\MHF\tree\Pointer
+    * @var  \Girover\Tree\Pointer|null
     */
     public $pointer;
 
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Node
-    |--------------------------------------------------------------------------
-    |
-    | App\Node instance : current node with all data such as: location, name, etc.
-    |
-    */
-    // public $node = null;  // {stdClass} current node;
-
-
+    /**
+     * @var bool
+     */
     public $treeExists = false;
 
 
-    protected $nodes;
+    /**
+     * @var \Girover\Tree\Database\Eloquent\NodeCollection|null
+     */
+    protected $nodes = null;
 
+    /**
+     * @var int $nodesCount uses in converting tree to html
+     */
     public $nodesCount = 1;
 
+    /**
+     * @var array
+     */
     public $ancestors = []; // array holding ancestries of location
 
-
-
-
+    /**
+     * @var string
+     */
     public $tree_photos_path = 'images/photos/';
 
-
-
-    /**----------------------------------------------------------------------------------
+    /**
      * Methods that are not defined and will be called by magic method __call()
-     * ---------------------------------------------------------------------------------
      *
-     *----------------------------------------------------------------------------------*/
+     * @var array
+     */
     protected $methods = [
         'draw' => [ // Indicates how many generations to draw from the pointer
             'drawEntire' => null,
@@ -95,52 +91,40 @@ class FamilyTree
         ],
     ];
 
-
     /**
      * Initializing the object instance of class Tree
-     *
-     * @param int|null tree_id
-     *
-     * @return void
      */
-    // function __construct($tree_id){
-    //     if(is_null($tree_id)){
-    //         return;
-    //     }
-    //     $this->id    = $tree_id;
-
-    //     $this->initConfigs();
-    //     $this->configs = config('tree');
-
-    //     // Load properties of this tree
-    //     $this->makeProperties();
-
-    //     // Make tree pointer and set it on the root node
-    //     $this->makePointer();
-    // }
     public function __construct()
     {
-
-        // // Make tree pointer and set it on the root node
     }
 
     /**
      * Make family tree from Tree model or Node model
+     * 
+     * @param mixed $object
+     *       {\Girover\Tree\Models\Tree |
+     *        \Girover\Tree\Models\Node |
+     *        \Girover\Tree\Database\Eloquent\NodeCollection $object}
+     * @return \Girover\Tree\FamilyTree
      */
-    public function make($tree)
+    public function make($object)
     {
         $node = null;
 
-        if ($tree instanceof Tree) {
-            $this->tree = $tree;
-            // $this->node = $tree->root()->first();
-            $node = $tree->root()->first();
+        if ($object instanceof Tree) {
+            $this->tree = $object;
+            $node = $object->root()->first();
         }
 
-        if ($tree instanceof Node) {
-            $this->tree = config('tree.tree_model')::find($tree->tree_id);
-            // $this->node = $tree;
-            $node = $tree;
+        if ($object instanceof Node) {
+            $this->tree = Tree::find($object->tree_id);
+            $node = $object;
+        }
+
+        if ($object instanceof NodeCollection) {
+            $this->tree = Tree::find($object[0]->tree_id);
+            $node = $object[0];
+            $this->nodes = $object;
         }
 
         $this->makePointer($node);
@@ -155,16 +139,16 @@ class FamilyTree
     * if the tree is not active or blocked, then throw an TreeNotActiveException
     * @return void
     */
-    public function makeProperties()
-    {
-        if (! $this->properties = config('tree.tree_model')::find($this->tree->id)) {
-            throw new TreeException("Tree with id : ".$this->tree->id.' not found', 1);
-        }
+    // public function makeProperties()
+    // {
+    //     if (! $this->properties = config('tree.tree_model')::find($this->tree->id)) {
+    //         throw new TreeException("Tree with id : ".$this->tree->id.' not found', 1);
+    //     }
 
-        if (! $this->isActive()) {
-            throw new TreeNotActiveException("Error: The tree with name `".$this->properties->name."` is not active", 1);
-        }
-    }
+    //     if (! $this->isActive()) {
+    //         throw new TreeNotActiveException("Error: The tree with name `".$this->properties->name."` is not active", 1);
+    //     }
+    // }
 
     /**
     *    Initializing the tree Pointer
@@ -172,7 +156,7 @@ class FamilyTree
     * Create pointer for this tree and put it on root node of this tree
     * and then pass the tree instance to the pointer
     *
-    * @param Girover\Tree\Models\Node $indicated_node
+    * @param \Girover\Tree\Models\Node $indicated_node
     * @return void
     */
     public function makePointer(Node $indicated_node = null)
@@ -183,13 +167,19 @@ class FamilyTree
     /**
     * Get this tree properties like: id, name, base location, etc....
     *
-    * @return App\Node
+    * @return \Girover\Tree\Models\Tree|null
     */
     public function properties()
     {
         return $this->tree;
     }
 
+    /**
+     * Return the pointer of the FamilyTree
+     * 
+     * @return \Girover\Tree\Pointer
+     * @throws TreeException
+     */
     public function pointer()
     {
         if (null === $this->pointer) {
@@ -206,31 +196,10 @@ class FamilyTree
      */
     public function isActive()
     {
+        if (null === $this->tree){
+            throw new TreeException('No tree is loaded', 1);
+        }
         return $this->tree->active;
-    }
-
-    /**
-    * Tree Model
-    *
-    * Get The Tree model
-    *
-    * @return string calss name of tree model
-    */
-    public function treeModel()
-    {
-        return config('tree.tree_model');
-    }
-
-    /**
-    * Node Model
-    *
-    * Get The node model
-    *
-    * @return string calss name of node model
-    */
-    public function nodeModel()
-    {
-        return config('tree.node_model');
     }
 
     /**
@@ -248,7 +217,7 @@ class FamilyTree
     /**
      * To set nodes smothly without querying database.
      *
-     * @param Illuminate\Support\Collection | Girover\Tree\TreeCollection
+     * @param \Girover\Tree\Database\Eloquent\NodeCollection $collection
      * @return void
      */
     public function setNodesSilently($collection)
@@ -279,13 +248,12 @@ class FamilyTree
     /**
     * Load specific number of generation of this tree
     *
-    * @param int number of generations to load.
-    * @return Illuminate\Database\Eloquent\Collection
+    * @param int $number_of_generations
+    * @return \Girover\Tree\Database\Eloquent\NodeCollection
     */
-    protected function loadGenerations($number_of_generations)
+    public function loadGenerations($number_of_generations)
     {
         return  $this->nodes = $this->nodesQuery()
-                                    ->orderBy('location')
                                     ->where('location', 'REGEXP', Location::multiGenerationsREGEXP($this->pointer->location(), $number_of_generations))
                                     ->get();
     }
@@ -293,21 +261,29 @@ class FamilyTree
     /**
     * Make database query for The Tree model to start other queries from this point
     *
-    * @return Illuminate\Databse\Eloquent\Builder
+    * @return \Illuminate\Database\Eloquent\Builder
     */
     public function treeQuery()
     {
-        return config('tree.tree_model')::where('id', $this->tree->id);
+        if (null === $this->tree){
+            throw new TreeException("Error No tree is loaded", 1);
+            
+        }
+        return Tree::where('id', $this->tree->id);
     }
 
     /**
     * Make database query for The Node model to start other queries from this point
     *
-    * @return App\Girover\Database\Eloquent\TreeEloquentBuilder
+    * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
     */
     public function nodesQuery()
     {
-        return config('tree.node_model')::where('tree_id', $this->tree->id);
+        if (null === $this->tree){
+            throw new TreeException("no tree is loaded", 1);            
+        }
+
+        return Node::where('tree_id', $this->tree->id);
     }
 
     /**
@@ -327,7 +303,7 @@ class FamilyTree
     /**
      * Get all Nodes in this Tree from database Table 'nodes'
      *
-     * @return Illuminate\Database\Eloquent\Collection
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function all()
     {
@@ -339,7 +315,7 @@ class FamilyTree
     /**
      * Get all Nodes in this Tree from database Table 'nodes'
      *
-     * @return Illuminate\Database\Eloquent\Collection
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function allFromPointer()
     {
@@ -352,7 +328,7 @@ class FamilyTree
     /**
      * Get all loaded nodes in this tree
      *
-     * @param App\Girover\Database\Eloquent\TreeCollection
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection|null
      */
     public function nodes()
     {
@@ -362,17 +338,20 @@ class FamilyTree
     /**
      * To count the tree nodes that are allready loaded
      *
-     * @return integer;
+     * @return int
      */
     protected function countLoadedNodes()
     {
+        if (null === $this->nodes){
+            return 0;
+        }
         return $this->nodes->count();
     }
 
     /**
      * To count the tree nodes that are allready loaded
      *
-     * @return integer;
+     * @return int
      */
     protected function countDatabaseNodes()
     {
@@ -404,7 +383,8 @@ class FamilyTree
     * Get all Nodes of this tree from database
     * and set them in the variable $nodes
     *
-    * @return App\Girover\Database\Eloquent\TreeCollection
+    * @param int|null $number_of_generations
+    * @return \Girover\Tree\FamilyTree
     */
     public function load($number_of_generations = null)
     {
@@ -422,7 +402,7 @@ class FamilyTree
      * Load the tree nodes from preloaded collection
      * no need to querying database.
      *
-     * @param Illuminate\Support\Collection | Girover\Tree\TreeCollection
+     * @param Illuminate\Support\Collection | \Girover\Tree\TreeCollection $collection
      * @return Girover\Tree\Tree
      */
     public function silentLoad($collection)
@@ -1120,14 +1100,14 @@ class FamilyTree
     public function getTreeInfo()
     {
         return [
-            'userName' => $this->treeModel->user()[0]->name,
-            'treeName' => $this->treeModel->name,
-            'members' => $this->treeModel->nodesCount(),
-            'wives' => $this->treeModel->wivesCount(),
-            'males' => $this->treeModel->genderCount(1),
-            'females' => $this->treeModel->genderCount(2),
+            'userName' => $this->tree->user()[0]->name,
+            'treeName' => $this->tree->name,
+            'members' => $this->tree->nodesCount(),
+            'wives' => $this->tree->wivesCount(),
+            'males' => $this->tree->genderCount(1),
+            'females' => $this->tree->genderCount(2),
             'generations' => $this->totalGenerations(),
-            'settings' => $this->treeModel->getSettingsAsArray(),
+            'settings' => $this->tree->getSettingsAsArray(),
         ];
     }
 
@@ -1148,8 +1128,8 @@ class FamilyTree
      */
     public function changeBasicNode($location)
     {
-        if (config('tree.tree_model')::where('id', $this->properties()->id)->update(['basic_node' => $location])) {
-            $this->properties->basic_node = $location;
+        if (Tree::where('id', $this->tree->id)->update(['basic_node' => $location])) {
+            $this->tree->basic_node = $location;
 
             return $this->properties();
         }

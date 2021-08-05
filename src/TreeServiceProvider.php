@@ -26,6 +26,7 @@ class TreeServiceProvider extends PackageServiceProvider
             );
         // ->hasCommand(SkeletonCommand::class);
 
+        
         $this->app->bind('FamilyTree', function ($app) {
             return new FamilyTree();
         });

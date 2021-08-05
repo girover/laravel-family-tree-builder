@@ -6,7 +6,7 @@ use Girover\Tree\EagerTree;
 use Girover\Tree\Exceptions\TreeException;
 use Illuminate\Database\Eloquent\Collection;
 
-class TreeCollection extends Collection
+class NodeCollection extends Collection
 {
     /**
      * determine if there are nodes in the collection
@@ -73,14 +73,14 @@ class TreeCollection extends Collection
      * @return string tree as Html text
      */
     public function toTree()
-    {
-        if ($this->count() == 0) {
-            return (new EagerTree(null))->emptyTree();
-        }
-        if (! $this->isCorrectlySorted()) {
-            throw new TreeException("Error: Tree nodes must be correctly sorted before trying to build it.", 1);
-        }
+    {return '';
+        // if ($this->count() == 0) {
+        //     return (new EagerTree(null))->emptyTree();
+        // }
+        // if (! $this->isCorrectlySorted()) {
+        //     throw new TreeException("Error: Tree nodes must be correctly sorted before trying to build it.", 1);
+        // }
 
-        return (new EagerTree($this->first()->tree_id))->silentLoad($this)->draw();
+        // return (new EagerTree($this->first()->tree_id))->silentLoad($this)->draw();
     }
 }
