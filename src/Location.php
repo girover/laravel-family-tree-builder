@@ -415,7 +415,7 @@ class Location
     }
 
     /**
-     * Make the first child of the node that the pointer is indicating to.
+     * Make the last child of the node that the pointer is indicating to.
      *
      * @param string $location
      * @return string the first child location

@@ -133,6 +133,21 @@ class FamilyTree
     }
 
     /**
+     * Using magic method __get($name)
+     * to get properties of the tree model
+     * 
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        if ($this->tree === null) {
+            return null;
+        }
+        return $this->tree->{$name};
+    }
+
+    /**
     * Create pointer for this tree and put it on root node of this tree
     * and then pass the tree instance to the pointer
     *
@@ -280,7 +295,7 @@ class FamilyTree
     public function nodesQuery()
     {
         if (null === $this->tree){
-            throw new TreeException("no tree is loaded", 1);            
+            throw new TreeException("The Pointer is not associated with any trees", 1);            
         }
 
         return Node::where('tree_id', $this->tree->id);
@@ -389,7 +404,7 @@ class FamilyTree
     public function load($number_of_generations = null)
     {
         if (! is_numeric($number_of_generations) && ! is_null($number_of_generations)) {
-            throw new TreeException("Error: The given generation '".$number_of_generations."' is not a number", 1);
+            throw new TreeException("Error: The given generation '".$number_of_generations."' should be number", 1);
         }
         $this->nodes = $number_of_generations
                        ? $this->loadGenerations($number_of_generations)
@@ -788,14 +803,14 @@ class FamilyTree
      * Delete old keys for this node from database table
      *  "concurrent_old_keys"
      * --------------------------------------------------------------
-     * @param Concurrent $node
+     * @param \Girover\Tree\Models\Node $node
      * @return void
      * --------------------------------------------------------------
      */
     public function deletOldKeys($node)
     {
-        Concurrent_old_key::where('con_id', $node->id)
-                          ->delete();
+        // Concurrent_old_key::where('con_id', $node->id)
+                        //   ->delete();
     }
 
     /**
@@ -805,24 +820,24 @@ class FamilyTree
      */
     public function deleteTree()
     {
-        $deletedNodes = Concurrent::where('tree_id', $this->tree->id)->delete();
+        // $deletedNodes = Concurrent::where('tree_id', $this->tree->id)->delete();
 
-        $deletedWives = Wife::where('tree_id', $this->tree->id)->delete();
+        // $deletedWives = Wife::where('tree_id', $this->tree->id)->delete();
 
-        $deletedTree = TreeRecord::where('id', $this->tree->id)->delete();
+        // $deletedTree = TreeRecord::where('id', $this->tree->id)->delete();
 
-        return [
-            'deleted_nodes' => $deletedNodes,
-            'deleted_wives' => $deletedWives,
-            'deleted_tree' => $deletedTree,
-        ];
+        // return [
+        //     'deleted_nodes' => $deletedNodes,
+        //     'deleted_wives' => $deletedWives,
+        //     'deleted_tree' => $deletedTree,
+        // ];
     }
 
     /**
      * Determine if the given nodes are Siblings [ node and the next_node in nodes array ]
      *
-     * @param App\Node $node
-     * @param App\Node $next_node
+     * @param \Girover\Tree\Models\Node $node
+     * @param \Girover\Tree\Models\Node $next_node
      * @return bool
      */
     public function areSiblings($node, $next_node)
@@ -1023,7 +1038,7 @@ class FamilyTree
     /**
      * return photo name for node [male, female]
      *
-     * @param int $gender
+     * @param int|string $gender
      * @return string
      */
     public static function photoIcon($gender = 'm')
@@ -1142,7 +1157,7 @@ class FamilyTree
      */
     public function getDeletedTrees()
     {
-        return TreeRecord::onlyTrashed()->get();
+        // return TreeRecord::onlyTrashed()->get();
     }
 
     public function getDeletedNodes()

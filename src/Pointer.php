@@ -68,7 +68,7 @@ class Pointer
     public function __call($name, $args)
     {
         if ($this->node() instanceof Node) {
-            if (method_exists($this->node(), $name)) {
+            if (method_exists(Node::class, $name)) {
                 return call_user_func([$this->node(), $name], ...$args);
             }
         }
@@ -109,6 +109,26 @@ class Pointer
     }
 
     /**
+     * Get the node that the Pointer indicates to
+     *
+     * @return \Girover\Tree\Models\Node|null
+     */
+    public function getNode()
+    {
+        return $this->node;
+    }
+
+    /**
+     * Get the properties of the tree model
+     *
+     * @return \Girover\Tree\Models\Tree|null
+     */
+    public function tree()
+    {
+        return $this->tree->properties();
+    }
+
+    /**
      * Get the location of the node that the pointer indicates to.
      *
      * @return mixed
@@ -122,7 +142,7 @@ class Pointer
      * Check if the given location found in this tree
      *
      * @param string $location
-     * @return \Girover\Tree\Models\Node|Object|null
+     * @return \Girover\Tree\Models\Node|object|null
      */
     public function find($location)
     {
@@ -236,9 +256,10 @@ class Pointer
     }
 
     /**
-     * Run the Pointer to indicate to last child of the current node.
+     * Move the Pointer to indicate to last child of the current node.
      *
      * @return \Girover\Tree\Pointer $this
+     * 
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function toLastChild()

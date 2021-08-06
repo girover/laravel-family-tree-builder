@@ -55,8 +55,13 @@ return [
 ## Usage
 
 ```php
-$tree = new Girover\Tree();
-echo $tree->echoPhrase('Hello, Spatie!');
+use Girover\Tree\Models\Tree;
+use Girover\Tree\Facades\FamilyTree;
+
+$t = Tree::find(1); 
+$tree = FamilyTree::make($tree);
+echo $tree->name;
+return $tree->pointer()->to('aaa.aaa')->getNode();
 ```
 
 ## Testing
