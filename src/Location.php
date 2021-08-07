@@ -57,7 +57,7 @@ class Location
 
     /**
      * Make the location for the tree Root
-     * 
+     *
      * @return string
      */
     public static function generateRootLocation()

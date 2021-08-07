@@ -5,7 +5,6 @@ namespace Girover\Tree\Traits;
 use Girover\Tree\Database\Eloquent\NodeCollection;
 use Girover\Tree\Database\Eloquent\NodeEloquentBuilder;
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Facades\FamilyTree;
 use Girover\Tree\GlobalScopes\ImagesEagerRelationScope;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
@@ -103,7 +102,6 @@ trait Nodeable
         // Adding mass assignment fields to fillable array
         $this->fillable = array_merge($this->fillable, static::$fillable_cols);
     }
-
 
     /**
      * Relationship for Getting wives og the node.
@@ -857,7 +855,6 @@ trait Nodeable
     /**
      * Get all siblings those are older than this node
      *
-     * 
      */
     public function husband()
     {
@@ -908,6 +905,7 @@ trait Nodeable
     {
         $tree = Tree::find($this->tree_id);
         $tree->pointer()->to($this);
+
         return $tree->draw();
     }
 

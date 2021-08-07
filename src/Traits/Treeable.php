@@ -7,7 +7,6 @@ use Girover\Tree\Location;
 use Girover\Tree\Models\Node;
 use Girover\Tree\Models\Tree;
 use Girover\Tree\Pointer;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 
 /**
@@ -21,7 +20,7 @@ trait Treeable
      * @var \Girover\Tree\Pointer|null
      */
     private $pointer = null;
-    
+
     /**
      * @var \Girover\Tree\Database\Eloquent\NodeCollection|null
      */
@@ -33,7 +32,7 @@ trait Treeable
     public $treeExists = false;
 
     /**
-     * @var int $nodesCount uses in converting tree to html
+     * @var int uses in converting tree to html
      */
     public $nodesCount = 1;
 
@@ -47,7 +46,6 @@ trait Treeable
      */
     public $tree_photos_path = 'images/photos/';
 
-
     public static function bootTreeable()
     {
     }
@@ -56,7 +54,7 @@ trait Treeable
     {
         // $this->pointer = Node::find(1);
         // $this->makePointer();
-         $this->makePointer();
+        $this->makePointer();
     }
 
     public function nodeModel()
@@ -111,10 +109,9 @@ trait Treeable
         return $this->pointer;
     }
 
-    
     /**
      * Move the pointer to indicates to the root of this tree
-     * 
+     *
      * @return \Girover\Tree\Pointer|null
      */
     public function movePointerToRoot()
@@ -252,7 +249,6 @@ trait Treeable
         $this->nodes = null;
         $this->pointer->toRoot();
     }
-
 
     /**
      * Get Information about the current tree
@@ -414,9 +410,10 @@ trait Treeable
      */
     protected function countLoadedNodes()
     {
-        if (null === $this->nodes){
+        if (null === $this->nodes) {
             return 0;
         }
+
         return $this->nodes->count();
     }
 
@@ -445,7 +442,7 @@ trait Treeable
     public function countGenerations()
     {
         $node = $this->nodesQuery()->orderByRaw('LENGTH(location) DESC')->first();
-        
+
         if (null !== $node) {
             return Location::generation($node->location);
         }
@@ -673,19 +670,18 @@ trait Treeable
      *
      * @param array $data data of the root node
      * @return string
-     * 
+     *
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function addRoot($data = [])
     {
         if (empty($data)) {
-            throw new TreeException("Error: no data for Root are provided", 1);            
+            throw new TreeException("Error: no data for Root are provided", 1);
         }
         if ($this->isEmptyTree()) {
-            $this->nodes()->create(array_merge($data, ['tree_id'=>$this->id, 'location'=>Location::generateRootLocation()]));
+            $this->nodes()->create(array_merge($data, ['tree_id' => $this->id, 'location' => Location::generateRootLocation()]));
         }
         throw new TreeException("Root for tree {$this->name} is already exists", 1);
-        
     }
 
     /**

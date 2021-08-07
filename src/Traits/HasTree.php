@@ -2,7 +2,6 @@
 
 namespace Girover\Tree\Traits;
 
-use Girover\Tree\EagerTree;
 use Girover\Tree\Exceptions\TreeException;
 use Illuminate\Support\Facades\DB;
 

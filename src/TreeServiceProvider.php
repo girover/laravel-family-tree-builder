@@ -26,7 +26,6 @@ class TreeServiceProvider extends PackageServiceProvider
             );
         // ->hasCommand(SkeletonCommand::class);
 
-        
         // resolves when calling Girover\Tree\Facades\FamilyTree methods as static
         // $this->app->bind('FamilyTree', function () {
         //     return new FamilyTree();

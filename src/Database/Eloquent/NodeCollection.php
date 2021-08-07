@@ -73,7 +73,8 @@ class NodeCollection extends Collection
      * @return string tree as Html text
      */
     public function toTree()
-    {return '';
+    {
+        return '';
         // if ($this->count() == 0) {
         //     return (new EagerTree(null))->emptyTree();
         // }

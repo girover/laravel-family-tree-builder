@@ -2,7 +2,6 @@
 
 namespace Girover\Tree\Database\Eloquent;
 
-use Girover\Tree\EagerTree;
 use Girover\Tree\Location;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -128,7 +127,7 @@ class NodeEloquentBuilder extends Builder
     }
 
     /**
-     * 
+     *
      */
     public function root()
     {

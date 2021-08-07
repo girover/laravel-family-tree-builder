@@ -56,8 +56,6 @@ class Pointer
     public function __construct(Tree $tree = null)
     {
         $this->tree = $tree; // This has to be the first init in Poiter, because next line depend on it
-        
-        // $this->node = $indicated_node;
     }
 
     /**
@@ -158,7 +156,7 @@ class Pointer
      *
      * @param mixed $location [\Girover\Tree\Models\Node | string]
      * @return \Girover\Tree\Pointer $this
-     * 
+     *
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function to($location)
@@ -171,7 +169,6 @@ class Pointer
 
         Location::validate($location);
         $node = $this->find($location);
-        
 
         if ($node === null) {
             throw new TreeException("Error: Node with location '".$location."' Not Found in The tree: ".$this->tree->name, 1);
@@ -260,7 +257,7 @@ class Pointer
      * Move the Pointer to indicate to last child of the current node.
      *
      * @return \Girover\Tree\Pointer $this
-     * 
+     *
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function toLastChild()
@@ -427,14 +424,14 @@ class Pointer
     /**
      * To make the node that the pointer indicates to as a basic node
      * in the tree of this pointer
-     * 
+     *
      * @return $this
      */
     public function makeAsBasicNode()
     {
         $this->tree->basic_node = $this->location();
         $this->tree->save();
-        
+
         return $this;
     }
 }
