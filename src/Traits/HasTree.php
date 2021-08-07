@@ -32,7 +32,7 @@ trait HasTree
     /**
      * Get all trees that belongs this user
      *
-     * @return Illuminate\Database\Eloquent\Relationship\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function trees()
     {
@@ -89,19 +89,5 @@ trait HasTree
     public function hasTree($id)
     {
         return $this->trees()->where('id', $id)->count() ? true : false;
-    }
-
-    /**
-     * Get instance of tree
-     *
-     * @return App\Girover\Tree\EagerTree
-     */
-    public function tree($id)
-    {
-        if ($this->hasTree($id)) {
-            return new EagerTree($id);
-        }
-
-        return null;
     }
 }

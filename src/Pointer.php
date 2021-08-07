@@ -23,39 +23,41 @@ namespace Girover\Tree;
 use BadMethodCallException;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Models\Node;
+use Girover\Tree\Models\Tree;
 
 class Pointer
 {
-    /**----------------------------------------------------------------------------------
+    /**
      * Instance of Girover\Tree\FamilyTree
      * ---------------------------------------------------------------------------------
      * when creating a pointer it take an instance of FamilyTree as parameter
+     * @var \Girover\Tree\Models\Tree|null
      */
     protected $tree;
 
-    /**----------------------------------------------------------------------------------
+    /**
      * This variable contains all data of the node that this poiter point to:
      * ---------------------------------------------------------------------------------
-     *  it can be [Object, JSON, Model, Database Record ...]
-     *  depending on which tree is using this node
-     * @var \Girover\Tree\Models\Node |null
-     *----------------------------------------------------------------------------------*/
+     * it can be [Object, JSON, Model, Database Record ...]
+     * depending on which tree is using this node
+     * @var \Girover\Tree\Models\Node|null
+     */
     protected $node;
 
     /**
      * Initialize the Pointer and indicate it to the root node
      * of the given tree
      *
-     * @param \Girover\Tree\FamilyTree $tree
-     * @param \Girover\Tree\Models\Node |null $indicated_node
+     * @param \Girover\Tree\Models\Tree |null $indicated_node
      *
      * @return void
      */
-    public function __construct(FamilyTree $family_tree, Node $indicated_node = null)
+    // public function __construct(FamilyTree $family_tree, Node $indicated_node = null)
+    public function __construct(Tree $tree = null)
     {
-        $this->tree = $family_tree; // This has to be the first init in Poiter, because next line depend on it
+        $this->tree = $tree; // This has to be the first init in Poiter, because next line depend on it
         
-        $this->node = $indicated_node;
+        // $this->node = $indicated_node;
     }
 
     /**
@@ -125,7 +127,7 @@ class Pointer
      */
     public function tree()
     {
-        return $this->tree->properties();
+        return $this->tree;
     }
 
     /**
@@ -135,7 +137,7 @@ class Pointer
      */
     public function location()
     {
-        return $this->node ? $this->node->location : null;
+        return ($this->node !== null) ? $this->node->location : null;
     }
 
     /**
@@ -161,7 +163,6 @@ class Pointer
      */
     public function to($location)
     {
-        
         if (is_a($location, $this->model())) {
             $this->node = $location;
 
@@ -169,11 +170,11 @@ class Pointer
         }
 
         Location::validate($location);
-
         $node = $this->find($location);
+        
 
         if ($node === null) {
-            throw new TreeException("Error: Node with location '".$location."' Not Found in The tree: ".$this->tree->properties()->name, 1);
+            throw new TreeException("Error: Node with location '".$location."' Not Found in The tree: ".$this->tree->name, 1);
         }
 
         $this->node = $node;
@@ -308,7 +309,7 @@ class Pointer
     /**
      * Get the logest location in the tree that starts from the pointer
      *
-     * @return object|null
+     * @return object|string|null
      */
     public function longestLocation()
     {
@@ -420,6 +421,20 @@ class Pointer
     {
         $this->tree->load($generations);
 
+        return $this;
+    }
+
+    /**
+     * To make the node that the pointer indicates to as a basic node
+     * in the tree of this pointer
+     * 
+     * @return $this
+     */
+    public function makeAsBasicNode()
+    {
+        $this->tree->basic_node = $this->location();
+        $this->tree->save();
+        
         return $this;
     }
 }
