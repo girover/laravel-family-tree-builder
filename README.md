@@ -35,22 +35,22 @@ php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="
 php artisan migrate
 ```
 
-You can publish asset files with:
+You can publish **assets** with:
 ```bash
 php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-assets"
 ```
 
-You can publish translation files with:
+You can publish **translation** files with:
 ```bash
 php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-translations"
 ```
 
-You can publish the config file with:
+You can publish the **config** files with:
 ```bash
 php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-config"
 ```
 
-This is the contents of the published **config** file:
+This is the contents of the published **config** file `config/tree.php`:
 
 ```php
     return [
