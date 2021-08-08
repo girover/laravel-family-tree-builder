@@ -179,9 +179,9 @@ return $tree->pointer()->to('aaa.aaa')->toHtml();
 ### Tree model
 | function | Description | Returns |
 | --- | --- | --- |
-| `$tree->toHtml()` | convert the tree to html | string |
-| `$tree->draw()` | convert the tree to html | string |
-| `$tree->toTree()` | convert the tree to html | string |
+| ```php $tree->toHtml()``` | convert the tree to html | string html |
+| ```php $tree->draw()``` | convert the tree to html | string |
+| ```php $tree->toTree()``` | convert the tree to html | string |
 ## Testing
 
 ```bash
