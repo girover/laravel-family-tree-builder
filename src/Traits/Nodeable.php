@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 trait Nodeable
 {
     /**
-     * massassignment fillable properties
+     * mass assignment fillable properties
      *
      * @var array
      */
@@ -49,7 +49,7 @@ trait Nodeable
     /**
      * {@inheritdoc}
      *
-     * @param \Illuminate\Databse\Query\Builder
+     * @param \Illuminate\Database\Query\Builder
      * @return \Girover\Tree\Database\TreeQueryBuilder
      */
     public function newEloquentBuilder($query)
@@ -192,9 +192,9 @@ trait Nodeable
     }
 
     /**
-     * Indicates wich generation this node is
+     * Indicates which generation this node is
      *
-     * @return Int | NULL
+     * @return int | NULL
      */
     public function generation()
     {

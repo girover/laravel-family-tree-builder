@@ -8,7 +8,7 @@
         |--------------------------------------------------------------------------
         |
         | string : Name of the model that holds trees information.
-        | The database tabe that contains all trees.
+        | The database table that contains all trees.
         */
         'tree_model' => Girover\Tree\Models\Tree::class,
         /*
@@ -17,7 +17,7 @@
         |--------------------------------------------------------------------------
         |
         | string : Name of the model that tree gets data from.
-        | The database tabe that contains all nodes.
+        | The database table that contains all nodes.
         */
         'node_model' => Girover\Tree\Models\Node::class,
         
@@ -27,7 +27,7 @@
         |--------------------------------------------------------------------------
         |
         | string : Name of the model that tree's nodes' images has.
-        | The database tabe that contains all nodes images.
+        | The database table that contains all nodes images.
         */
         'images_model'=> Girover\Tree\Models\NodeImage::class,
         
@@ -90,8 +90,6 @@
                 'with' => 'images', // name of relationship that should be eager loaded
             ],
         ], 
-
-        'tree_profiles'=>'images/tree-profiles/',
 
         /*
         |--------------------------------------------------------------------------

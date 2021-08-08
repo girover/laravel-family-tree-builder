@@ -80,13 +80,13 @@ class Pointer
             }
         }
 
-        throw new BadMethodCallException('Call undefined Methode [ '.$name.' ] on class: '.Node::class);
+        throw new BadMethodCallException('Call undefined method [ '.$name.' ] on class: '.Node::class);
     }
 
     /**
     * Model of nodes
     *
-    * @return string Girove\Tree\Models\Node::class
+    * @return string Girover\Tree\Models\Node::class
     */
     public function model()
     {
