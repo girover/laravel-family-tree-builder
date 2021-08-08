@@ -157,8 +157,11 @@ This is the contents of the published **config** file `config/tree.php`:
 
 ## Assets
 
-If you want to store your asset in other directories,
-you can change the following configs in **config/tree.php** file.
+After publishing assets, they will be stored in `public` folder 
+of the project in a folder called `vendor/tree`.
+If you want to move any of these assets to other directories,
+you need to provide the new path.
+You can change assets configs in `config/tree.php` file.
 
 ```php
 'assets' => [
