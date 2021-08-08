@@ -21,25 +21,25 @@
 
 ## Installation
 
-You can install the package via composer:
+You can install the package via **composer**:
 
 ```bash
-**composer require girover/tree**
+composer require girover/tree
 ```
 
-You can publish and run the migrations with:
+You can publish and run the **migrations** with:
 
 ```bash
-**php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-migrations"
-php artisan migrate**
+php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-migrations"
+php artisan migrate
 ```
 
 You can publish the config file with:
 ```bash
-php artisan vendor:publish **--provider="Girover\Tree\TreeServiceProvider" --tag="tree-config"**
+php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-config"
 ```
 
-This is the contents of the published config file:
+This is the contents of the published **config** file:
 
 ```php
     return [
