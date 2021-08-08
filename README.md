@@ -34,6 +34,16 @@ php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="
 php artisan migrate
 ```
 
+You can publish asset files with:
+```bash
+php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-assets"
+```
+
+You can publish translation files with:
+```bash
+php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-translations"
+```
+
 You can publish the config file with:
 ```bash
 php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-config"

@@ -492,7 +492,7 @@ trait Treeable
     {
         return '<div id="tree" class="tree"><ul>'
                 . '<li>'
-                . '<a class="node" data-id=""  data-location="0" data-tree="" data-id="" data-name="" data-geder="" data-role="empty">
+                . '<a class="node" data-id=""  data-location="0" data-tree="" data-id="" data-name="" data-gender="" data-role="empty">
                         <div class="empty-node">
                             <div class="node-img"><img src="'. asset('images/photos/icon_male.png').'"></div>
                             <div class="node-info">add new</div>
@@ -575,8 +575,8 @@ trait Treeable
             return  '<div class="wives-group">'
                       . '<a class="node empty" data-counter="'.$this->nodesCount++.'"  data-tree="" data-location="0" data-husband_location="'.$item->location.'" data-id="0" data-name="wife" data-f_name="wife" data-l_name="wife" data-m_name="wife" data-gender="2">
                          <div class="female-node wife">
-                             <div class="node-img"><img src="'.url(config('tree.tree_profiles').'icon_female.png').'"></div>
-                             <div class="node-info">اضافة زوجة</div>
+                             <div class="node-img"><img src="'.asset(config('tree.tree_profiles').'icon_female.png').'"></div>
+                             <div class="node-info">'. __('add wife') .'</div>
                              <div class="wife-number">0</div>
                          </div>
                          </a>

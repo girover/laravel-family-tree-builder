@@ -18,6 +18,8 @@ class TreeServiceProvider extends PackageServiceProvider
             ->name('tree')
             ->hasConfigFile('tree')
             // ->hasViews()
+            ->hasAssets()
+            ->hasTranslations()
             ->hasMigrations(
                 'create_node_images_table',
                 'create_marriages_table',
