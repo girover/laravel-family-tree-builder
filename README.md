@@ -11,6 +11,7 @@
   - [Introduction](#introduction)
   - [Installation](#installation)
   - [Usage](#usage)
+  - [Assets](#assets)
   - [Testing](#testing)
   - [Changelog](#changelog)
   - [Contributing](#contributing)
@@ -149,19 +150,38 @@ This is the contents of the published **config** file:
     ];
 ```
 
+## Assets
+
+If you want to store your asset in other directories,
+you can change the following configs in **config/tree.php** file.
+
+```php
+'assets' => [
+    'path_avatar' => 'vendor/tree/images/', // Path to images folder
+    'path_css'    => 'vendor/tree/css/',  // Path to css folder
+    'path_js'     => 'vendor/tree/js/',  // Path to js folder
+]
+```
+
 ## Usage
 
+you can use both `Girover\Tree\Models\Tree` and `Girover\Tree\Models\Node` to build the family tree
 
 ```php
 use Girover\Tree\Models\Tree;
-use Girover\Tree\Facades\FamilyTree;
+use Girover\Tree\Models\Node;
 
-$t = Tree::find(1); 
-$tree = FamilyTree::make($tree);
+$tree = Tree::find(1); 
+$node = Node::find(1);
 echo $tree->name;
-return $tree->pointer()->to('aaa.aaa')->getNode();
+return $tree->pointer()->to('aaa.aaa')->toHtml();
 ```
-
+### Tree model
+| function | Description | Returns |
+| --- | --- | --- |
+| `$tree->toHtml()` | convert the tree to html | string |
+| `$tree->draw()` | convert the tree to html | string |
+| `$tree->toTree()` | convert the tree to html | string |
 ## Testing
 
 ```bash

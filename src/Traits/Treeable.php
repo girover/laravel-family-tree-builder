@@ -494,7 +494,7 @@ trait Treeable
                 . '<li>'
                 . '<a class="node" data-id=""  data-location="0" data-tree="" data-id="" data-name="" data-gender="" data-role="empty">
                         <div class="empty-node">
-                            <div class="node-img"><img src="'. asset('images/photos/icon_male.png').'"></div>
+                            <div class="node-img"><img src="'. asset(config('tree.assets.path_avatar').'icon_male.png').'"></div>
                             <div class="node-info">add new</div>
                         </div>
                     </a>'
@@ -575,7 +575,7 @@ trait Treeable
             return  '<div class="wives-group">'
                       . '<a class="node empty" data-counter="'.$this->nodesCount++.'"  data-tree="" data-location="0" data-husband_location="'.$item->location.'" data-id="0" data-name="wife" data-f_name="wife" data-l_name="wife" data-m_name="wife" data-gender="2">
                          <div class="female-node wife">
-                             <div class="node-img"><img src="'.asset(config('tree.tree_profiles').'icon_female.png').'"></div>
+                             <div class="node-img"><img src="'.asset(config('tree.assets.path_avatar').'icon_female.png').'"></div>
                              <div class="node-info">'. __('add wife') .'</div>
                              <div class="wife-number">0</div>
                          </div>
@@ -621,7 +621,7 @@ trait Treeable
      * @param array  $wives
      * @return string
      */
-    public function getNodeHtml($node = null, $role = 'husband no-cildren', $wives = [])
+    public function getNodeHtml($node = null, $role = 'husband no-children', $wives = [])
     {
         if ($node === null) {
             return '';
@@ -645,7 +645,7 @@ trait Treeable
                      data-tree="'.$node->tree_id.'" data-location="'.$node->location.'" data-id="'.$node->id.'" data-name="'.$node->name.'" data-f_name="'.$node->f_name.'" data-l_name="'.$node->l_name.'" data-m_name="'.$node->m_name.'" data-birthdate="'.$node->birth_date.'" data-gender="'.$node->gender.'" data-role="'.$role.'">
                     '.$addFather.$showFather.$nodeCollapse.
                     '<div class="'.$node_class.' '.$role.'">	    
-                        <div class="node-img"><img src="'.asset(config('tree.tree_profiles').$photo).'"></div>
+                        <div class="node-img"><img src="'.asset(config('tree.assets.path_avatar').$photo).'"></div>
                         <div class="node-info">'.$node->name.'</div>
                         '.(($role === 'wife') ? '<div class="wife-number">1</div>' : '').'
                     </div> 

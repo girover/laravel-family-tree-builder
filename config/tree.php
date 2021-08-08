@@ -93,5 +93,17 @@
 
         'tree_profiles'=>'images/tree-profiles/',
 
+        /*
+        |--------------------------------------------------------------------------
+        | Assets: CSS, JS and IMAGES
+        |--------------------------------------------------------------------------
+        |
+        |
+        */
+        'assets' => [
+            'path_avatar' => 'vendor/tree/images/', // Path to image folder
+            'path_css'    => 'vendor/tree/css/',  // Path to css files
+            'path_js'     => 'vendor/tree/js/',  // Path to js files
+        ]
 
     ];
