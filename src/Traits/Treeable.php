@@ -660,6 +660,16 @@ trait Treeable
      *
      * @return string
      */
+    public function toTree()
+    {
+        return $this->draw();
+    }
+
+    /**
+     * Draw the current tree and return it as HTML.
+     *
+     * @return string
+     */
     public function toHtml()
     {
         return $this->draw();
@@ -679,7 +689,7 @@ trait Treeable
             throw new TreeException("Error: no data for Root are provided", 1);
         }
         if ($this->isEmptyTree()) {
-            $this->nodes()->create(array_merge($data, ['tree_id' => $this->id, 'location' => Location::generateRootLocation()]));
+            return $this->nodes()->create(array_merge($data, ['tree_id' => $this->id, 'location' => Location::generateRootLocation()]));
         }
         throw new TreeException("Root for tree {$this->name} is already exists", 1);
     }

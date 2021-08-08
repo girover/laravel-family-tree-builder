@@ -23,7 +23,7 @@ class CreateNodesTable extends Migration
             $table->string('m_name', 50)->nullable();
             $table->date('birth_date')->nullable();
             $table->string('birth_place', 255)->nullable();
-            $table->enum('gender', ['m', 'f'])->default('f');
+            $table->enum('gender', ['m', 'f'])->default('m');
             $table->string('photo', 255);
             $table->timestamps();
             

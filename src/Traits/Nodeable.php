@@ -532,7 +532,8 @@ trait Nodeable
      */
     public function firstChild()
     {
-        return  static::where('location', 'REGEXP', Location::childrenREGEXP($this->location))
+        return  static::tree($this->tree_id)
+                     ->where('location', 'REGEXP', Location::childrenREGEXP($this->location))
                      ->orderBy('location', 'ASC')
                      ->first();
         // return (new EagerTree($this->tree_id))->pointer->silentlyTo($this)->firstChild();
@@ -545,10 +546,10 @@ trait Nodeable
      */
     public function lastChild()
     {
-        return  static::where('location', 'REGEXP', Location::childrenREGEXP($this->location))
+        return  static::tree($this->tree_id)
+                     ->where('location', 'REGEXP', Location::childrenREGEXP($this->location))
                      ->orderBy('location', 'DESC')
                      ->first();
-        // return (new EagerTree($this->tree_id))->pointer->silentlyTo($this)->lastChild();
     }
 
     /**

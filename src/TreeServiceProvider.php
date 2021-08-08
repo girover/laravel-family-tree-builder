@@ -24,14 +24,5 @@ class TreeServiceProvider extends PackageServiceProvider
                 'create_nodes_table',
                 'create_trees_table'
             );
-        // ->hasCommand(SkeletonCommand::class);
-
-        // resolves when calling Girover\Tree\Facades\FamilyTree methods as static
-        // $this->app->bind('FamilyTree', function () {
-        //     return new FamilyTree();
-        // });
-        // $this->app->bind(Pointer::class, function () {
-        //     return new Pointer();
-        // });
     }
 }

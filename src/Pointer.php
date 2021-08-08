@@ -64,9 +64,16 @@ class Pointer
      * @param string $name method name
      * @param array $args parameters that passed to the called method
      * @return mixed
+     *
+     * @throws \Girover\Tree\Exceptions\TreeException
+     * @throws \BadMethodCallException
      */
     public function __call($name, $args)
     {
+        if ($this->node() === null && method_exists(Node::class, $name)) {
+            throw new TreeException("Pointer is not indicating to any node in Tree [".$this->tree->name."].", 1);
+        }
+
         if ($this->node() instanceof Node) {
             if (method_exists(Node::class, $name)) {
                 return call_user_func([$this->node(), $name], ...$args);
