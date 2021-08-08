@@ -33,24 +33,24 @@ You can install the package via **composer**:
 composer require girover/tree
 ```
 
-You can publish and run the **migrations** with:
+To publish **migrations** and migrate them, run this command in your terminal:
 
 ```bash
 php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-migrations"
 php artisan migrate
 ```
 
-You can publish **assets** with:
+To publish **assets** you can run the following command:
 ```bash
 php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-assets"
 ```
 
-You can publish **translation** files with:
+For publishing **translation** run the following command:
 ```bash
 php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-translations"
 ```
 
-You can publish the **config** files with:
+You can publish the **config** files with command:
 ```bash
 php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-config"
 ```
