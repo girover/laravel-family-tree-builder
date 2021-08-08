@@ -6,7 +6,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/girover/tree.svg?style=flat-square)](https://packagist.org/packages/girover/tree)
 
 
-![tree-template](https://user-images.githubusercontent.com/53403538/128645594-93cbef35-896a-4809-a65b-b74fbe4747de.png)
+![tree-template-2](https://user-images.githubusercontent.com/53403538/128646183-8d716a2c-da22-473a-a06d-1563974afb76.png)
 
 ---
 ## Content
