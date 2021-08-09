@@ -200,6 +200,8 @@ return $tree->pointer()->to('aaa.aaa')->toHtml();
 ### Tree model
 | function | Description | Returns |
 | --- | --- | --- |
+| `$tree->addRoot($data)` | add root to the tree | Girover\Tree\Models\Node |
+| `$tree->newRoot($data)` | makes new root for the tree | Girover\Tree\Models\Node |
 | `$tree->toHtml()` | convert the tree to html | string html |
 | `$tree->draw()` | convert the tree to html | string |
 | `$tree->toTree()` | convert the tree to html | string |

@@ -211,10 +211,10 @@ class Location
     /**
      * Validating the node location
      *
-     * determines if the node location is valide and has the correct style
+     * determines if the node location is valid and has the correct style
      * of set of chars or digits followed by separator and so on.
      *
-     * @param string $location ocation to validate
+     * @param string $location location to validate
      * @throws \Girover\Tree\Exceptions\TreeException
      * @return bool | TreeException
      */

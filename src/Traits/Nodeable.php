@@ -4,6 +4,7 @@ namespace Girover\Tree\Traits;
 
 use Girover\Tree\Database\Eloquent\NodeCollection;
 use Girover\Tree\Database\Eloquent\NodeEloquentBuilder;
+use Girover\Tree\Database\SqlStatements;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\ImagesEagerRelationScope;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
@@ -282,7 +283,7 @@ trait Nodeable
 
     /**
      * Get all uncles and/or aunts of this node
-     * dependes on the given gender
+     * depends on the given gender
      *
      * @param \Illuminate\Support\Collection
      * @return \Girover\Tree\Database\Eloquent\NodeCollection
@@ -793,7 +794,7 @@ trait Nodeable
      */
     public function makeSonTo($location)
     {
-        // check if the location is exists and load it if exsits
+        // check if the location is exists and then load it
         if (! ($node = static::find($location))) {
             throw new TreeException("Error: The location `".$location."` not found in this tree.", 1);
         }
@@ -832,19 +833,18 @@ trait Nodeable
 
         try {
             // update all nodes location in this tree
-            // first prepend all locations with sepataror '.'
-            $affected_rows = static::tree($this->tree_id)
-            ->update(['location' => DB::raw(' CONCAT("'.Location::SEPARATOR.'", `location`) ')]);
+            // first prepend all locations with separator '.'
+            // tp prevent duplicated location in same tree
+            DB::update(SqlStatements::updatePrependLocationsWithSeparator(), [$this->tree_id]);
             // then prepend all locations with 'aaa'
-            $affected_rows = static::tree($this->tree_id)
-            ->update(['location' => DB::raw(' CONCAT("'.Location::firstPossibleSegment().'", `location`) ')]);
+            DB::update(SqlStatements::updatePrependLocationsWithFirstPossibleSegmetn(), [$this->tree_id]);
 
             // create th new root node with given data
-            $this->createNewNode($data, Location::firstPossibleSegment());
+            $new_root = $this->createNewNode($data, Location::firstPossibleSegment());
 
             DB::commit();
 
-            return $affected_rows;
+            return $new_root;
         } catch (\Throwable $th) {
             // Rollback the database changes
             DB::rollBack();
@@ -889,7 +889,7 @@ trait Nodeable
      */
     public function deleteAndShiftChildren()
     {
-        // to prevente the model observer from deleting children
+        // to prevent the model observer from deleting children
         $this->shift_children = true;
         //
         //

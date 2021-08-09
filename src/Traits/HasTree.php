@@ -60,7 +60,7 @@ trait HasTree
 
             DB::commit();
 
-            return 'The tree has been deleted successfuly.';
+            return 'The tree has been deleted successfully.';
         } catch (\Throwable $th) {
             DB::rollBack();
 

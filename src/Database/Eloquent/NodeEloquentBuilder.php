@@ -10,7 +10,7 @@ class NodeEloquentBuilder extends Builder
     /**
      * to add constraint [models that belongs the given tree number]
      * to QueryBuilder
-     * to achive where tree_id = $tree_id on QueryBuilder
+     * to achieve where tree_id = $tree_id on QueryBuilder
      * @param int $tree_id
      * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
      */

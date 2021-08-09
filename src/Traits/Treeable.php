@@ -308,10 +308,10 @@ trait Treeable
      * @param string $locaction
      * @return Node
      */
-    public function getLoadedNode($locaction)
+    public function getLoadedNode($location)
     {
         foreach ($this->nodes as $node) {
-            if ($node->location == $locaction) {
+            if ($node->location == $location) {
                 return $node;
             }
         }
@@ -331,10 +331,46 @@ trait Treeable
 
     /**
      * Get the root node of this tree from the database
+     * @return \Girover\Tree\Models\Node
      */
     public function root()
     {
         return $this->hasOne(Node::class)->first();
+    }
+
+    /**
+     * Create the root for this tree.
+     *
+     * @param array $data data of the root node
+     * @return \Girover\Tree\Models\Node
+     *
+     * @throws \Girover\Tree\Exceptions\TreeException
+     */
+    public function addRoot($data = [])
+    {
+        if (empty($data)) {
+            throw new TreeException("Error: no data for Root are provided", 1);
+        }
+        if ($this->isEmptyTree()) {
+            return $this->nodes()->create(array_merge($data, ['tree_id' => $this->id, 'location' => Location::generateRootLocation()]));
+        }
+        throw new TreeException("Root for tree {$this->name} is already exists", 1);
+    }
+
+    /**
+     * Create new Root node in this tree and make
+     * the current root child of the new root
+     * 
+     * @param array $data
+     * @return \Girover\Tree\Models\Node|null
+     */
+    public function newRoot($data = [])
+    {
+        if (empty($data)) {
+            return null;
+        }
+
+        return $this->pointer()->toRoot()->createFather($data);
     }
 
     /**
@@ -478,7 +514,7 @@ trait Treeable
      *
      * @return \Girover\Tree\Database\Eloquent\NodeCollection
      */
-    public function farthestNodes()
+    public function nodesOnTop()
     {
         return $this->nodesQuery()->orderByRaw('LENGTH(location) DESC')->get();
     }
@@ -673,25 +709,6 @@ trait Treeable
     public function toHtml()
     {
         return $this->draw();
-    }
-
-    /**
-     * Create the root for this tree.
-     *
-     * @param array $data data of the root node
-     * @return string
-     *
-     * @throws \Girover\Tree\Exceptions\TreeException
-     */
-    public function addRoot($data = [])
-    {
-        if (empty($data)) {
-            throw new TreeException("Error: no data for Root are provided", 1);
-        }
-        if ($this->isEmptyTree()) {
-            return $this->nodes()->create(array_merge($data, ['tree_id' => $this->id, 'location' => Location::generateRootLocation()]));
-        }
-        throw new TreeException("Root for tree {$this->name} is already exists", 1);
     }
 
     /**

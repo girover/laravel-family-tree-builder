@@ -1,20 +1,20 @@
 <?php
 /**----------------------------------------------------------------------------------
 | Pointer of Tree
-| Aouth: Majed Girover
+| Auth: Majed Girover
 |        girover.mhf@gmail.com
 | ---------------------------------------------------------------------------------
 | when creating a FamilyTree instance, a pointer object is created and indicates
 | to the root node in the Tree.
 | the pointer only indicates to nodes in the database table and not to the loaded nodes
 | inside the tree property $nodes.
-| so every time Poiner moves through the tree it make request to databse table and return
+| so every time Pointer moves through the tree it make request to database table and return
 | one record of tree nodes.
 | therefor be aware when you draw the tree to show in the browser, because
-| if the tree nodes are allready loaded and you move the pointer throgh the tree
-| and you want to draw them again, so it will draw the old nodes those were loadded before.
+| if the tree nodes are already loaded and you move the pointer through the tree
+| and you want to draw them again, so it will draw the old nodes those were loaded before.
 | And to draw the tree from the pointer node, you have to call `load` method to change
-| the allready loaded nodes.
+| the already loaded nodes.
 |
 | */
 
@@ -178,7 +178,7 @@ class Pointer
         $node = $this->find($location);
 
         if ($node === null) {
-            throw new TreeException("Error: Node with location '".$location."' Not Found in The tree: ".$this->tree->name, 1);
+            throw new TreeException("Error: Node with location '".$location."' Not Found in the tree [ ".$this->tree->name." ]", 1);
         }
 
         $this->node = $node;

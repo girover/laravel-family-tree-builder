@@ -8,7 +8,7 @@ namespace Girover\Tree\Traits;
 trait IsNode
 {
     /**
-     * asign the node to this property of authenticated user
+     * assign the node to this property of authenticated user
      *
      * @var \Girover\Tree\Models\Node|null
      */
