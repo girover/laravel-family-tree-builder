@@ -198,6 +198,12 @@ echo $tree->name;
 return $tree->pointer()->to('aaa.aaa')->toHtml();
 ```
 ### Tree model
+
+```php
+    use Girover\Tree\Models\Tree;
+    
+    $tree = Tree::find(1);
+```
 | function | Description | Returns |
 | --- | --- | --- |
 | `$tree->addRoot($data)` | add root to the tree | Girover\Tree\Models\Node |
