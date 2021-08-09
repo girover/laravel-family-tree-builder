@@ -14,6 +14,9 @@
   - [Installation](#installation)
   - [Assets](#assets)
   - [Usage](#usage)
+    - [Tree](#tree)
+    - [Pointer](#pointer)
+    - [Node](#node)
   - [Testing](#testing)
   - [Changelog](#changelog)
   - [Contributing](#contributing)
@@ -23,6 +26,7 @@
 
 
 ## Introduction
+This package allows you to build family tree.
 
 ## Installation
 
@@ -196,7 +200,7 @@ $node = Node::find(1);
 echo $tree->name;
 return $tree->pointer()->to('aaa.aaa')->toHtml();
 ```
-### Tree model
+### Tree
 
 ```php
     use Girover\Tree\Models\Tree;
@@ -210,6 +214,9 @@ return $tree->pointer()->to('aaa.aaa')->toHtml();
 | `$tree->toHtml()` | convert the tree to html | string html |
 | `$tree->draw()` | convert the tree to html | string |
 | `$tree->toTree()` | convert the tree to html | string |
+
+### Pointer
+### Node
 ## Testing
 
 ```bash
