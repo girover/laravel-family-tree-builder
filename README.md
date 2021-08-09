@@ -201,13 +201,13 @@ return $tree->pointer()->to('aaa.aaa')->toHtml();
 
 ```php
     use Girover\Tree\Models\Tree;
-    
+
     $tree = Tree::find(1);
 ```
 | function | Description | Returns |
 | --- | --- | --- |
-| `$tree->addRoot($data)` | add root to the tree | Girover\Tree\Models\Node |
-| `$tree->newRoot($data)` | makes new root for the tree | Girover\Tree\Models\Node |
+| `$tree->addRoot($data)` | add root to the tree. ```$data``` is array of root info | Girover\Tree\Models\Node |
+| `$tree->newRoot($data)` | makes new root for the tree. ```$data``` is array of the new root info | Girover\Tree\Models\Node |
 | `$tree->toHtml()` | convert the tree to html | string html |
 | `$tree->draw()` | convert the tree to html | string |
 | `$tree->toTree()` | convert the tree to html | string |
