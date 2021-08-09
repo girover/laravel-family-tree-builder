@@ -1,3 +1,4 @@
+![tree-template-2](https://user-images.githubusercontent.com/53403538/128646183-8d716a2c-da22-473a-a06d-1563974afb76.png)
 # Building family tree
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/girover/tree.svg?style=flat-square)](https://packagist.org/packages/girover/tree)
@@ -6,15 +7,13 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/girover/tree.svg?style=flat-square)](https://packagist.org/packages/girover/tree)
 
 
-![tree-template-2](https://user-images.githubusercontent.com/53403538/128646183-8d716a2c-da22-473a-a06d-1563974afb76.png)
-
 ---
 ## Content
 
   - [Introduction](#introduction)
   - [Installation](#installation)
-  - [Usage](#usage)
   - [Assets](#assets)
+  - [Usage](#usage)
   - [Testing](#testing)
   - [Changelog](#changelog)
   - [Contributing](#contributing)
