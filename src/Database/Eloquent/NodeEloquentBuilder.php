@@ -80,7 +80,7 @@ class NodeEloquentBuilder extends Builder
     }
 
     /**
-     * to add constraint [models have location smaller than given location] 
+     * to add constraint [models have location smaller than given location]
      * to QueryBuilder
      * @param string $location
      * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder

@@ -6,7 +6,7 @@ class Delete extends SqlStatements
 {
     /**
      * To delete node with its children from database
-     * 
+     *
      * @param int $tree_id
      * @param int $location
      * @return string

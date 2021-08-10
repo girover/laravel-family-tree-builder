@@ -360,7 +360,7 @@ trait Treeable
     /**
      * Create new Root node in this tree and make
      * the current root child of the new root
-     * 
+     *
      * @param array $data
      * @return \Girover\Tree\Models\Node|null
      */

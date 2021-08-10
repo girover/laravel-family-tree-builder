@@ -170,14 +170,14 @@ class Pointer
      */
     public function to($location)
     {
-        if ( $location instanceof ($this->model() )) {
+        if ($location instanceof ($this->model())) {
             $this->node = $location;
-            
+
             return $this;
         }
-        
+
         Location::validate($location);
-        
+
         $node = $this->find($location);
 
         if ($node === null) {
@@ -447,7 +447,7 @@ class Pointer
 
     /**
      * To delete the node with its children
-     * 
+     *
      * @return int affected rows
      */
     public function deleteWithChildren()
@@ -457,7 +457,7 @@ class Pointer
 
     /**
      * Get the tree as Html
-     * 
+     *
      * @return string
      */
     public function toTree()
@@ -467,7 +467,7 @@ class Pointer
 
     /**
      * Get the tree as Html
-     * 
+     *
      * @return string
      */
     public function toHtml()

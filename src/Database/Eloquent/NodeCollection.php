@@ -80,8 +80,7 @@ class NodeCollection extends Collection
         if (! $this->isCorrectlySorted()) {
             throw new TreeException("Error: Tree nodes must be correctly sorted before trying to build it.", 1);
         }
-        return $this[0]->toTree();
 
-        // return (new EagerTree($this->first()->tree_id))->silentLoad($this)->draw();
+        return $this[0]->toTree();
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Girover\Tree\Database\Sql;
 
-use Girover\Tree\Database\Sql\SqlStatements;
 use Girover\Tree\Location;
 
 class Update extends SqlStatements
@@ -10,7 +9,7 @@ class Update extends SqlStatements
     /**
      * Sql UPDATE statement to add SEPARATOR '.'
      * to the beginning of all locations in the given tree
-     * 
+     *
      * @param int $tree_id
      * @return string sql statement
      */
@@ -25,7 +24,7 @@ class Update extends SqlStatements
      * Sql UPDATE statement to add first possible segment
      * 'aaa'|'000' to the beginning of all locations in the given tree
      * NOTE: this method doesn't add '.' to the segment
-     * 
+     *
      * @param int $tree_id
      * @return string sql statement
      */
