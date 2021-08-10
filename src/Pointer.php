@@ -21,9 +21,11 @@
 namespace Girover\Tree;
 
 use BadMethodCallException;
+use Girover\Tree\Database\Sql\Delete;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Models\Node;
 use Girover\Tree\Models\Tree;
+use Illuminate\Support\Facades\DB;
 
 class Pointer
 {
@@ -168,13 +170,14 @@ class Pointer
      */
     public function to($location)
     {
-        if (is_a($location, $this->model())) {
+        if ( $location instanceof ($this->model() )) {
             $this->node = $location;
-
+            
             return $this;
         }
-
+        
         Location::validate($location);
+        
         $node = $this->find($location);
 
         if ($node === null) {
@@ -440,5 +443,35 @@ class Pointer
         $this->tree->save();
 
         return $this;
+    }
+
+    /**
+     * To delete the node with its children
+     * 
+     * @return int affected rows
+     */
+    public function deleteWithChildren()
+    {
+        return DB::delete(Delete::nodeWithChildren($this->tree->id, $this->location()));
+    }
+
+    /**
+     * Get the tree as Html
+     * 
+     * @return string
+     */
+    public function toTree()
+    {
+        return $this->tree->draw();
+    }
+
+    /**
+     * Get the tree as Html
+     * 
+     * @return string
+     */
+    public function toHtml()
+    {
+        return $this->tree->draw();
     }
 }

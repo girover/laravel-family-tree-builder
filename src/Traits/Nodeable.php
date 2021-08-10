@@ -4,7 +4,7 @@ namespace Girover\Tree\Traits;
 
 use Girover\Tree\Database\Eloquent\NodeCollection;
 use Girover\Tree\Database\Eloquent\NodeEloquentBuilder;
-use Girover\Tree\Database\SqlStatements;
+use Girover\Tree\Database\Sql\Update;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\ImagesEagerRelationScope;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
@@ -835,9 +835,9 @@ trait Nodeable
             // update all nodes location in this tree
             // first prepend all locations with separator '.'
             // tp prevent duplicated location in same tree
-            DB::update(SqlStatements::updatePrependLocationsWithSeparator(), [$this->tree_id]);
+            DB::update(Update::prependLocationsWithSeparator(), [$this->tree_id]);
             // then prepend all locations with 'aaa'
-            DB::update(SqlStatements::updatePrependLocationsWithFirstPossibleSegmetn(), [$this->tree_id]);
+            DB::update(Update::prependLocationsWithFirstPossibleSegmetn(), [$this->tree_id]);
 
             // create th new root node with given data
             $new_root = $this->createNewNode($data, Location::firstPossibleSegment());
