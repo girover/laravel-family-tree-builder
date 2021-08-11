@@ -269,35 +269,27 @@ trait Nodeable
     }
 
     /**
-     * Get all uncles and/or aunts of this node.
+     * make a query start for getting fathers siblings
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
      */
-    protected function allFatherSiblings()
+    protected function siblingsOfFatherQuery()
     {
         return static::tree($this->tree_id)
                     ->locationNot(Location::father($this->location))
-                    ->locationREGEXP(Location::withSiblingsREGEXP(Location::father($this->location)))
-                    ->get();
+                    ->locationREGEXP(Location::withSiblingsREGEXP(Location::father($this->location)));
     }
 
     /**
-     * Get all uncles and/or aunts of this node
-     * depends on the given gender
+     * Get all uncles and aunts of this node.
      *
-     * @param \Illuminate\Support\Collection
      * @return \Girover\Tree\Database\Eloquent\NodeCollection
      */
-    public function fatherSiblings($gender = null)
+    protected function siblingsOfFather()
     {
-        if (is_null($gender)) {
-            return $this->allFatherSiblings();
-        }
-
         return static::tree($this->tree_id)
                     ->locationNot(Location::father($this->location))
                     ->locationREGEXP(Location::withSiblingsREGEXP(Location::father($this->location)))
-                    ->where('gender', $gender)
                     ->get();
     }
 
@@ -308,7 +300,7 @@ trait Nodeable
      */
     public function uncles()
     {
-        return $this->fatherSiblings('m');
+        return $this->siblingsOfFatherQuery()->where('gender', 'm')->get();
     }
 
     /**
@@ -318,7 +310,18 @@ trait Nodeable
      */
     public function aunts()
     {
-        return $this->fatherSiblings('f');
+        return $this->siblingsOfFatherQuery()->where('gender', 'f')->get();
+    }
+
+    /**
+     * make a query start for getting children
+     *
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
+    protected function childrenQuery()
+    {
+        return static::tree($this->tree_id)
+                    ->locationREGEXP(Location::childrenREGEXP($this->location));
     }
 
     /**
@@ -326,29 +329,9 @@ trait Nodeable
      *
      * @return \Girover\Tree\Database\Eloquent\NodeCollection
      */
-    protected function allChildren()
+    public function children()
     {
-        return static::tree($this->tree_id)
-                    ->locationREGEXP(Location::childrenREGEXP($this->location))
-                    ->get();
-    }
-
-    /**
-     * Get all direct children of this node
-     * without descendants
-     *
-     * @param \Girover\Tree\Database\Eloquent\NodeCollection
-     */
-    public function children($gender = null)
-    {
-        if (is_null($gender)) {
-            return $this->allChildren();
-        }
-
-        return static::tree($this->tree_id)
-                    ->locationREGEXP(Location::childrenREGEXP($this->location))
-                    ->where('gender', $gender)
-                    ->get();
+        return $this->childrenQuery()->get();
     }
 
     /**
@@ -359,30 +342,18 @@ trait Nodeable
      */
     public function sons()
     {
-        return $this->children('m');
+        return $this->childrenQuery()->where('gender', 'm')->get();
     }
 
     /**
-     * Get all direct sons of this node
+     * Get all direct daughters of this node
      * without descendants
      *
      * @param \Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function daughters()
     {
-        return $this->children('f');
-    }
-
-    /**
-     * Count children of this node.
-     *
-     * @return int
-     */
-    protected function countAllChildren()
-    {
-        return static::tree($this->tree_id)
-                    ->locationREGEXP(Location::childrenREGEXP($this->location))
-                    ->count();
+        return $this->childrenQuery()->where('gender', 'f')->get();
     }
 
     /**
@@ -392,14 +363,7 @@ trait Nodeable
      */
     public function countChildren($gender = null)
     {
-        if (is_null($gender)) {
-            return $this->countAllChildren();
-        }
-
-        return static::tree($this->tree_id)
-                    ->locationREGEXP(Location::childrenREGEXP($this->location))
-                    ->where('gender', $gender)
-                    ->count();
+        return $this->childrenQuery()->count();
     }
 
     /**
@@ -409,7 +373,7 @@ trait Nodeable
      */
     public function countSons()
     {
-        return $this->countChildren('m');
+        return $this->childrenQuery()->where('gender', 'm')->count();
     }
 
     /**
@@ -419,7 +383,7 @@ trait Nodeable
      */
     public function countDaughters()
     {
-        return $this->countChildren('f');
+        return $this->childrenQuery()->where('gender', 'f')->count();
     }
 
     /**
@@ -554,17 +518,46 @@ trait Nodeable
     }
 
     /**
-     * Get all siblings of this node
-     * without the node static
+     * make a query for getting siblings
      *
-     * @param \Illuminate\Support\Collection
+     * @param string $gender m|f
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
      */
-    public function siblings()
+    protected function siblingsQuery()
     {
         return static::tree($this->tree_id)
                     ->locationNot($this->location)
-                    ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
-                    ->get();
+                    ->locationREGEXP(Location::withSiblingsREGEXP($this->location));
+    }
+
+    /**
+     * getting all sibling of the node
+     *
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     */
+    public function siblings()
+    {
+        return $this->siblingsQuery()->get();
+    }
+
+    /**
+     * getting all brothers of the node
+     *
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     */
+    public function brothers()
+    {
+        return $this->siblingsQuery()->where('gender', 'm')->get();
+    }
+
+    /**
+     * getting all brothers of the node
+     *
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     */
+    public function sisters()
+    {
+        return $this->siblingsQuery()->where('gender', 'f')->get();
     }
 
     /**
@@ -746,6 +739,7 @@ trait Nodeable
      * Create new child for this node
      *
      * @param array|static data for the new child
+     * @param string $gender 'm'|'f'
      * @return \Girover\Tree\Models\Node|null
      */
     public function newChild($data, $gender = 'm')
@@ -832,9 +826,9 @@ trait Nodeable
         DB::beginTransaction();
 
         try {
-            // update all nodes location in this tree
+            // update all nodes locations in this tree
             // first prepend all locations with separator '.'
-            // tp prevent duplicated location in same tree
+            // tp prevent duplicated locations in same tree
             DB::update(Update::prependLocationsWithSeparator(), [$this->tree_id]);
             // then prepend all locations with 'aaa'
             DB::update(Update::prependLocationsWithFirstPossibleSegmetn(), [$this->tree_id]);
