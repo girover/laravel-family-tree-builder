@@ -1,2 +1,5 @@
-fix methode Nodeable::deleteAndShiftChildren()
+fix method Nodeable::deleteAndShiftChildren()
 --------------------------------------------------
+add method addCssClassToNode($class, $id)
+    $class = css class name
+    $id    = id of the node to apply css class on

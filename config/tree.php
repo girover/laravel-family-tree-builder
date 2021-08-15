@@ -82,8 +82,9 @@
         */
         'node_relationships'=> [
             'wives' => [
-                'model' => \Girover\Tree\Models\Marriage::class,
-                'with'  => 'wives', // name of relationship that should be eager loaded
+                'model'  => null,
+                'with'   => 'wives', // name of relationship that should be eager loaded
+                'pivot'  => 'marriages', // name of pivot table that makes many-to-many relationship
             ],
             'images' => [
                 'model'=> \Girover\Tree\Models\NodeImage::class,

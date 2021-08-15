@@ -530,8 +530,12 @@ trait Treeable
                 . '<li>'
                 . '<a class="node" data-id=""  data-location="0" data-tree="" data-id="" data-name="" data-gender="" data-role="empty">
                         <div class="empty-node">
-                            <div class="node-img"><img src="'. asset(config('tree.assets.path_avatar').'icon_male.png').'"></div>
-                            <div class="node-info">add new</div>
+                        <div class="node-info-wrapper">
+                            <div class="node-info">
+                                <div class="node-img"><img src="'. asset(config('tree.assets.path_avatar').'icon_male.png').'"></div>
+                                <div class="name">add new</div>                
+                            </div>
+                        </div>
                         </div>
                     </a>'
                 . '</li>'
@@ -552,13 +556,13 @@ trait Treeable
         $wives = $node->wives->all();
         if ($is_node_father) {
             // Get wives of this father/node
-            $node_html .= '<div class="h">';
+            $node_html .= '<div class="parent">';
             $node_html .= $this->getHusbandHtml($node);
             $node_html .= $this->getWivesHtml($node, $wives);
             $node_html .= '</div>';
         // }else if(isset($this->wives[$node->location])){
         } elseif (! empty($wives)) {
-            $node_html .= '<div class="h">';
+            $node_html .= '<div class="parent">';
             $node_html .= $this->getHusbandHtml($node, ' no-children');
             $node_html .= $this->getWivesHtml($node, $wives);
             $node_html .= '</div>';
@@ -607,13 +611,17 @@ trait Treeable
 
             return $this->getNodeHtml($firstWife, 'wife', $wives);
         } else {
-            // Return Html For Undefiend Wife
+            // Return Html For Undefined Wife
             return  '<div class="wives-group">'
                       . '<a class="node empty" data-counter="'.$this->nodesCount++.'"  data-tree="" data-location="0" data-husband_location="'.$item->location.'" data-id="0" data-name="wife" data-f_name="wife" data-l_name="wife" data-m_name="wife" data-gender="2">
-                         <div class="female-node wife">
-                             <div class="node-img"><img src="'.asset(config('tree.assets.path_avatar').'icon_female.png').'"></div>
-                             <div class="node-info">'. __('add wife') .'</div>
-                             <div class="wife-number">0</div>
+                         <div class="female-node wife empty">
+                            <div class="node-info-wrapper">
+                                <div class="node-info">
+                                    <div class="node-img"><img src="'.asset(config('tree.assets.path_avatar').'icon_female.png').'"></div>
+                                    <div class="name">'. __('add wife') .'</div>
+                                    <div class="wife-number">0</div>
+                                </div>
+                            </div>
                          </div>
                          </a>
                      </div>';
@@ -622,7 +630,7 @@ trait Treeable
     }
 
     /**
-     * Get Wives Html Code from secound wife to the last
+     * Get Wives Html Code from second wife to the last
      *
      * @param array $wives
      * @return string
@@ -638,9 +646,13 @@ trait Treeable
             $hText .= '<a class="node " data-id="'.$wife->id.'" data-counter="' . $this->nodesCount++ . '"
                             data-tree="'.$wife->tree_id.'" data-location="'.$wife->location.'" data-id="'.$wife->id.'" data-name="'.$wife->name.'" data-f_name="'.$wife->f_name.'" data-l_name="'.$wife->l_name.'" data-m_name="'.$wife->m_name.'" data-birthdate="'.$wife->birth_date.'" data-gender="'.$wife->gender.'" data-role="wife">
                          <div class="female-node wife-'.$id.'">
-                            <div class="node-img"><img src="'.asset($this->tree_photos_path.$photo).'"></div>
-                            <div class="node-info">'.$wife->name.'</div>
-                            <div class="wife-number">'.$id.'</div>
+                            <div class="node-info-wrapper">
+                                <div class="node-info">
+                                    <div class="node-img"><img src="'.asset(config('tree.assets.path_avatar').$photo).'"></div>
+                                    <div class="name">'.$wife->name.'</div>
+                                    <div class="wife-number">'.$id.'</div>
+                                </div>
+                            </div>
                          </div>
                        </a>';
             $id++;
@@ -663,8 +675,10 @@ trait Treeable
             return '';
         }
 
-        $photo = public_path($this->tree_photos_path.$node->photo);
-        $photo = (file_exists($photo) and ! is_dir($photo))
+        // $photo = public_path($this->tree_photos_path.$node->photo);
+        $photo = config('tree.assets.path_avatar').$node->photo;
+        
+        $photo = (file_exists($photo) && ! is_dir($photo))
                   ? $node->photo
                   : $this->photoIcon($node->gender);
         $node_class = ($node->gender == 'm') ? 'male-node' : 'female-node';
@@ -681,9 +695,13 @@ trait Treeable
                      data-tree="'.$node->tree_id.'" data-location="'.$node->location.'" data-id="'.$node->id.'" data-name="'.$node->name.'" data-f_name="'.$node->f_name.'" data-l_name="'.$node->l_name.'" data-m_name="'.$node->m_name.'" data-birthdate="'.$node->birth_date.'" data-gender="'.$node->gender.'" data-role="'.$role.'">
                     '.$addFather.$showFather.$nodeCollapse.
                     '<div class="'.$node_class.' '.$role.'">	    
-                        <div class="node-img"><img src="'.asset(config('tree.assets.path_avatar').$photo).'"></div>
-                        <div class="node-info">'.$node->name.'</div>
-                        '.(($role === 'wife') ? '<div class="wife-number">1</div>' : '').'
+                        <div class="node-info-wrapper">
+                            <div class="node-info">
+                                <div class="node-img"><img src="'.asset(config('tree.assets.path_avatar').$photo).'"></div>
+                                <div class="name">'.$node->name.'</div>
+                                '.(($role === 'wife') ? '<div class="wife-number">1</div>' : '').'
+                            </div>
+                        </div>
                     </div> 
                 </a>'.($this->getOtherWivesStyled($wives));
         $html = ($role == 'wife') ? $html.'</div>' : $html;

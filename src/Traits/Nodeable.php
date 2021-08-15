@@ -10,6 +10,7 @@ use Girover\Tree\GlobalScopes\ImagesEagerRelationScope;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
 use Girover\Tree\Location;
+use Girover\Tree\Models\Node;
 use Girover\Tree\Models\Tree;
 use Illuminate\Support\Facades\DB;
 
@@ -107,15 +108,29 @@ trait Nodeable
     /**
      * Relationship for Getting wives og the node.
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function wives()
     {
-        $model = (null !== config('tree.node_relationships.wives.model'))
-                ? config('tree.node_relationships.wives.model')
-                : 'Girover\Tree\Models\Marriage';
+        $pivot = (config('node_relationships.wives.pivot'))??'marriages';
 
-        return $this->belongsToMany(get_class(), $model, 'node_husband_id', 'node_wife_id');
+        return $this->belongsToMany(get_class(), $pivot, 'node_husband_id', 'node_wife_id')
+                    ->withPivot('node_husband_id', 'node_wife_id', 'date_of_marriage', 'marriage_desc');
+    }
+
+    /**
+     * assign a wife to this node
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function getMarriedWith($node)
+    {
+        if (! $node instanceof static) {
+            throw new TreeException("Parameter passed to [".__METHOD__."] should be instance of [".get_class($this)."]", 1);
+        }
+        
+        $this->wives()->attach($node->id,['date_of_marriage'=>$this->date_of_marriage]
+        );
     }
 
     /**
@@ -786,27 +801,19 @@ trait Nodeable
      * @param string $location: location to move node to it
      * @return \Girover\Tree\Models\Node
      */
-    public function makeSonTo($location)
+    public function makeAsSonOf($location)
     {
-        // check if the location is exists and then load it
-        if (! ($node = static::find($location))) {
+        // get the node that should be father of this node
+        if (! ($node = static::tree($this->tree_id)->location($location)->first())) {
             throw new TreeException("Error: The location `".$location."` not found in this tree.", 1);
         }
-        // make new child location
-        $current_location = $this->location;
-        // move the pointer to the loaded node
-        $new_location = (! $last_child = $this->lastChild())
-                      ? $current_location.Location::SEPARATOR.Location::firstPossibleSegment()
+        // Generate new location for this node
+        $new_location = (! $last_child = $node->lastChild())
+                      ? $node->location.Location::SEPARATOR.Location::firstPossibleSegment()
                       : Location::nextSibling($last_child->location);
 
-        $table = config('tree.nodes_table.name');
-        $statement =
-            "UPDATE `".$table."`
-            SET `location` = CONCAT('".$new_location."' , SUBSTRING(location FROM ".(strlen($current_location) + 1)."))
-            WHERE `tree_id` = ".$this->tree_id."
-            AND   `location` like '".$current_location."%'";
-
-        DB::update($statement);
+        // Update locations of this node and its children in database
+        DB::update(Update::changeLocations($this->tree_id, $this->location, $new_location));
 
         return $this;
     }
