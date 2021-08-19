@@ -260,7 +260,30 @@ To get the node you can do this:
     use Girover\Tree\Models\Node;
 
     $node    = Node::find(1);
+```
+To get the father of the node:
+```php
+    return $node->father();
+```
+To get the grandfather of the node:
+```php
+    return $node->grandfather();
+```
+To get all children of the node:
+```php
     return $node->children();
+```
+To get all siblings of the node:
+```php
+    return $node->siblings();
+```
+To get all brothers of the node:
+```php
+    return $node->brothers();
+```
+To get all sisters of the node:
+```php
+    return $node->sisters();
 ```
 ## Testing
 
