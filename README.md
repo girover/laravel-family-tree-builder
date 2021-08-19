@@ -207,23 +207,24 @@ return $tree->pointer()->to('aaa.aaa')->toHtml();
 
     $tree = Tree::find(1);
 ```
+You can call the following method on the object of Tree 
 | # | function | Description | Params |
 | --- | --- | --- | --- |
-| 1 | `$tree->createRoot($data)` | create root in the tree. | ```$data``` is array of root info |
-| 2 | `$tree->newRoot($data)` | makes new root for the tree. | ```$data``` is array of info for the new root  |
-| 3 | `$tree->toHtml()` | convert the tree to html to view it |  |
-| 4 | `$tree->draw()` | convert the tree to html to view it |  |
-| 5 | `$tree->toTree()` | convert the tree to html to view it |  |
-| 6 | `$tree->emptyTree()` | return an empty tree to view it |  |
-| 7 | `$tree->pointer()` | To get the pointer inside the tree |  |
-| 8 | `$tree->movePointerToRoot()` | To move the pointer to indicate to the root |  |
-| 9 | `$tree->movePointerTo($location)` | To move the pointer to the given location |  |
-| 10 | `$tree->goTo($location)` | To move the pointer to the given location |  |
-| 11 | `$tree->fatherOf($location)` | To get the father of the node that has given location |  |
-| 12 | `$tree->wivesOf($location)` | To get all wives of the node that has given location |  |
-| 13 | `$tree->ancestorsOf($location)` | To get all ancestors of the given location |  |
-| 14 | `$tree->countGenerations()` | To get how many generations this tree has |  |
-| 15 | `$tree->nodesOnTop()` | Get the newest generation members in the tree |  |
+| 1 | `createRoot($data)` | create root in the tree. | ```$data``` is array of root info |
+| 2 | `newRoot($data)` | makes new root for the tree. | ```$data``` is array of info for the new root  |
+| 3 | `toHtml()` | convert the tree to html to view it |  |
+| 4 | `draw()` | convert the tree to html to view it |  |
+| 5 | `toTree()` | convert the tree to html to view it |  |
+| 6 | `emptyTree()` | return an empty tree to view it |  |
+| 7 | `pointer()` | To get the pointer inside the tree |  |
+| 8 | `movePointerToRoot()` | To move the pointer to indicate to the root |  |
+| 9 | `movePointerTo($location)` | To move the pointer to the given location |  |
+| 10 | `goTo($location)` | To move the pointer to the given location |  |
+| 11 | `fatherOf($location)` | To get the father of the node that has given location |  |
+| 12 | `wivesOf($location)` | To get all wives of the node that has given location |  |
+| 13 | `ancestorsOf($location)` | To get all ancestors of the given location |  |
+| 14 | `countGenerations()` | To get how many generations this tree has |  |
+| 15 | `nodesOnTop()` | Get the newest generation members in the tree |  |
 
 
 ### Pointer
