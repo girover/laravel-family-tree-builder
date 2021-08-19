@@ -211,6 +211,9 @@ return $tree->pointer()->to('aaa.aaa')->toHtml();
 | --- | --- | --- |
 | `$tree->createRoot($data)` | create root in the tree. | ```$data``` is array of root info |
 | `$tree->newRoot($data)` | makes new root for the tree. | ```$data``` is array of info for the new root  |
+```php
+    $tree->toHtml();
+```
 | `$tree->toHtml()` | convert the tree to html to view it |  |
 | `$tree->draw()` | convert the tree to html to view it |  |
 | `$tree->toTree()` | convert the tree to html to view it |  |
