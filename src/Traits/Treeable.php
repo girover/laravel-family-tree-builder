@@ -346,10 +346,10 @@ trait Treeable
      *
      * @throws \Girover\Tree\Exceptions\TreeException
      */
-    public function addRoot($data = [])
+    public function createRoot($data = [])
     {
         if (empty($data)) {
-            throw new TreeException("Error: no data for Root are provided", 1);
+            throw new TreeException("Error: no data are provided to create Root for the tree [ ".$this->name." ]", 1);
         }
         if ($this->isEmptyTree()) {
             return $this->nodes()->create(array_merge($data, ['tree_id' => $this->id, 'location' => Location::generateRootLocation()]));
