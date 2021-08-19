@@ -251,9 +251,9 @@ And now you can get the node data by calling the method ```node()```
     echo $node->gender;
 ```
 ### Node
-Node is a person in the tree. Nodes in a tree are connected with other nodes by using **Location mechanism**, where every node has location in the tree, which is a set of characters separated by ```dot```.
+Node is a person in the tree. Nodes in tree are connected with other nodes by using **Location mechanism**, where every node has its own location, which is a set of characters separated by ```dot```.    
 If the Root location in the tree is ```aaa```, so the first child's location 
-of this root will be ```aaa.aaa``` and the second will be ```aaa.aab``` and so on.
+of this root will be ```aaa.aaa```, and the second will be ```aaa.aab``` and so on.
 
 To get the node you can do this:
 ```php
