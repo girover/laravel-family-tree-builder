@@ -208,33 +208,33 @@ return $tree->pointer()->to('aaa.aaa')->toHtml();
     $tree = Tree::find(1);
 ```
 You can call the following method on the object of Tree 
-| # | function | Description | Params |
-| --- | --- | --- | --- |
-| 1 | `createRoot($data)` | create root in the tree. | ```$data``` is array of root info |
-| 2 | `newRoot($data)` | makes new root for the tree. | ```$data``` is array of info for the new root  |
-| 3 | `toHtml()` | convert the tree to html to view it |  |
-| 4 | `draw()` | convert the tree to html to view it |  |
-| 5 | `toTree()` | convert the tree to html to view it |  |
-| 6 | `emptyTree()` | return an empty tree to view it |  |
-| 7 | `pointer()` | To get the pointer inside the tree |  |
-| 8 | `movePointerToRoot()` | To move the pointer to indicate to the root |  |
-| 9 | `movePointerTo($location)` | To move the pointer to the given location |  |
-| 10 | `goTo($location)` | To move the pointer to the given location |  |
-| 11 | `fatherOf($location)` | To get the father of the node that has given location |  |
-| 12 | `wivesOf($location)` | To get all wives of the node that has given location |  |
-| 13 | `ancestorsOf($location)` | To get all ancestors of the given location |  |
-| 14 | `countGenerations()` | To get how many generations this tree has |  |
-| 15 | `nodesOnTop()` | Get the newest generation members in the tree |  |
+| #   | function                   | Description                                           | Params                                        |
+| --- | -------------------------- | ----------------------------------------------------- | --------------------------------------------- |
+| 1   | `createRoot($data)`        | create root in the tree.                              | ```$data``` is array of root info             |
+| 2   | `newRoot($data)`           | makes new root for the tree.                          | ```$data``` is array of info for the new root |
+| 3   | `toHtml()`                 | convert the tree to html to view it                   |                                               |
+| 4   | `draw()`                   | convert the tree to html to view it                   |                                               |
+| 5   | `toTree()`                 | convert the tree to html to view it                   |                                               |
+| 6   | `emptyTree()`              | return an empty tree to view it                       |                                               |
+| 7   | `pointer()`                | To get the pointer inside the tree                    |                                               |
+| 8   | `movePointerToRoot()`      | To move the pointer to indicate to the root           |                                               |
+| 9   | `movePointerTo($location)` | To move the pointer to the given location             |                                               |
+| 10  | `goTo($location)`          | To move the pointer to the given location             |                                               |
+| 11  | `fatherOf($location)`      | To get the father of the node that has given location |                                               |
+| 12  | `wivesOf($location)`       | To get all wives of the node that has given location  |                                               |
+| 13  | `ancestorsOf($location)`   | To get all ancestors of the given location            |                                               |
+| 14  | `countGenerations()`       | To get how many generations this tree has             |                                               |
+| 15  | `nodesOnTop()`             | Get the newest generation members in the tree         |                                               |
 
 
 ### Pointer
 
-Tree has a pointer inside it, and it can move through all nodes in the tree.
+Tree has a pointer inside it and his pointer indicates to a node. Pointer can move through all nodes in the tree. Pointer is instance of ```Girover\Tree\Pointer```
 To get this pointer you can do the following:
 ```php
     use Girover\Tree\Models\Tree;
 
-    $tree = Tree::find(1);
+    $tree    = Tree::find(1);
     $pointer = $tree->pointer();
 ```
 And now you can use this pointer to make a lot of actions inside the tree, for example moving through nodes, deleting and retrieving more information about nodes.
@@ -251,6 +251,17 @@ And now you can get the node data by calling the method ```node()```
     echo $node->gender;
 ```
 ### Node
+Node is a person in the tree. Nodes in a tree are connected with other nodes by using **Location mechanism**, where every node has location in the tree, which is a set of characters separated by ```dot```.
+If the Root location in the tree is ```aaa```, so the first child's location 
+of this root will be ```aaa.aaa``` and the second will be ```aaa.aab``` and so on.
+
+To get the node you can do this:
+```php
+    use Girover\Tree\Models\Node;
+
+    $node    = Node::find(1);
+    return $node->children();
+```
 ## Testing
 
 ```bash
