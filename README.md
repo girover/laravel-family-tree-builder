@@ -285,6 +285,11 @@ To get all sisters of the node:
 ```php
     return $node->sisters();
 ```
+To get all sisters of the node:
+```php
+    $data = ['name'=>'Majed', 'birth_date'=>'1983/04/10'];
+    return $node->newSon($data);
+```
 ## Testing
 
 ```bash
