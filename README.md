@@ -228,6 +228,20 @@ You can call the following method on the object of Tree
 
 
 ### Pointer
+
+Tree has a pointer inside it, and it can move through all nodes in the tree.
+To get this pointer you can do the following:
+```php
+    use Girover\Tree\Models\Tree;
+
+    $tree = Tree::find(1);
+    $pointer = $tree->pointer();
+```
+And now you can use this pointer to make a lot of actions inside the tree, for example moving through nodes, deleting and retrieving more information about nodes.
+Eg. To move the pointer you to location ```aaa.aaa.adf.sde```:
+```php
+    $pointer->to('aaa.aaa.adf.sde');
+```  
 ### Node
 ## Testing
 
