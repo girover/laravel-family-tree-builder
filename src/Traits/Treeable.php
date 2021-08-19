@@ -150,7 +150,7 @@ trait Treeable
     }
 
     /**
-     * Determine if the nodes of this tree are allready loaded.
+     * Determine if the nodes of this tree are already loaded.
      *
      * @return bool
      */
@@ -303,9 +303,9 @@ trait Treeable
     }
 
     /**
-     * Get the node that is saved in nodes array and eqcual to the given location as argument
+     * Get the node that is saved in nodes array and equal to the given location as argument
      *
-     * @param string $locaction
+     * @param string $location
      * @return Node
      */
     public function getLoadedNode($location)
@@ -389,7 +389,7 @@ trait Treeable
      *      Get the Wives node of the given location
      *---------------------------------------------------
      * @param string $location
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection colection of wives
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection collection of wives
      */
     public function wivesOf($location)
     {
@@ -440,7 +440,7 @@ trait Treeable
     }
 
     /**
-     * To count the tree nodes that are allready loaded
+     * To count the tree nodes that are already loaded
      *
      * @return int
      */
@@ -457,7 +457,7 @@ trait Treeable
      * Count the nodes
      *
      * Count the number of nodes in the tree of current node
-     * First check if there are nodes asigned to variable $node:
+     * First check if there are nodes assigned to variable $node:
      * If there are no nodes then query the database
      * if there are nodes count them from $nodes
      *
@@ -746,22 +746,16 @@ trait Treeable
             if ($this->nodes === null) {
                 return $this->emptyTree();
             }
-            //---------------------------
-            // if (! $this->isEmptyTree()) {
-            //     $this->load();
-            // // throw new TreeException("Error: Load The tree '".$this->properties()->name."' has nodes but they are not loaded. \n You Can call the method load() before draw() method to load the tree nodes", 1);
-            // } else {
-            //     return $this->emptyTree();
-            // }
         }
 
         if (($nodes_count = $this->countNodes()) == 0) {
             return $this->emptyTree();
         }
+
         $fathers = [];
         $close_status = false;
         $is_node_father = false;
-        $tree_html = ' ' ;
+        $tree_html = '' ;
 
         //=============================
         // Start drawing the tree from the pointer

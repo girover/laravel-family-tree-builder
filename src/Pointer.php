@@ -38,7 +38,7 @@ class Pointer
     protected $tree;
 
     /**
-     * This variable contains all data of the node that this poiter point to:
+     * This variable contains all data of the node that this pointer point to:
      * ---------------------------------------------------------------------------------
      * it can be [Object, JSON, Model, Database Record ...]
      * depending on which tree is using this node
@@ -57,7 +57,7 @@ class Pointer
     // public function __construct(FamilyTree $family_tree, Node $indicated_node = null)
     public function __construct(Tree $tree = null)
     {
-        $this->tree = $tree; // This has to be the first init in Poiter, because next line depend on it
+        $this->tree = $tree; // This has to be the first init in Pointer, because next line depend on it
     }
 
     /**
@@ -96,7 +96,7 @@ class Pointer
     }
 
     /**
-     * Make query start point to databse table [ model -> Nodes ]
+     * Make query start point to database table [ model -> Nodes ]
      *
      * starts with select from `nodes` where tree_id = {current tree id}
      *
@@ -314,7 +314,7 @@ class Pointer
     }
 
     /**
-     * Get the logest location in the tree that starts from the pointer
+     * Get the longest location in the tree that starts from the pointer
      *
      * @return object|string|null
      */
@@ -419,7 +419,7 @@ class Pointer
     }
 
     /**
-     * to make the tree instanse loads its own nodes from Pointer's node location
+     * to make the tree instance loads its own nodes from Pointer's node location
      *
      * @param int|null $generations
      * @return \Girover\Tree\Pointer
