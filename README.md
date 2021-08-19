@@ -239,10 +239,17 @@ To get this pointer you can do the following:
 ```
 And now you can use this pointer to make a lot of actions inside the tree, for example moving through nodes, deleting and retrieving more information about nodes.
 Eg.
-<br>To move the pointer to location ```aaa.aaa.adf.sde```:
+To move the pointer to location ```aaa.aaa.adf.sde```:
 ```php
     $pointer->to('aaa.aaa.adf.sde');
-```  
+```
+And now you can get the node data by calling the method ```node()```
+```php
+    $node = $pointer->node();
+    echo $node->location;
+    echo $node->name;
+    echo $node->gender;
+```
 ### Node
 ## Testing
 
