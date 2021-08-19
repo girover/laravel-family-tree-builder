@@ -95,7 +95,7 @@ trait Treeable
      *
      * @return void
      */
-    private function makePointer()
+    protected function makePointer()
     {
         $this->pointer = new Pointer($this);
     }
@@ -511,6 +511,7 @@ trait Treeable
 
     /**
      * Get nodes who have the longest location in the tree
+     * Get the newest generation members in the tree
      *
      * @return \Girover\Tree\Database\Eloquent\NodeCollection
      */
@@ -549,7 +550,7 @@ trait Treeable
      * @param Node $is_node_father
      * @return string [ Html code ]
      */
-    public function getNodeStyled($node, $is_node_father)
+    protected function getNodeStyled($node, $is_node_father)
     {
         $node_html = '';
         // $wives = (isset($this->wives[$item->location]))?$this->wives[$item->location]:[];
@@ -581,7 +582,7 @@ trait Treeable
      *
      * @return String
      */
-    public function getHusbandHtml($node, $classes = '')
+    protected function getHusbandHtml($node, $classes = '')
     {
         return $this->getNodeHtml($node, 'husband'.$classes);
     }
@@ -592,7 +593,7 @@ trait Treeable
      * @param \Girover\Tree\Models\Node $node
      * @return string
      */
-    public function getChildHtml($node)
+    protected function getChildHtml($node)
     {
         return $this->getNodeHtml($node, 'child');
     }
@@ -603,7 +604,7 @@ trait Treeable
      * @param array $wives
      * @return string
      */
-    public function getWivesHtml($item, $wives)
+    protected function getWivesHtml($item, $wives)
     {
         $wivesCount = count($wives);
         if ($wivesCount > 0) {
@@ -635,7 +636,7 @@ trait Treeable
      * @param array $wives
      * @return string
      */
-    public function getOtherWivesStyled($wives)
+    protected function getOtherWivesStyled($wives)
     {
         $id = 2;
         $hText = '';
@@ -669,7 +670,7 @@ trait Treeable
      * @param array  $wives
      * @return string
      */
-    public function getNodeHtml($node = null, $role = 'husband no-children', $wives = [])
+    protected function getNodeHtml($node = null, $role = 'husband no-children', $wives = [])
     {
         if ($node === null) {
             return '';
