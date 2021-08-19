@@ -285,9 +285,9 @@ To get all sisters of the node:
 ```php
     return $node->sisters();
 ```
-To get all sisters of the node:
+To create new son for the node:
 ```php
-    $data = ['name'=>'Majed', 'birth_date'=>'1983/04/10'];
+    $data = ['name'=>'Majed', 'birth_date'=>'1983/04/10', 'gender'=>'m'];
     return $node->newSon($data);
 ```
 ## Testing
