@@ -118,7 +118,32 @@ After creating the Root in the tree, let's add first child for the Root.
     // Or you can do this instead
     $tree->movePointerToRoot()->newSon($first_child_data);
 ```
+Now our tree consists of two nodes, Root node and first child of Root.   
+To view this tree in the browser you can do this:
+```php
+    namespace App\Http\Controllers;
 
+    use Illuminate\Http\Request;
+    use Girover\Tree\Models\Tree;
+
+    class TreeController extends Controller
+    {
+        public function index()
+        {
+            $tree     = Tree::find(1);
+            $treeHTML = $tree->toHtml()
+            return view('tree.index')->with('treeHTML');
+        }
+    }
+```
+And now inside your blade file you can render the tree
+
+```php
+    // views/tree/index.blade.php
+    <div>
+        {!! $treeHTML !!}
+    </div>
+```
 
 You can call the following method on the object of Tree 
 | #   | function                   | Description                                           | Params                                        |
