@@ -27,8 +27,7 @@
 
 ## Introduction
 This package allows you to build family trees.
-With this package it will be very simple to create trees and add nodes(persons).
-
+    With this package it will be very simple to create trees and add nodes to trees. 
 
 ## Installation
 
@@ -79,17 +78,33 @@ You can change assets configs in `config/tree.php` file.
 
 ## Usage
 
-you can use both `Girover\Tree\Models\Tree` and `Girover\Tree\Models\Node` to build the family tree
+To start building a tree or creating a new tree, it is very simple and thanks to Eloquent Models from laravel. 
 
 ```php
 use Girover\Tree\Models\Tree;
-use Girover\Tree\Models\Node;
 
-$tree = Tree::find(1); 
-$node = Node::find(1);
-echo $tree->name;
-return $tree->pointer()->to('aaa.aaa')->toHtml();
+$tree = Tree::create(
+    [
+        'name' => 'my first tree',
+    ]
+);
 ```
+After creating the tree, now you can start to add as many node as you like.    
+Let's start adding the First node (Root) to the tree.
+```php
+    $data = ['name'=>'root', 'birth_date'=>'2000-01-01'];
+
+    $tree->createRoot($data);
+```
+What if you want to make a new Root?   
+In this case you can use the method **```newRoot```** to create new Root, and the previous Root will be a child of the new created Root.
+```php
+    $new_root_data = ['name'=>'new_root', 'birth_date'=>'2001-01-01'];
+
+    $tree->newRoot($new_root_data);
+```
+
+
 ### Tree
 
 ```php
