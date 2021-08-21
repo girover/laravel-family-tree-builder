@@ -454,6 +454,24 @@ To create new daughter for the node:
     // or you can use the newChild method
     $node->newChild($data, 'f');
 ```
+to make an existing node as child of another node. Note this will move the node with its children to be child of the given location
+```php
+    $location = 'aaa.fgd';
+    $node->makeAsSonOf($location);
+```
+The next code will create father for this node, only if this node is a Root in the tree.
+```php
+    $data = ['name' => $name, 'birth_date' => $birth_date];
+    $node->createFather($data);
+```
+To display the tree of this node starting from the node itself.
+```php
+    $node->toHtml();
+    // or
+    $node->draw();
+    // or
+    $node->toTree();
+```
 ## Testing
 
 ```bash
