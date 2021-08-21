@@ -229,7 +229,7 @@ You can call the following method on the object of Tree
 
 ### Pointer
 
-Tree has a pointer inside it and his pointer indicates to a node. Pointer can move through all nodes in the tree. Pointer is instance of ```Girover\Tree\Pointer```
+Tree has a pointer inside it and this pointer indicates to one node. Pointer can move through all nodes in the tree.   Pointer is instance of ```Girover\Tree\Pointer```
 To get this pointer you can do the following:
 ```php
     use Girover\Tree\Models\Tree;
@@ -298,8 +298,9 @@ To get the grandfather of the node:
 ```
 To get the ancestor that matches the given parameter
 ```php
-    $node->ancestor($ancestor = null); // returns father
+    $node->ancestor(); // returns father
     $node->ancestor(2); // returns grandfather
+    $node->ancestor(3); // returns the father of grandfather
 ```
 To get all ancestors of this node
 ```php
@@ -471,6 +472,27 @@ To display the tree of this node starting from the node itself.
     $node->draw();
     // or
     $node->toTree();
+```
+
+**Note**: You can use the Pointer of tree to access all methods of class Node.
+for example you can get all children of specific node by doing this:
+```php
+    use Girover\Tree\Models\Tree;
+
+    $tree = Tree::find(1);
+    
+    $tree->pointer()->to('aaa.aaa');
+    $tree->pointer()->father();            // returns node's father
+    $tree->pointer()->grandfather();       // returns node's grandfather
+    $tree->pointer()->children();          // returns node's children
+    $tree->pointer()->sons();              // returns node's sons
+    $tree->pointer()->newDaughter($data);  // create new daughter for the node
+    .
+    .
+    .
+    .
+    .
+    $tree->pointer()->siblings();
 ```
 ## Testing
 
