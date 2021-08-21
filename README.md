@@ -103,7 +103,16 @@ In this case you can use the method **```newRoot```** to create new Root, and th
 
     $tree->newRoot($new_root_data);
 ```
+After creating the Root in the tree, let's add first child for the Root.
+```php
+    use Girover\Tree\models\Tree;
 
+    $tree = Tree::find(1);
+
+    $first_child_data = ['name'=>'first_child', 'birth_date'=>'2001-01-01'];
+    
+    $tree->movePointerToRoot()->newChild($first_child_data);
+```
 
 ### Tree
 
