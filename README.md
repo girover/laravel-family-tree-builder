@@ -121,6 +121,8 @@ After creating the Root in the tree, let's add first child for the Root.
 Now our tree consists of two nodes, Root node and first child of Root.   
 To view this tree in the browser you can do this:
 ```php
+    <?php
+
     namespace App\Http\Controllers;
 
     use Illuminate\Http\Request;
@@ -132,7 +134,7 @@ To view this tree in the browser you can do this:
         {
             $tree     = Tree::find(1);
             $treeHTML = $tree->toHtml()
-            return view('tree.index')->with('treeHTML');
+            return view('tree.index')->with('treeHTML', $treeHTML);
         }
     }
 ```
