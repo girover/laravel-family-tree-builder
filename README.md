@@ -144,7 +144,7 @@ You can call the following method on the object of Tree
 
 Every tree has a Pointer inside it, and this Pointer indicates to one node.    
 Pointer can move through all nodes in the tree.     
-Because the Pointer indicates to a node inside the tree, so it can call all ![methods of Model ```Node```](#node) .   
+Because the Pointer indicates to a node inside the tree, so it can call all [methods of Model ```Node```](#node) .   
 To get this pointer you can do the following:
 ```php
     use Girover\Tree\Models\Tree;
