@@ -26,12 +26,8 @@
 
 
 ## Introduction
-This package allows you to build family tree.  
-The tree is a set of Nodes connected together, and every node represents a person in the family tree.   This package uses a special mechanism to build this connection between the nodes in family tree.
-This mechanism depends on a field called **location** in **nodes** table in database.   
-**location** of a node is a set of characters with specific length.   
-For example location of the Root in a tree will be **```aaa```**, and the first child of this Root will have location like **```aaa.aaa```**, as we can see that the location of the child consists of two segment, where the last segment represent the child, and the rest of the location represents the previous ancestors.   
-Therefor if one node has location **```aaa.aaa.bbb.fff.ddd.aaa.sss```**, so we can guess that the father of this node has location **```aaa.aaa.bbb.fff.ddd.aaa```** and the grandfather has location **```aaa.aaa.bbb.fff.ddd```** and so on.
+This package allows you to build family trees.
+With this package it will be very simple to create trees and add nodes(persons).
 
 
 ## Installation
