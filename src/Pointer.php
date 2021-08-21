@@ -171,6 +171,11 @@ class Pointer
     public function to($location)
     {
         if ($location instanceof ($this->model())) {
+            
+            if ($this->node()->tree_id !== $location->tree_id) {
+                throw new TreeException("Error a passed node to the method [". __METHOD__ ." ] don't belong the tree", 1);                
+            }
+
             $this->node = $location;
 
             return $this;
