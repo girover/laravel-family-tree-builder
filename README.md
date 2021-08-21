@@ -78,6 +78,8 @@ You can change assets configs in `config/tree.php` file.
 
 ## Usage
 
+### Tree
+
 To start building a tree or creating a new tree, it is very simple and thanks to [Eloquent](https://laravel.com/docs/8.x/eloquent) Models from [laravel](http://laravel.com). 
 
 ```php
@@ -117,13 +119,7 @@ After creating the Root in the tree, let's add first child for the Root.
     $tree->movePointerToRoot()->newSon($first_child_data);
 ```
 
-### Tree
 
-```php
-    use Girover\Tree\Models\Tree;
-
-    $tree = Tree::find(1);
-```
 You can call the following method on the object of Tree 
 | #   | function                   | Description                                           | Params                                        |
 | --- | -------------------------- | ----------------------------------------------------- | --------------------------------------------- |
@@ -146,7 +142,9 @@ You can call the following method on the object of Tree
 
 ### Pointer
 
-Tree has a pointer inside it and this pointer indicates to one node. Pointer can move through all nodes in the tree.   Pointer is instance of ```Girover\Tree\Pointer```
+Every tree has a Pointer inside it, and this Pointer indicates to one node.    
+Pointer can move through all nodes in the tree.     
+Because the Pointer indicates to a node inside the tree, so it can call all ![methods of Model ```Node```](#node) .   
 To get this pointer you can do the following:
 ```php
     use Girover\Tree\Models\Tree;
