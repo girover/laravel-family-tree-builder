@@ -261,6 +261,36 @@ To get the node you can do this:
 
     $node    = Node::find(1);
 ```
+To get all wives of the node:
+```php
+    return $node->wives;
+    // to add constraints
+    return $node->wives()->where('name', $name)->get();
+```
+To get assign wife to this node:
+```php
+    $wife = Node::find($female_node_id)
+    return $node->getMarriedWith($wife);
+```
+To determine if the node is root in the tree
+```php
+    // returns true or false
+    return $node->isRoot();
+```
+Determine if the node has children
+```php
+    // returns true or false
+    return $node->hasChildren();
+```
+Determine if the node has siblings
+```php
+    // returns true or false
+    return $node->hasSiblings();
+```
+to get which generation number in the tree this node is:
+```php
+    return $node->generation(); // int or null
+```
 To get the father of the node:
 ```php
     return $node->father();
@@ -269,9 +299,91 @@ To get the grandfather of the node:
 ```php
     return $node->grandfather();
 ```
+To get the ancestor that matches the given parameter
+```php
+    // if null given, will return the father
+    return $node->ancestor($ancestor = null);
+```
+To get all ancestors of this node
+```php
+    // if null given, will return the father
+    return $node->ancestors();
+```
+To get all uncles of the node:
+```php
+    return $node->uncles();
+```
+To get all aunts of the node:
+```php
+    return $node->aunts();
+```
 To get all children of the node:
 ```php
     return $node->children();
+```
+To get all sons of the node:
+```php
+    return $node->sons();
+```
+To get all daughters of the node:
+```php
+    return $node->daughters();
+```
+To count the children of the node:
+```php
+    return $node->countChildren();
+```
+To count all sons of the node:
+```php
+    return $node->countSons();
+```
+To count all daughters of the node:
+```php
+    return $node->countDaughters();
+```
+To count all siblings of the node:
+```php
+    return $node->countSiblings();
+```
+To count all brothers of the node:
+```php
+    return $node->countBrothers();
+```
+To count all sisters of the node:
+```php
+    return $node->countSisters();
+```
+To get all descendants of the node:
+```php
+    return $node->descendants();
+```
+To get all male descendants of the node:
+```php
+    return $node->maleDescendants();
+```
+To get all female descendants of the node:
+```php
+    return $node->femaleDescendants();
+```
+To count all descendants of the node:
+```php
+    return $node->countDescendants();
+```
+To count all male descendants of the node:
+```php
+    return $node->countMaleDescendants();
+```
+To count all female descendants of the node:
+```php
+    return $node->countFemaleDescendants();
+```
+To get the first child of the node:
+```php
+    return $node->firstChild();
+```
+To get the last child of the node:
+```php
+    return $node->lastChild();
 ```
 To get all siblings of the node:
 ```php
@@ -285,10 +397,62 @@ To get all sisters of the node:
 ```php
     return $node->sisters();
 ```
+To get the next sibling of the node. gets only one sibling.
+```php
+    return $node->nextSibling();
+```
+To get all the next siblings of the node. siblings who are older.
+```php
+    return $node->nextSiblings();
+```
+To get the previous sibling of the node. only one sibling.
+```php
+    return $node->prevSibling();
+```
+To get all the previous siblings of the node. siblings who are younger.
+```php
+    return $node->prevSiblings();
+```
+To get the first sibling of the node.
+```php
+    return $node->firstSibling();
+```
+To get the last sibling of the node.
+```php
+    return $node->lastSibling();
+```
+To create new sibling for the node:
+```php
+    $data = ['name'=>$name, 'birth_date'=>$birth_date];
+    return $node->newSibling($data, 'm'); // m = male
+```
+To create new brother for the node:
+```php
+    $data = ['name'=>$name, 'birth_date'=>$birth_date];
+    return $node->newBrother($data);
+    // or you can use the newSibling method
+    return $node->newSibling($data, 'm');
+```
+To create new sister for the node:
+```php
+    $data = ['name'=>$name, 'birth_date'=>$birth_date];
+    return $node->newSister($data);
+    // or you can use the newSibling method
+    return $node->newSibling($data, 'f');
+```
 To create new son for the node:
 ```php
-    $data = ['name'=>'Majed', 'birth_date'=>'1983/04/10', 'gender'=>'m'];
+    $data = ['name'=>$name, 'birth_date'=>$birth_date];
     return $node->newSon($data);
+    // or you can use the newChild method
+    return $node->newChild($data, 'm');
+```
+To create new daughter for the node:
+```php
+    $data = ['name'=>$name, 'birth_date'=>$birth_date];
+    return $node->newDaughter($data);
+    // or you can use the newChild method
+    return $node->newChild($data, 'f');
 ```
 ## Testing
 

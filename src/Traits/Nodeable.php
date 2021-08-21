@@ -121,6 +121,7 @@ trait Nodeable
     /**
      * assign a wife to this node
      *
+     * @param \Girover\Tree\Models\Node $node
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function getMarriedWith($node)
@@ -376,7 +377,7 @@ trait Nodeable
      *
      * @return int
      */
-    public function countChildren($gender = null)
+    public function countChildren()
     {
         return $this->childrenQuery()->count();
     }
@@ -415,22 +416,28 @@ trait Nodeable
     }
 
     /**
-     * Count siblings of this node by gender.
-     *
-     * @param '0'|'1'|null $gender the gender of sibling
+     * to get siblings of the node that has the given gender
+     * 
+     * @param string $gender 'm'|'f'
      * @return int
      */
-    public function countSiblings($gender = null)
+    protected function countSiblingsByGender($gender)
     {
-        if (is_null($gender)) {
-            return $this->countAllSiblings();
-        }
-
         return static::tree($this->tree_id)
                     ->locationNot($this->location)
                     ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
                     ->where('gender', $gender)
                     ->count();
+    }
+
+    /**
+     * Count siblings of this node by gender.
+     *
+     * @return int
+     */
+    public function countSiblings()
+    {
+        return $this->countAllSiblings();
     }
 
     /**
@@ -440,7 +447,7 @@ trait Nodeable
      */
     public function countBrothers()
     {
-        return $this->countSiblings('m');
+        return $this->countSiblingsByGender('m');
     }
 
     /**
@@ -450,7 +457,49 @@ trait Nodeable
      */
     public function countSisters()
     {
-        return $this->countSiblings('f');
+        return $this->countSiblingsByGender('f');
+    }
+
+    /**
+     * make a query start for getting descendants
+     *
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
+    protected function descendantsQuery()
+    {
+        return static::tree($this->tree_id)
+                     ->locationNot($this->location)
+                     ->where('location', 'like', $this->location.'%');
+    }
+
+    /**
+     * getting all descendants fo the node
+     * 
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     */
+    public function descendants()
+    {
+        return $this->descendantsQuery()->get();
+    }
+
+    /**
+     * getting all male descendants fo the node
+     * 
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     */
+    public function maleDescendants()
+    {
+        return $this->descendantsQuery()->where('gender', 'm')->get();
+    }
+
+    /**
+     * getting all female descendants fo the node
+     * 
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     */
+    public function femaleDescendants()
+    {
+        return $this->descendantsQuery()->where('gender', 'f')->get();
     }
 
     /**
@@ -460,27 +509,18 @@ trait Nodeable
      */
     protected function countAllDescendants()
     {
-        return static::tree($this->tree_id)
-                        ->locationNot($this->location)
-                        ->where('location', 'like', $this->location.'%')
-                        ->count();
+        return $this->descendantsQuery()->count();
     }
 
     /**
      * Count all descendants of the node by gender.
      *
-     * @param '0'|'1'|null $gender the gender of sibling
+     * @param string $gender 'm'|'f' the gender of sibling
      * @return int
      */
-    public function countDescendants($gender = null)
+    protected function countDescendantsByGender($gender)
     {
-        if (is_null($gender)) {
-            return $this->countAllDescendants();
-        }
-
-        return static::tree($this->tree_id)
-                    ->locationNot($this->location)
-                    ->where('location', 'like', $this->location.'%')
+        return $this->descendantsQuery()
                     ->where('gender', $gender)
                     ->count();
     }
@@ -490,9 +530,19 @@ trait Nodeable
      *
      * @return int
      */
+    public function countDescendants()
+    {
+        return $this->countAllDescendants();
+    }
+
+    /**
+     * Count all male descendants of this node.
+     *
+     * @return int
+     */
     public function countMaleDescendants()
     {
-        return $this->countDescendants('m');
+        return $this->countDescendantsByGender('m');
     }
 
     /**
@@ -502,7 +552,7 @@ trait Nodeable
      */
     public function countFemaleDescendants()
     {
-        return $this->countDescendants('f');
+        return $this->countDescendantsByGender('f');
     }
 
     /**
