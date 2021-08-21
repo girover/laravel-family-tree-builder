@@ -41,8 +41,10 @@
         |
         */
         'nodes_table' => [
-            'name' => 'nodes',
-            'location_field' => 'location',
+            'name'               => 'nodes',
+            'location_field'     => 'location',
+            'enum_gender_male'   => 'm',
+            'enum_gender_female' => 'f',
         ],
 
         /*
