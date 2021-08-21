@@ -134,6 +134,7 @@ To view this tree in the browser you can do this:
         {
             $tree     = Tree::find(1);
             $treeHTML = $tree->toHtml()
+            
             return view('tree.index')->with('treeHTML', $treeHTML);
         }
     }
