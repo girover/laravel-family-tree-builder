@@ -78,7 +78,7 @@ You can change assets configs in `config/tree.php` file.
 
 ## Usage
 
-To start building a tree or creating a new tree, it is very simple and thanks to Eloquent Models from laravel. 
+To start building a tree or creating a new tree, it is very simple and thanks to Eloquent Models from ![laravel](https://laravel.com). 
 
 ```php
 use Girover\Tree\Models\Tree;
@@ -89,7 +89,7 @@ $tree = Tree::create(
     ]
 );
 ```
-After creating the tree, now you can start to add as many node as you like.    
+After creating the tree, you can start to add as many node as you like.    
 Let's start adding the First node (Root) to the tree.
 ```php
     $data = ['name'=>'root', 'birth_date'=>'2000-01-01'];
