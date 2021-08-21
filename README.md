@@ -78,7 +78,7 @@ You can change assets configs in `config/tree.php` file.
 
 ## Usage
 
-To start building a tree or creating a new tree, it is very simple and thanks to Eloquent Models from ![laravel](https://laravel.com). 
+To start building a tree or creating a new tree, it is very simple and thanks to Eloquent Models from [laravel](http://laravel.com). 
 
 ```php
 use Girover\Tree\Models\Tree;
