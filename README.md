@@ -110,8 +110,11 @@ After creating the Root in the tree, let's add first child for the Root.
     $tree = Tree::find(1);
 
     $first_child_data = ['name'=>'first_child', 'birth_date'=>'2001-01-01'];
-    
-    $tree->movePointerToRoot()->newChild($first_child_data);
+
+    $tree->movePointerToRoot()->newChild($first_child_data ,'m'); // m = male
+
+    // Or you can do this instead
+    $tree->movePointerToRoot()->newSon($first_child_data);
 ```
 
 ### Tree

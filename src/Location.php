@@ -53,7 +53,7 @@ class Location
      *
      * @var int location's segment length
      */
-    protected const SEGMENT_LENGTH = 3;
+    protected const SEGMENT_LENGTH = 2;
 
     /**
      * Make the location for the tree Root
