@@ -27,10 +27,53 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
-
+        // config()->set('database.default', 'mysql');
+        $this->configureDatabase();
+        // $this->migrateTables();
         /*
         include_once __DIR__.'/../database/migrations/create_tree_table.php.stub';
         (new \CreatePackageTable())->up();
         */
+    }
+
+    /**
+     * Girover has written this
+     * to create tables in memory database
+     */
+    public function configureDatabase()
+    {
+       config()->set('database.connections.testing',[
+        'driver' => 'mysql',
+        'host' => '127.0.0.1',
+        'port' => '3306',
+        'database' => 'tree_testing',
+        'username' => 'root',
+        'password' => '',
+        'unix_socket' => '',
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix' => '',
+        'prefix_indexes' => true,
+        'strict' => true,
+        'engine' => null,
+        'options' => extension_loaded('pdo_mysql') ? array_filter([
+            \PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+        ]) : [],
+       ]); 
+    }
+    /**
+     * Girover has written this
+     * to create tables in memory database
+     */
+    public function migrateTables()
+    {
+        include_once __DIR__.'/../database/migrations/create_trees_table.php.stub';
+        (new \CreateTreesTable())->up();
+        include_once __DIR__.'/../database/migrations/create_nodes_table.php.stub';
+        (new \CreateNodesTable())->up();
+        include_once __DIR__.'/../database/migrations/create_marriages_table.php.stub';
+        (new \CreateMarriagesTable())->up();
+        include_once __DIR__.'/../database/migrations/create_node_images_table.php.stub';
+        (new \CreateNodeImagesTable())->up();
     }
 }
