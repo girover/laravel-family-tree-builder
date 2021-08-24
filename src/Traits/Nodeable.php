@@ -72,7 +72,7 @@ trait Nodeable
         // When model is deleted
         static::deleted(function ($model) {
 
-            // if the model has shift_children property is not setted
+            // if the model has shift_children property is not sat
             // then delete children, otherwise delete just the node
             if ($model->shift_children === null) {
                 return static::tree($model->tree_id)
@@ -711,8 +711,8 @@ trait Nodeable
     {
         return $this->siblingsQuery()
                      ->withoutGlobalScope(OrderByLocationScope::class)
-                     ->where('location', '<', $this->location)
                      ->orderBy('location', 'desc')
+                     ->where('location', '<', $this->location)
                      ->first();
     }
 
@@ -736,6 +736,8 @@ trait Nodeable
     public function prevBrother()
     {
         return $this->siblingsQuery()
+                    ->withoutGlobalScope(OrderByLocationScope::class)
+                    ->orderBy('location', 'desc')
                     ->where('location', '<', $this->location)
                     ->where('gender', 'm')
                      ->first();
@@ -762,6 +764,8 @@ trait Nodeable
     public function prevSister()
     {
         return $this->siblingsQuery()
+                    ->withoutGlobalScope(OrderByLocationScope::class)
+                    ->orderBy('location', 'desc')
                     ->where('location', '<', $this->location)
                     ->where('gender', 'f')
                      ->first();
