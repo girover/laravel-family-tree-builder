@@ -76,6 +76,8 @@ You can change assets configs in `config/tree.php` file.
 ]
 ```
 
+Yous should add the CSS file ```public/vendor/tree/css/tree.css``` to your blade file to get the tree styled.
+
 ## Usage
 
 ### Tree
@@ -180,7 +182,7 @@ To get this pointer you can do the following:
     $tree    = Tree::find(1);
     $pointer = $tree->pointer();
 ```
-And now you can use this pointer to make a lot of actions inside the tree, for example moving through nodes, deleting and retrieving more information about nodes.
+And now you can use this pointer to make a lot of actions inside the tree, for example moving through nodes, deleting and retrieving more information about nodes.   
 Eg.
 To move the pointer to location ```aaa.aaa.adf.sde```:
 ```php
@@ -193,6 +195,9 @@ And now you can get the node data by calling the method ```node()```
     echo $node->name;
     echo $node->gender;
 ```
+
+Note that wi called method ```node()``` after we had called the method ```to($location)```.   
+This is because when a tree instance created, its Pointer indicates to ```null```.
 ### Node
 Node is a person in the tree. Nodes in tree are connected with other nodes by using **Location mechanism**, where every node has its own location, which is a set of characters separated by ```dot```.    
 If the Root location in the tree is ```aaa```, so the first child's location 
@@ -341,7 +346,7 @@ To get the next sibling of the node. gets only one sibling.
 ```php
     return $node->nextSibling();
 ```
-To get all the next siblings of the node. siblings who are older.
+To get all the next siblings of the node. siblings who are younger.
 ```php
     return $node->nextSiblings();
 ```
@@ -349,7 +354,7 @@ To get the previous sibling of the node. only one sibling.
 ```php
     return $node->prevSibling();
 ```
-To get all the previous siblings of the node. siblings who are younger.
+To get all the previous siblings of the node. siblings who are older.
 ```php
     return $node->prevSiblings();
 ```
@@ -417,19 +422,23 @@ To display the tree of this node starting from the node itself.
     $node->toTree();
 ```
 
-**Note**: You can use the Pointer of tree to access all methods of class Node.
-for example you can get all children of specific node by doing this:
+**Note**: You can use the Pointer of tree to access all methods of class Node.   
+for example:
 ```php
     use Girover\Tree\Models\Tree;
 
     $tree = Tree::find(1);
     
-    $tree->pointer()->to('aaa.aaa');       // move Pointer to location 'aaa.aaa'
-    $tree->pointer()->father();            // get father of node that Pointer indicates to
+    $tree->pointer()->to('aaa.aaa')->father();       // move Pointer to location 'aaa.aaa'
     $tree->pointer()->grandfather();       // get grandfather of node that Pointer indicates to
+    $tree->pointer()->ancestor(3);            // get father of node that Pointer indicates to
     $tree->pointer()->children();          // get children of node that Pointer indicates to
     $tree->pointer()->sons();              // get sons of node that Pointer indicates to
-    $tree->pointer()->newDaughter($data);  // create daughter of node that Pointer indicates to
+    $tree->pointer()->newDaughter($data);  // create daughter for the node that Pointer indicates to
+    $tree->pointer()->newSon($data);  // create son of node that Pointer indicates to
+    $tree->pointer()->newSister($data);  // create sister for the node that Pointer indicates to
+    $tree->pointer()->newChild($data, 'm');  // create son for the node that Pointer indicates to
+    $tree->pointer()->firstChild();  // get the first child of node that Pointer indicates to
     .
     .
     .
