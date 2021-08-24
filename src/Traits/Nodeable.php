@@ -37,18 +37,6 @@ trait Nodeable
     ];
 
     /**
-     * @var \Girover\Tree\Models\Tree the tree that contain this node
-     */
-    public $parent_tree;
-
-    /**
-     * Eager loading relationships
-     *
-     * @var array // from config file tree.php
-     */
-    // protected static $bound_relationships = [];
-
-    /**
      * {@inheritdoc}
      *
      * @param \Illuminate\Database\Query\Builder
