@@ -94,14 +94,14 @@ $tree = Tree::create(
 );
 ```
 After creating the tree, you can start to add as many node as you like.    
-Let's start adding the First node (Root) to the tree.
+Let's start adding the First node **```Root```** to the tree.
 ```php
     $data = ['name'=>'root', 'birth_date'=>'2000-01-01'];
 
     $tree->createRoot($data);
 ```
-What if you want to make a new Root?   
-In this case you can use the method **```newRoot```** to create new Root, and the previous Root will be a child of the new created Root.
+**What if you want to make a new Root?**   
+In this case you can use the method **```newRoot```** to create new Root, and the previous Root will become a child of the new created Root.
 ```php
     $new_root_data = ['name'=>'new_root', 'birth_date'=>'2001-01-01'];
 
@@ -244,7 +244,7 @@ To get the grandfather of the node:
 ```php
     return $node->grandfather();
 ```
-To get the ancestor that matches the given parameter
+To get the ancestor that matches the given number as parameter. 
 ```php
     $node->ancestor(); // returns father
     $node->ancestor(2); // returns grandfather
@@ -429,7 +429,7 @@ for example:
 
     $tree = Tree::find(1);
     
-    $tree->pointer()->to('aa.aa')->father();       // move Pointer to location 'aa.aa'
+    $tree->pointer()->to('aa.aa')->father();       // move Pointer to location 'aa.aa' and then get its father.
     $tree->pointer()->grandfather();       // get grandfather of node that Pointer indicates to
     $tree->pointer()->ancestor(3);            // get father of node that Pointer indicates to
     $tree->pointer()->children();          // get children of node that Pointer indicates to
