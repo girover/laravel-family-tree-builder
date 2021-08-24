@@ -184,9 +184,9 @@ To get this pointer you can do the following:
 ```
 And now you can use this pointer to make a lot of actions inside the tree, for example moving through nodes, deleting and retrieving more information about nodes.   
 Eg.
-To move the pointer to location ```aaa.aaa.adf.sde```:
+To move the pointer to location ```aa.aa.df.se```:
 ```php
-    $pointer->to('aaa.aaa.adf.sde');
+    $pointer->to('aa.aa.df.se');
 ```
 And now you can get the node data by calling the method ```node()```
 ```php
@@ -196,12 +196,12 @@ And now you can get the node data by calling the method ```node()```
     echo $node->gender;
 ```
 
-Note that wi called method ```node()``` after we had called the method ```to($location)```.   
+Note that we called method ```node()``` after we had called the method ```to($location)```.   
 This is because when a tree instance created, its Pointer indicates to ```null```.
 ### Node
 Node is a person in the tree. Nodes in tree are connected with other nodes by using **Location mechanism**, where every node has its own location, which is a set of characters separated by ```dot```.    
-If the Root location in the tree is ```aaa```, so the first child's location 
-of this root will be ```aaa.aaa```, and the second will be ```aaa.aab``` and so on.
+If the Root location in the tree is ```aa```, so the first child's location 
+of this root will be ```aa.aa```, and the second will be ```aa.ab``` and so on.
 
 To get the node you can do this:
 ```php
@@ -405,7 +405,7 @@ To create new daughter for the node:
 ```
 to make an existing node as child of another node. Note this will move the node with its children to be child of the given location
 ```php
-    $location = 'aaa.fgd';
+    $location = 'aa.fd';
     $node->makeAsSonOf($location);
 ```
 The next code will create father for this node, only if this node is a Root in the tree.
@@ -429,7 +429,7 @@ for example:
 
     $tree = Tree::find(1);
     
-    $tree->pointer()->to('aaa.aaa')->father();       // move Pointer to location 'aaa.aaa'
+    $tree->pointer()->to('aa.aa')->father();       // move Pointer to location 'aa.aa'
     $tree->pointer()->grandfather();       // get grandfather of node that Pointer indicates to
     $tree->pointer()->ancestor(3);            // get father of node that Pointer indicates to
     $tree->pointer()->children();          // get children of node that Pointer indicates to
