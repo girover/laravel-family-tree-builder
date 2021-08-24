@@ -629,7 +629,7 @@ trait Nodeable
      * Get all siblings of this node
      * including the node
      *
-     * @param \Illuminate\Support\Collection
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function siblingsAndSelf()
     {
@@ -641,42 +641,88 @@ trait Nodeable
     /**
      * Get the next sibling that is younger than this node
      *
-     * @param \Illuminate\Support\Collection
+     * @return \Girover\Tree\Models\Node
      */
     public function nextSibling()
     {
-        return static::tree($this->tree_id)
-                     ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
-                     ->locationNot($this->location)
-                     ->where('location', '>', $this->location)
+        return $this->siblingsQuery()
+                    ->where('location', '>', $this->location)
                      ->first();
     }
 
     /**
      * Get all siblings those are younger than this node
      *
-     * @param \Illuminate\Support\Collection
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function nextSiblings()
     {
-        return static::tree($this->tree_id)
-                     ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
-                     ->locationNot($this->location)
-                     ->where('location', '>', $this->location)
+        return $this->siblingsQuery()
+                    ->where('location', '>', $this->location)
+                     ->get();
+    }
+
+    /**
+     * Get the next brother that is younger than this node
+     *
+     * @return \Girover\Tree\Models\Node
+     */
+    public function nextBrother()
+    {
+        return $this->siblingsQuery()
+                    ->where('location', '>', $this->location)
+                    ->where('gender', 'm')
+                     ->first();
+    }
+
+    /**
+     * Get the all next brother who are younger than this node
+     *
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     */
+    public function nextBrothers()
+    {
+        return $this->siblingsQuery()
+                    ->where('location', '>', $this->location)
+                    ->where('gender', 'm')
+                     ->get();
+    }
+
+    /**
+     * Get the next sister that is younger than this node
+     *
+     * @return \Girover\Tree\Models\Node
+     */
+    public function nextSister()
+    {
+        return $this->siblingsQuery()
+                    ->where('location', '>', $this->location)
+                    ->where('gender', 'f')
+                     ->first();
+    }
+
+    /**
+     * Get the all next sisters who are younger than this node
+     *
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     */
+    public function nextSisters()
+    {
+        return $this->siblingsQuery()
+                    ->where('location', '>', $this->location)
+                    ->where('gender', 'f')
                      ->get();
     }
 
     /**
      * Get the previous sibling og this node.
      *
-     * @param \Girover\Tree\Models\Node
+     * @return \Girover\Tree\Models\Node
      */
     public function prevSibling()
     {
-        return static::tree($this->tree_id)
+        return $this->siblingsQuery()
                      ->withoutGlobalScope(OrderByLocationScope::class)
-                     ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
-                     ->locationNot($this->location)
                      ->where('location', '<', $this->location)
                      ->orderBy('location', 'desc')
                      ->first();
@@ -685,15 +731,65 @@ trait Nodeable
     /**
      * Get all siblings those are older than this node
      *
-     * @param \Illuminate\Support\Collection
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
      */
     public function prevSiblings()
     {
-        return $this->tree($this->tree_id)
-                    ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
-                    ->locationNot($this->location)
+        return $this->siblingsQuery()
                     ->where('location', '<', $this->location)
                     ->get();
+    }
+
+    /**
+     * Get the previous brother that is older than this node
+     *
+     * @return \Girover\Tree\Models\Node
+     */
+    public function prevBrother()
+    {
+        return $this->siblingsQuery()
+                    ->where('location', '<', $this->location)
+                    ->where('gender', 'm')
+                     ->first();
+    }
+
+    /**
+     * Get the all previous brothers who are older than this node
+     *
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     */
+    public function prevBrothers()
+    {
+        return $this->siblingsQuery()
+                    ->where('location', '<', $this->location)
+                    ->where('gender', 'm')
+                     ->get();
+    }
+
+    /**
+     * Get the previous sister that is older than this node
+     *
+     * @return \Girover\Tree\Models\Node 
+     */
+    public function prevSister()
+    {
+        return $this->siblingsQuery()
+                    ->where('location', '<', $this->location)
+                    ->where('gender', 'f')
+                     ->first();
+    }
+
+    /**
+     * Get the all previous sisters who are older than this node
+     *
+     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     */
+    public function prevSisters()
+    {
+        return $this->siblingsQuery()
+                    ->where('location', '<', $this->location)
+                    ->where('gender', 'f')
+                     ->get();
     }
 
     /**
@@ -703,10 +799,7 @@ trait Nodeable
      */
     public function firstSibling()
     {
-        return  static::tree($this->tree_id)
-                     ->where('location', '!=', $this->location)
-                     ->where('location', 'REGEXP', Location::withSiblingsREGEXP($this->location))
-                     ->orderBy('location')
+        return  $this->siblingsQuery()
                      ->first();
     }
 
@@ -717,10 +810,61 @@ trait Nodeable
      */
     public function lastSibling()
     {
-        return  static::tree($this->tree_id)
-                     ->where('location', '!=', $this->location)
-                     ->where('location', 'REGEXP', Location::withSiblingsREGEXP($this->location))
+        return  $this->siblingsQuery()
+                     ->withoutGlobalScope(OrderByLocationScope::class)
                      ->orderBy('location', 'desc')
+                     ->first();
+    }
+
+    /**
+     * Get the first brother of node that the Pointer is indicating to
+     *
+     * @return \Girover\Tree\Models\Node
+     */
+    public function firstBrother()
+    {
+        return  $this->siblingsQuery()
+                     ->where('gender', 'm')
+                     ->first();
+    }
+
+    /**
+     * Get last brother of node that the Pointer is indicating to
+     *
+     * @return \Girover\Tree\Models\Node
+     */
+    public function lastBrother()
+    {
+        return  $this->siblingsQuery()
+                     ->withoutGlobalScope(OrderByLocationScope::class)
+                     ->orderBy('location', 'desc')
+                     ->where('gender', 'm')
+                     ->first();
+    }
+
+    /**
+     * Get the first sister of node that the Pointer is indicating to
+     *
+     * @return \Girover\Tree\Models\Node
+     */
+    public function firstSister()
+    {
+        return  $this->siblingsQuery()
+                     ->where('gender', 'f')
+                     ->first();
+    }
+
+    /**
+     * Get last sister of node that the Pointer is indicating to
+     *
+     * @return \Girover\Tree\Models\Node
+     */
+    public function lastSister()
+    {
+        return  $this->siblingsQuery()
+                     ->withoutGlobalScope(OrderByLocationScope::class)
+                     ->orderBy('location', 'desc')
+                     ->where('gender', 'f')
                      ->first();
     }
 

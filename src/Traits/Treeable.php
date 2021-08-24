@@ -473,7 +473,7 @@ trait Treeable
     /**
      * Indicate How many generation this tree has {The entire tree}
      *
-     * @return Int | NULL
+     * @return int | NULL
      */
     public function countGenerations()
     {
@@ -580,7 +580,7 @@ trait Treeable
      * @param \Girover\Tree\Models\Node $node
      * @param string $classes
      *
-     * @return String
+     * @return string
      */
     protected function getHusbandHtml($node, $classes = '')
     {

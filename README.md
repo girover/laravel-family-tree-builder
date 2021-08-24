@@ -109,7 +109,7 @@ In this case you can use the method **```newRoot```** to create new Root, and th
 ```
 After creating the Root in the tree, let's add first child for the Root.
 ```php
-    use Girover\Tree\models\Tree;
+    use Girover\Tree\Models\Tree;
 
     $tree = Tree::find(1);
 
@@ -350,6 +350,22 @@ To get all the next siblings of the node. siblings who are younger.
 ```php
     return $node->nextSiblings();
 ```
+To get the next brother of the node. gets only one brother.
+```php
+    return $node->nextBrother();
+```
+To get all the next brothers of the node. brothers who are younger.
+```php
+    return $node->nextBrothers();
+```
+To get the next sister of the node. gets only one sister.
+```php
+    return $node->nextSister();
+```
+To get all the next sisters of the node. sisters who are younger.
+```php
+    return $node->nextSisters();
+```
 To get the previous sibling of the node. only one sibling.
 ```php
     return $node->prevSibling();
@@ -358,6 +374,22 @@ To get all the previous siblings of the node. siblings who are older.
 ```php
     return $node->prevSiblings();
 ```
+To get the previous brother of the node. only one brother.
+```php
+    return $node->prevBrother();
+```
+To get all the previous brothers of the node. brothers who are older.
+```php
+    return $node->prevBrothers();
+```
+To get the previous sister of the node. only one sister.
+```php
+    return $node->prevSister();
+```
+To get all the previous sisters of the node. sisters who are older.
+```php
+    return $node->prevSisters();
+```
 To get the first sibling of the node.
 ```php
     return $node->firstSibling();
@@ -365,6 +397,22 @@ To get the first sibling of the node.
 To get the last sibling of the node.
 ```php
     return $node->lastSibling();
+```
+To get the first brother of the node.
+```php
+    return $node->firstBrother();
+```
+To get the last brother of the node.
+```php
+    return $node->lastBrother();
+```
+To get the first sister of the node.
+```php
+    return $node->firstSister();
+```
+To get the last sister of the node.
+```php
+    return $node->lastSister();
 ```
 To create new sibling for the node:
 ```php
