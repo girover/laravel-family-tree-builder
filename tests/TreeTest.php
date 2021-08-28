@@ -2,6 +2,7 @@
 
 namespace Girover\Tree\Tests;
 
+use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Location;
 use Girover\Tree\Models\Tree;
 use Girover\Tree\Models\Node;
@@ -18,7 +19,7 @@ class TreeTest extends TestCase
         // Create new Tree in database.
         $tree = Tree::factory()->create();
         // Create Root node for the created tree.
-        $root = $tree->createRoot(['name'=>'majed', 'tree_id'=>$tree->id]);
+        $root = $tree->createRoot(['name'=>'majed']);
        
         $this->assertDatabaseHas('trees', ['name'=>$tree->name]);
         $this->assertDatabaseHas('nodes', [
@@ -28,12 +29,40 @@ class TreeTest extends TestCase
     }
 
     /** @test */
+    public function test_can_not_create_root_for_tree_if_root_exists()
+    {
+        $this->expectException(TreeException::class);        
+        // Create new Tree in database.
+        $tree = Tree::factory()->create();
+        // Create Root node for the created tree.
+        $root = $tree->createRoot(['name'=>'Root']);
+
+        $this->assertDatabaseHas('nodes', [
+            'tree_id'=>$tree->id,
+            'location'=>$root->location,
+        ]);
+        $another_root = $tree->createRoot(['name'=>'Another root']);
+        $this->assertNotInstanceOf(Node::class, $another_root); 
+    }
+
+    /** @test */
+    public function test_can_not_create_root_for_tree_if_no_data_are_provided()
+    {
+        $this->expectException(TreeException::class);        
+        // Create new Tree in database.
+        $tree = Tree::factory()->create();
+        // Create Root node for the created tree.
+        $root_data = [];
+        $tree->createRoot($root_data); 
+    }
+
+    /** @test */
     public function test_can_create_new_root_for_tree()
     {
         // Create new Tree in database.
         $tree = Tree::factory()->create();
         // Create Root node for the created tree.
-        $root = $tree->createRoot(['name'=>'majed', 'tree_id'=>$tree->id]);
+        $root = $tree->createRoot(['name'=>'majed']);
         // Create new Root and make the previously created root son of this new root.
         $new_root = $tree->newRoot(['name'=>'Hussein', 'tree_id'=>$tree->id]);
         
@@ -47,16 +76,16 @@ class TreeTest extends TestCase
     }
 
     /** @test */
-    public function test_can_create_new_son_for_node()
+    public function test_can_not_create_new_root_for_tree_if_no_data_are_provided()
     {
-        // create new node in database table
-        $node = Node::factory()->create();
-        $son = $node->newSon(Node::factory()->make()->toArray());
-
-        $this->assertDatabaseHas('nodes', ['name'=>$node->name]);
-        $this->assertDatabaseHas('nodes', ['name'=>$son->name]);
-
-        // Check if the new is father of $son
-        $this->assertEquals($node->location, Location::father($son->location));
+        // Create new Tree in database.
+        $tree = Tree::factory()->create();
+        $this->assertDatabaseHas('trees', ['name'=>$tree->name]);
+        // Create Root node for the created tree.
+        $root = $tree->createRoot(['name'=>'majed']);
+        $this->assertDatabaseHas('nodes', ['tree_id'=>$tree->id, 'location'=>$root->location]);
+        // Try to create root with no data provided
+        $new_root = $tree->newRoot([]);
+        $this->assertNull($new_root);        
     }
 }

@@ -1,5 +1,11 @@
 fix method Nodeable::deleteAndShiftChildren()
 --------------------------------------------------
+Add pasteTree($tree) method to Nodeable class
+    this method will copy a tree and paste it to a node
+    to make the root of the given tree as child for
+    target node.
+--------------------------------------------------
 add method addCssClassToNode($class, $id)
     $class = css class name
     $id    = id of the node to apply css class on
+--------------------------------------------------
