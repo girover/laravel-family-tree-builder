@@ -351,9 +351,13 @@ trait Treeable
         if (empty($data)) {
             throw new TreeException("Error: no data are provided to create Root for the tree [ ".$this->name." ]", 1);
         }
+        if (!array_key_exists('name', $data)) {
+            throw new TreeException("Error: the field 'name' should be provided", 1);
+        }
         if ($this->isEmptyTree()) {
             return $this->nodes()->create(array_merge($data, ['tree_id' => $this->id, 'location' => Location::generateRootLocation()]));
         }
+        // The tree is not empty, e.i. There is already a Root for this tree.
         throw new TreeException("Root for tree {$this->name} is already exists", 1);
     }
 
@@ -368,6 +372,10 @@ trait Treeable
     {
         if (empty($data)) {
             return null;
+        }
+
+        if ($this->isEmptyTree()) {
+            return $this->createRoot($data);
         }
 
         return $this->pointer()->toRoot()->createFather($data);

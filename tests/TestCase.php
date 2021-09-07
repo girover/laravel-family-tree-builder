@@ -61,19 +61,4 @@ class TestCase extends Orchestra
         ]) : [],
        ]); 
     }
-    /**
-     * Girover has written this
-     * to create tables in memory database
-     */
-    public function migrateTables()
-    {
-        include_once __DIR__.'/../database/migrations/create_trees_table.php.stub';
-        (new \CreateTreesTable())->up();
-        include_once __DIR__.'/../database/migrations/create_nodes_table.php.stub';
-        (new \CreateNodesTable())->up();
-        include_once __DIR__.'/../database/migrations/create_marriages_table.php.stub';
-        (new \CreateMarriagesTable())->up();
-        include_once __DIR__.'/../database/migrations/create_node_images_table.php.stub';
-        (new \CreateNodeImagesTable())->up();
-    }
 }

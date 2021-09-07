@@ -36,6 +36,4 @@
     <logging>
         <junit outputFile="build/report.junit.xml"/>
     </logging>
-    <env name="CACHE_DRIVER" value="array"/>
-    <env name="SESSION_DRIVER" value="array"/>
 </phpunit>

@@ -865,6 +865,10 @@ trait Nodeable
      *
      * @param \Girover\Tree\Models\Node|array $data data for the new node
      * @param string $location the location of the new [child|sibling|...]
+     * @param string $gender the gender of the person
+     * 
+     * @throws \Girover\Tree\Exceptions\TreeException
+     * @return \Girover\Tree\Models\Node
      */
     protected function createNewNode($data, $location, $gender = 'm')
     {
@@ -877,10 +881,18 @@ trait Nodeable
 
             return $data;
         }
+
         if (! is_array($data)) {
             throw new TreeException("Bad argument type. The argument passed to ".__METHOD__." must be an array or an instance of [".static::class."]. ".gettype($data)." is given", 1);
         }
 
+        if (empty($data)) {
+            throw new TreeException("No data for the new node are provided ", 1);
+        }
+
+        if (! key_exists('name', $data)) {
+            throw new TreeException("The name of person is not provided", 1);
+        }
         $data['tree_id'] = $this->tree_id;
         $data['location'] = $location;
         $data['gender'] = $gender;
