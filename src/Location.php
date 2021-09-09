@@ -66,36 +66,6 @@ class Location
     }
 
     /**
-     * Get the separator of node location
-     *
-     * @return string the separator
-     */
-    // public static function separator()
-    // {
-    //     return config('tree.location_separator') ?? static::$separator;
-    // }
-
-    /**
-     * Get the segment unit config
-     *
-     * @return string the unit
-     */
-    // public static function segmentUnit()
-    // {
-    //     return config('tree.location_segment_unit') ?? static::$segment_unit;
-    // }
-
-    /**
-     * Get the segment length config
-     *
-     * @return string the unit
-     */
-    // public static function segmentLength()
-    // {
-    //     return config('tree.location_segment_length') ?? static::$segment_length;
-    // }
-
-    /**
      * get Regular Expressions Ranges for locations
      *
      * it will return `0-9` if the location unit config is set to `digits`
