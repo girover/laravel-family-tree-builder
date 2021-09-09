@@ -157,7 +157,7 @@ class Location
      */
     public static function withSiblingsREGEXP($location)
     {
-        // ^fatherlocation\.charsWithoutSeparator+$
+        // ^father_location\.charsWithoutSeparator+$
         // EX: `^aa\.[^\.]+$`
         return '^'.static::convertLocationToPattern(static::father($location)).'\\'.static::SEPARATOR.'[^\\'.static::SEPARATOR.']+$';
     }
@@ -278,7 +278,7 @@ class Location
      */
     public static function multiGenerationsREGEXP(String $location, int $generations = 1)
     {
-        // ^aa(\.[a-z]{3}){0,2}$   where 2 is changeable depending on varibale $generations
+        // ^aa(\.[a-z]{3}){0,2}$   where 2 is changeable depending on variable $generations
         $pattern = '^'.$location.'(\\'.static::SEPARATOR.static::segmentREGEXP().'){0,'.($generations - 1).'}$';
 
         return $pattern;
@@ -524,8 +524,8 @@ class Location
             return false;
         }
 
-        $patern = '#^'.$location_1.'\\'.static::SEPARATOR.'#';
-        if (preg_match($patern, $location_2) and ($location_1 !== $location_2)) {
+        $pattern = '#^'.$location_1.'\\'.static::SEPARATOR.'#';
+        if (preg_match($pattern, $location_2) and ($location_1 !== $location_2)) {
             return true;
         }
 
