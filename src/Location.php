@@ -427,6 +427,8 @@ class Location
             return $location_segment;
         }
         // the segment is set of numbers like: `354`
+        // if $location_segment was fx 001 then when incrementing, it will give 2
+        // so we need to make it as 002
         return str_pad($location_segment, static::SEGMENT_LENGTH, '0', STR_PAD_LEFT);
     }
 
