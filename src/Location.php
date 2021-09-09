@@ -105,7 +105,7 @@ class Location
      */
     public static function rangeREGEXP()
     {
-        return self::SEGMENT_UNIT === 'chars' ? 'a-z' : '0-9';
+        return static::SEGMENT_UNIT === 'chars' ? 'a-z' : '0-9';
     }
 
     /**
@@ -131,7 +131,7 @@ class Location
     {
         // [a-z]{3}    where 3 is changeable depending on configs
         // [0-9]{3}
-        return '['.static::rangeREGEXP().']{'.self::SEGMENT_LENGTH.'}';
+        return '['.static::rangeREGEXP().']{'.static::SEGMENT_LENGTH.'}';
     }
 
     /**
@@ -144,7 +144,7 @@ class Location
     public static function childrenREGEXP($location)
     {
         // ^aaa\.[^\.]+$
-        return '^'.$location.self::SEPARATOR.'[^\\'.self::SEPARATOR.']+$';
+        return '^'.$location.static::SEPARATOR.'[^\\'.static::SEPARATOR.']+$';
     }
 
     /**
@@ -159,7 +159,7 @@ class Location
     {
         // ^fatherlocation\.charsWithoutSeparator+$
         // EX: `^aaa\.[^\.]+$`
-        return '^'.static::convertLocationToPattern(static::father($location)).'\\'.self::SEPARATOR.'[^\\'.self::SEPARATOR.']+$';
+        return '^'.static::convertLocationToPattern(static::father($location)).'\\'.static::SEPARATOR.'[^\\'.static::SEPARATOR.']+$';
     }
 
     /**
@@ -172,7 +172,7 @@ class Location
     {
         // "/^[a-z]{3}(\.[a-z]{3})*$/"
         // "/^[0-9]{3}(\.[0-9]{3})*$/"
-        return '/^'.static::segmentREGEXP().'(\\'.self::SEPARATOR.static::segmentREGEXP().')*$/';
+        return '/^'.static::segmentREGEXP().'(\\'.static::SEPARATOR.static::segmentREGEXP().')*$/';
     }
 
     /**
@@ -185,7 +185,7 @@ class Location
      */
     public static function convertLocationToPattern(String $location, Bool $covered = false)
     {
-        $locationPattern = str_replace(self::SEPARATOR, '\\'.self::SEPARATOR, $location);
+        $locationPattern = str_replace(static::SEPARATOR, '\\'.static::SEPARATOR, $location);
 
         return $covered ? '(^'.$locationPattern.'$)' : $locationPattern;
     }
@@ -201,7 +201,7 @@ class Location
      */
     public static function validateSegmentUnit()
     {
-        if (self::SEGMENT_UNIT !== 'chars' && self::SEGMENT_UNIT !== 'digits') {
+        if (static::SEGMENT_UNIT !== 'chars' && static::SEGMENT_UNIT !== 'digits') {
             throw new TreeException("Error. The location segment unit should be 'chars' or 'digits' ", 1);
         }
 
@@ -237,9 +237,9 @@ class Location
      */
     public static function firstPossibleSegment()
     {
-        $cipher = self::SEGMENT_UNIT == 'chars' ? 'a' : '0';
+        $cipher = static::SEGMENT_UNIT == 'chars' ? 'a' : '0';
         // `aaa+++` or `000+++`
-        return str_pad('', self::SEGMENT_LENGTH, $cipher);
+        return str_pad('', static::SEGMENT_LENGTH, $cipher);
     }
 
     /**
@@ -252,9 +252,9 @@ class Location
      */
     public static function lastPossibleSegment()
     {
-        $cipher = self::SEGMENT_UNIT == 'chars' ? 'z' : '9';
+        $cipher = static::SEGMENT_UNIT == 'chars' ? 'z' : '9';
         // `zzz+++` or `999+++`
-        return str_pad('', self::SEGMENT_LENGTH, $cipher);
+        return str_pad('', static::SEGMENT_LENGTH, $cipher);
     }
 
     /**
@@ -266,7 +266,7 @@ class Location
      */
     public static function singleGenerationREGEXP($generation_number = 1)
     {
-        return '^'.static::segmentREGEXP().'(\\'.self::SEPARATOR.static::segmentREGEXP().'){'.($generation_number - 1).'}$';
+        return '^'.static::segmentREGEXP().'(\\'.static::SEPARATOR.static::segmentREGEXP().'){'.($generation_number - 1).'}$';
     }
 
     /**
@@ -279,7 +279,7 @@ class Location
     public static function multiGenerationsREGEXP(String $location, int $generations = 1)
     {
         // ^aaa(\.[a-z]{3}){0,2}$   where 2 is changeable depending on varibale $generations
-        $pattern = '^'.$location.'(\\'.self::SEPARATOR.static::segmentREGEXP().'){0,'.($generations - 1).'}$';
+        $pattern = '^'.$location.'(\\'.static::SEPARATOR.static::segmentREGEXP().'){0,'.($generations - 1).'}$';
 
         return $pattern;
     }
@@ -305,7 +305,7 @@ class Location
     public static function isSegment($location)
     {
         // check the location that pointer indicating to
-        return strpos($location, self::SEPARATOR) === false ? true : false;
+        return strpos($location, static::SEPARATOR) === false ? true : false;
     }
 
     /**
@@ -354,7 +354,7 @@ class Location
             return $location;
         }
 
-        return substr($location, strrpos($location, self::SEPARATOR) + 1);
+        return substr($location, strrpos($location, static::SEPARATOR) + 1);
     }
 
     /**
@@ -367,7 +367,7 @@ class Location
     public static function father($location)
     {
         // return father of node that pointer is indicating to
-        return substr($location, 0, strrpos($location, self::SEPARATOR));
+        return substr($location, 0, strrpos($location, static::SEPARATOR));
     }
 
     /**
@@ -379,15 +379,15 @@ class Location
     public static function grandfather($location)
     {
         // if location is only one or two segment like: `aa` or `aa.aa`
-        if (substr_count($location, self::SEPARATOR) <= 1) {
+        if (substr_count($location, static::SEPARATOR) <= 1) {
             return null;
         }
-        $segments = explode(self::SEPARATOR, $location);
+        $segments = explode(static::SEPARATOR, $location);
         // remove the current node segment and the father segment
         array_pop($segments);
         array_pop($segments);
         // return grandfather location of node that pointer is indicating to
-        return implode(self::SEPARATOR, $segments);
+        return implode(static::SEPARATOR, $segments);
     }
 
     /**
@@ -400,16 +400,16 @@ class Location
     public static function ancestor(string $location, int $ancestor)
     {
         // if ancestor not found
-        if (substr_count($location, self::SEPARATOR) < $ancestor) {
+        if (substr_count($location, static::SEPARATOR) < $ancestor) {
             return null;
         }
-        $segments = explode(self::SEPARATOR, $location);
+        $segments = explode(static::SEPARATOR, $location);
         // remove segments from current to ancestor
         for ($i = 1; $i <= $ancestor; $i++) {
             array_pop($segments);
         }
         // return grandfather location of node that pointer is indicating to
-        return implode(self::SEPARATOR, $segments);
+        return implode(static::SEPARATOR, $segments);
     }
 
     /**
@@ -420,7 +420,7 @@ class Location
      */
     public static function firstChild($location)
     {
-        return $location.self::SEPARATOR.static::firstPossibleSegment();
+        return $location.static::SEPARATOR.static::firstPossibleSegment();
     }
 
     /**
@@ -431,7 +431,7 @@ class Location
      */
     public static function lastChild($location)
     {
-        return $location.self::SEPARATOR.static::lastPossibleSegment();
+        return $location.static::SEPARATOR.static::lastPossibleSegment();
     }
 
     /**
@@ -449,15 +449,15 @@ class Location
         ++$location_segment;
         // Check if the segment is zzz..  or 999..
         // if it is the last allowed segment
-        if (strlen($location_segment) > self::SEGMENT_LENGTH) {
+        if (strlen($location_segment) > static::SEGMENT_LENGTH) {
             return null;
         }
         // the segment is set of chars like: `abc`
-        if (self::SEGMENT_UNIT === 'chars') {
+        if (static::SEGMENT_UNIT === 'chars') {
             return $location_segment;
         }
         // the segment is set of numbers like: `354`
-        return str_pad($location_segment, self::SEGMENT_LENGTH, '0', STR_PAD_LEFT);
+        return str_pad($location_segment, static::SEGMENT_LENGTH, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -477,7 +477,7 @@ class Location
         }
         $new_segment = static::incrementSegment($last_segment);
 
-        return static::father($location).self::SEPARATOR.$new_segment;
+        return static::father($location).static::SEPARATOR.$new_segment;
     }
 
     /**
@@ -495,7 +495,7 @@ class Location
         }
         $new_segment = static::incrementSegment($last_segment);
 
-        return static::father($location).self::SEPARATOR.$new_segment;
+        return static::father($location).static::SEPARATOR.$new_segment;
     }
 
     /**
@@ -508,7 +508,7 @@ class Location
     {
         static::validate($location);
 
-        return substr_count($location, self::SEPARATOR) + 1;
+        return substr_count($location, static::SEPARATOR) + 1;
     }
 
     /**
@@ -524,7 +524,7 @@ class Location
             return false;
         }
 
-        $patern = '#^'.$location_1.'\\'.self::SEPARATOR.'#';
+        $patern = '#^'.$location_1.'\\'.static::SEPARATOR.'#';
         if (preg_match($patern, $location_2) and ($location_1 !== $location_2)) {
             return true;
         }
@@ -544,8 +544,8 @@ class Location
         if ($location_2 === null || $location_1 == $location_2) {
             return false;
         }
-        $node_pos = strrpos($location_1, self::SEPARATOR);
-        $node_next_pos = strrpos($location_2, self::SEPARATOR);
+        $node_pos = strrpos($location_1, static::SEPARATOR);
+        $node_next_pos = strrpos($location_2, static::SEPARATOR);
 
         $node_father = substr($location_1, 0, $node_pos);
         $node_next_father = substr($location_2, 0, $node_next_pos);
