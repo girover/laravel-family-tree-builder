@@ -964,7 +964,7 @@ trait Nodeable
         } else {
             $new_child_location = Location::generateNextLocation($last_child->location);
         }
-
+        
         Location::validate($new_child_location);
 
         return $this->createNewNode($data, $new_child_location, $gender);
@@ -995,9 +995,11 @@ trait Nodeable
     /**
      * Move the node with its children
      * to be child of the given location
+     * Both nodes should belong to same tree
      *
      * @param string $location: location to move node to it
      * @return \Girover\Tree\Models\Node
+     * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function makeAsSonOf($location)
     {
@@ -1031,9 +1033,9 @@ trait Nodeable
         DB::beginTransaction();
 
         try {
-            // update all nodes locations in this tree
-            // first prepend all locations with separator '.'
-            // tp prevent duplicated locations in same tree
+            // update all nodes locations in this tree.
+            // Firstly prepend all locations with separator '.'
+            // to prevent duplicated locations in same tree
             DB::update(Update::prependLocationsWithSeparator(), [$this->tree_id]);
             // then prepend all locations with 'aaa'
             DB::update(Update::prependLocationsWithFirstPossibleSegmetn(), [$this->tree_id]);

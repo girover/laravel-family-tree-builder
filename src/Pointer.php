@@ -170,9 +170,10 @@ class Pointer
      */
     public function to($location)
     {
-        if ($location instanceof ($this->model())) {
+        // if ($location instanceof ($this->model())) {
+        if ($location instanceof Node) {
             
-            if ($this->node()->tree_id !== $location->tree_id) {
+            if ($this->tree->id !== $location->tree_id) {
                 throw new TreeException("Error a passed node to the method [". __METHOD__ ." ] don't belong the tree", 1);                
             }
 
@@ -278,7 +279,7 @@ class Pointer
     public function toLastChild()
     {
         if (($last_child = $this->node()->lastChild()) === null) {
-            throw new TreeException("Error: Node has no children to move to the last.", 1);
+            throw new TreeException("Error: Node: '{$this->node()->name}' has no children.", 1);
         }
 
         return $this->to($last_child);
