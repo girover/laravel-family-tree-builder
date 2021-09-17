@@ -162,6 +162,11 @@ trait Nodeable
         if (! $node instanceof static) {
             throw new TreeException("Parameter passed to [".__METHOD__."] should be instance of [".get_class($this)."]", 1);
         }
+
+        // only male nodes allowed to do this
+        if ($this->gender == 'f') {
+            throw new TreeException($this->name." is a woman, and only men allowed to use ".__METHOD__, 1);
+        }
         
         $this->wives()->attach($node->id,['date_of_marriage'=>$this->date_of_marriage]
         );
