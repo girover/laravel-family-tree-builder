@@ -241,7 +241,7 @@ To assign wife to this node:
     $wife = Node::find($female_node_id)
     return $node->getMarriedWith($wife);
 ```
-When trying to do this with of female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if $node is a woman Exception will be thrown.
+When trying to do this with of female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if ```$node``` is a woman Exception will be thrown.
 ##
 To divorce a wife
 ```php
@@ -249,7 +249,7 @@ To divorce a wife
     $wife    = Node::find($female_node_id)
     return $husband->divorce($wife);
 ```
-When trying to do this with of female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if $husband is a woman Exception will be thrown.
+When trying to do this with of female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if ```$husband``` is a woman Exception will be thrown.
 ##
 To determine if the node is root in the tree
 ```php
