@@ -74,8 +74,8 @@ trait Nodeable
             // then delete children, otherwise delete just the node
             if ($model->shift_children === null) {
                 return static::tree($model->tree_id)
-                ->where('location', 'like', $model->location.'%')
-                ->delete();
+                             ->where('location', 'like', $model->location.'%')
+                             ->delete();
             }
         });
     }
@@ -334,7 +334,7 @@ trait Nodeable
     public function ancestors()
     {
         return static::tree($this->tree_id)
-                     ->where('location', '!=', $this->location)
+                     ->locationNot($this->location)
                      ->whereIn('location', Location::allLocationsToRoot($this->location))
                      ->get();
     }
@@ -371,7 +371,8 @@ trait Nodeable
      */
     public function uncles()
     {
-        return $this->siblingsOfFatherQuery()->where('gender', 'm')->get();
+        return $this->siblingsOfFatherQuery()->male()->get();
+        // return $this->siblingsOfFatherQuery()->where('gender', 'm')->get();
     }
 
     /**
@@ -381,7 +382,7 @@ trait Nodeable
      */
     public function aunts()
     {
-        return $this->siblingsOfFatherQuery()->where('gender', 'f')->get();
+        return $this->siblingsOfFatherQuery()->female()->get();
     }
 
     /**
@@ -413,7 +414,7 @@ trait Nodeable
      */
     public function sons()
     {
-        return $this->childrenQuery()->where('gender', 'm')->get();
+        return $this->childrenQuery()->male()->get();
     }
 
     /**
@@ -424,7 +425,7 @@ trait Nodeable
      */
     public function daughters()
     {
-        return $this->childrenQuery()->where('gender', 'f')->get();
+        return $this->childrenQuery()->female()->get();
     }
 
     /**
@@ -444,7 +445,7 @@ trait Nodeable
      */
     public function countSons()
     {
-        return $this->childrenQuery()->where('gender', 'm')->count();
+        return $this->childrenQuery()->male()->count();
     }
 
     /**
@@ -454,7 +455,7 @@ trait Nodeable
      */
     public function countDaughters()
     {
-        return $this->childrenQuery()->where('gender', 'f')->count();
+        return $this->childrenQuery()->female()->count();
     }
 
     /**
@@ -544,7 +545,7 @@ trait Nodeable
      */
     public function maleDescendants()
     {
-        return $this->descendantsQuery()->where('gender', 'm')->get();
+        return $this->descendantsQuery()->male()->get();
     }
 
     /**
@@ -554,7 +555,7 @@ trait Nodeable
      */
     public function femaleDescendants()
     {
-        return $this->descendantsQuery()->where('gender', 'f')->get();
+        return $this->descendantsQuery()->female()->get();
     }
 
     /**
@@ -618,8 +619,8 @@ trait Nodeable
     public function firstChild()
     {
         return  static::tree($this->tree_id)
-                     ->where('location', 'REGEXP', Location::childrenREGEXP($this->location))
-                     ->orderBy('location', 'ASC')
+                     ->locationREGEXP(Location::childrenREGEXP($this->location))
+                     ->locationOrder('ASC')
                      ->first();
         // return (new EagerTree($this->tree_id))->pointer->silentlyTo($this)->firstChild();
     }
@@ -632,8 +633,8 @@ trait Nodeable
     public function lastChild()
     {
         return  static::tree($this->tree_id)
-                     ->where('location', 'REGEXP', Location::childrenREGEXP($this->location))
-                     ->orderBy('location', 'DESC')
+                     ->locationREGEXP(Location::childrenREGEXP($this->location))
+                     ->locationOrder('DESC')
                      ->first();
     }
 
@@ -667,7 +668,7 @@ trait Nodeable
      */
     public function brothers()
     {
-        return $this->siblingsQuery()->where('gender', 'm')->get();
+        return $this->siblingsQuery()->male()->get();
     }
 
     /**
@@ -677,7 +678,7 @@ trait Nodeable
      */
     public function sisters()
     {
-        return $this->siblingsQuery()->where('gender', 'f')->get();
+        return $this->siblingsQuery()->female()->get();
     }
 
     /**
@@ -701,7 +702,7 @@ trait Nodeable
     public function nextSibling()
     {
         return $this->siblingsQuery()
-                    ->where('location', '>', $this->location)
+                    ->locationAfter($this->location)
                      ->first();
     }
 
@@ -713,7 +714,7 @@ trait Nodeable
     public function nextSiblings()
     {
         return $this->siblingsQuery()
-                    ->where('location', '>', $this->location)
+                    ->locationAfter($this->location)
                      ->get();
     }
 
@@ -725,8 +726,8 @@ trait Nodeable
     public function nextBrother()
     {
         return $this->siblingsQuery()
-                    ->where('location', '>', $this->location)
-                    ->where('gender', 'm')
+                    ->locationAfter($this->location)
+                    ->male()
                      ->first();
     }
 
@@ -738,8 +739,8 @@ trait Nodeable
     public function nextBrothers()
     {
         return $this->siblingsQuery()
-                    ->where('location', '>', $this->location)
-                    ->where('gender', 'm')
+                    ->locationAfter($this->location)
+                    ->male()
                      ->get();
     }
 
@@ -751,8 +752,8 @@ trait Nodeable
     public function nextSister()
     {
         return $this->siblingsQuery()
-                    ->where('location', '>', $this->location)
-                    ->where('gender', 'f')
+                    ->locationAfter($this->location)
+                    ->female()
                      ->first();
     }
 
@@ -764,8 +765,8 @@ trait Nodeable
     public function nextSisters()
     {
         return $this->siblingsQuery()
-                    ->where('location', '>', $this->location)
-                    ->where('gender', 'f')
+                    ->locationAfter($this->location)
+                    ->female()
                      ->get();
     }
 
@@ -778,8 +779,8 @@ trait Nodeable
     {
         return $this->siblingsQuery()
                      ->withoutGlobalScope(OrderByLocationScope::class)
-                     ->orderBy('location', 'desc')
-                     ->where('location', '<', $this->location)
+                     ->locationBefore($this->location)
+                     ->locationOrder('desc')
                      ->first();
     }
 
@@ -791,7 +792,7 @@ trait Nodeable
     public function prevSiblings()
     {
         return $this->siblingsQuery()
-                    ->where('location', '<', $this->location)
+                    ->locationBefore($this->location)
                     ->get();
     }
 
@@ -804,9 +805,9 @@ trait Nodeable
     {
         return $this->siblingsQuery()
                     ->withoutGlobalScope(OrderByLocationScope::class)
-                    ->orderBy('location', 'desc')
-                    ->where('location', '<', $this->location)
-                    ->where('gender', 'm')
+                    ->locationBefore($this->location)
+                    ->male()
+                    ->locationOrder('desc')
                      ->first();
     }
 
@@ -818,8 +819,8 @@ trait Nodeable
     public function prevBrothers()
     {
         return $this->siblingsQuery()
-                    ->where('location', '<', $this->location)
-                    ->where('gender', 'm')
+                    ->locationBefore($this->location)
+                    ->male()
                      ->get();
     }
 
@@ -832,9 +833,9 @@ trait Nodeable
     {
         return $this->siblingsQuery()
                     ->withoutGlobalScope(OrderByLocationScope::class)
-                    ->orderBy('location', 'desc')
-                    ->where('location', '<', $this->location)
-                    ->where('gender', 'f')
+                    ->locationBefore($this->location)
+                    ->female()
+                    ->locationOrder('desc')
                      ->first();
     }
 
@@ -846,8 +847,8 @@ trait Nodeable
     public function prevSisters()
     {
         return $this->siblingsQuery()
-                    ->where('location', '<', $this->location)
-                    ->where('gender', 'f')
+                    ->locationBefore($this->location)
+                    ->female()
                      ->get();
     }
 
@@ -871,7 +872,7 @@ trait Nodeable
     {
         return  $this->siblingsQuery()
                      ->withoutGlobalScope(OrderByLocationScope::class)
-                     ->orderBy('location', 'desc')
+                     ->locationOrder('desc')
                      ->first();
     }
 
@@ -883,7 +884,7 @@ trait Nodeable
     public function firstBrother()
     {
         return  $this->siblingsQuery()
-                     ->where('gender', 'm')
+                     ->male()
                      ->first();
     }
 
@@ -896,8 +897,8 @@ trait Nodeable
     {
         return  $this->siblingsQuery()
                      ->withoutGlobalScope(OrderByLocationScope::class)
-                     ->orderBy('location', 'desc')
-                     ->where('gender', 'm')
+                     ->male()
+                     ->locationOrder('desc')
                      ->first();
     }
 
@@ -909,7 +910,7 @@ trait Nodeable
     public function firstSister()
     {
         return  $this->siblingsQuery()
-                     ->where('gender', 'f')
+                     ->female()
                      ->first();
     }
 
@@ -922,8 +923,8 @@ trait Nodeable
     {
         return  $this->siblingsQuery()
                      ->withoutGlobalScope(OrderByLocationScope::class)
-                     ->orderBy('location', 'desc')
-                     ->where('gender', 'f')
+                     ->female()
+                     ->locationOrder('desc')
                      ->first();
     }
 

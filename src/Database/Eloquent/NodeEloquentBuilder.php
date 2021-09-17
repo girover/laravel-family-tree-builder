@@ -67,6 +67,19 @@ class NodeEloquentBuilder extends Builder
     }
 
     /**
+     * to add constraint orderBy
+     * to QueryBuilder
+     * @param string $order
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
+    public function locationOrder($order)
+    {
+        $this->orderBy('location', $order);
+
+        return $this;
+    }
+
+    /**
      * to add constraint [models have locations bigger than given location]
      * to QueryBuilder
      * @param string $location
