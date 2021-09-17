@@ -22,7 +22,7 @@ trait Treeable
     private $pointer = null;
 
     /**
-     * @var \Girover\Tree\Database\Eloquent\NodeCollection|null
+     * @var \Illuminate\Database\Eloquent\Collection|null
      */
     protected $nodes = null;
 
@@ -209,7 +209,7 @@ trait Treeable
     * Load specific number of generation of this tree
     *
     * @param int $number_of_generations
-    * @return \Girover\Tree\Database\Eloquent\NodeCollection
+    * @return \Illuminate\Database\Eloquent\Collection
     */
     public function loadGenerations($number_of_generations)
     {
@@ -282,7 +282,7 @@ trait Treeable
     /**
      * Get all Nodes in this Tree from database Table 'nodes'
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAllNodes()
     {
@@ -293,7 +293,7 @@ trait Treeable
     /**
      * Get all Nodes in this Tree from database Table 'nodes'
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAllNodesFromPointer()
     {
@@ -321,7 +321,7 @@ trait Treeable
      * Get All Nodes that are in specific generation depending on given number
      *
      * @param int $generation
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function nodesOfGeneration($generation = 1)
     {
@@ -397,7 +397,7 @@ trait Treeable
      *      Get the Wives node of the given location
      *---------------------------------------------------
      * @param string $location
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection collection of wives
+     * @return \Illuminate\Database\Eloquent\Collection collection of wives
      */
     public function wivesOf($location)
     {
@@ -408,7 +408,7 @@ trait Treeable
      * Get all ancestors nodes of the given location in this tree.
      *
      * @param string $location
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function ancestorsOf($location)
     {
@@ -428,7 +428,7 @@ trait Treeable
     /**
      * get all loaded nodes in this tree
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection;
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function loadedNodes()
     {
@@ -521,7 +521,7 @@ trait Treeable
      * Get nodes who have the longest location in the tree
      * Get the newest generation members in the tree
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function nodesOnTop()
     {

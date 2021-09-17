@@ -2,7 +2,6 @@
 
 namespace Girover\Tree\Traits;
 
-use Girover\Tree\Database\Eloquent\NodeCollection;
 use Girover\Tree\Database\Eloquent\NodeEloquentBuilder;
 use Girover\Tree\Database\Sql\Update;
 use Girover\Tree\Exceptions\TreeException;
@@ -49,12 +48,12 @@ trait Nodeable
     /**
      * {@inheritdoc}
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function newCollection(array $models = [])
-    {
-        return new NodeCollection($models);
-    }
+    // public function newCollection(array $models = [])
+    // {
+    //     return new NodeCollection($models);
+    // }
 
     public static function bootNodeable()
     {
@@ -193,7 +192,7 @@ trait Nodeable
     /**
      * Relationship for Getting images og the node.
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function images()
     {
@@ -330,7 +329,7 @@ trait Nodeable
     /**
      * Getting all ancestors nodes from the location where the Pointer indicates to
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function ancestors()
     {
@@ -355,7 +354,7 @@ trait Nodeable
     /**
      * Get all uncles and aunts of this node.
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     protected function siblingsOfFather()
     {
@@ -368,7 +367,7 @@ trait Nodeable
     /**
      * Get all uncles of this node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function uncles()
     {
@@ -378,7 +377,7 @@ trait Nodeable
     /**
      * Get all aunts of this node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function aunts()
     {
@@ -399,7 +398,7 @@ trait Nodeable
     /**
      * Get all children of this node.
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function children()
     {
@@ -410,7 +409,7 @@ trait Nodeable
      * Get all direct sons of this node
      * without descendants
      *
-     * @param \Girover\Tree\Database\Eloquent\NodeCollection
+     * @param \Illuminate\Database\Eloquent\Collection
      */
     public function sons()
     {
@@ -421,7 +420,7 @@ trait Nodeable
      * Get all direct daughters of this node
      * without descendants
      *
-     * @param \Girover\Tree\Database\Eloquent\NodeCollection
+     * @param \Illuminate\Database\Eloquent\Collection
      */
     public function daughters()
     {
@@ -531,7 +530,7 @@ trait Nodeable
     /**
      * getting all descendants fo the node
      * 
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function descendants()
     {
@@ -541,7 +540,7 @@ trait Nodeable
     /**
      * getting all male descendants fo the node
      * 
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function maleDescendants()
     {
@@ -551,7 +550,7 @@ trait Nodeable
     /**
      * getting all female descendants fo the node
      * 
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function femaleDescendants()
     {
@@ -654,7 +653,7 @@ trait Nodeable
     /**
      * getting all sibling of the node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function siblings()
     {
@@ -664,7 +663,7 @@ trait Nodeable
     /**
      * getting all brothers of the node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function brothers()
     {
@@ -674,7 +673,7 @@ trait Nodeable
     /**
      * getting all brothers of the node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function sisters()
     {
@@ -685,7 +684,7 @@ trait Nodeable
      * Get all siblings of this node
      * including the node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function siblingsAndSelf()
     {
@@ -709,7 +708,7 @@ trait Nodeable
     /**
      * Get all siblings those are younger than this node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function nextSiblings()
     {
@@ -734,7 +733,7 @@ trait Nodeable
     /**
      * Get the all next brother who are younger than this node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function nextBrothers()
     {
@@ -760,7 +759,7 @@ trait Nodeable
     /**
      * Get the all next sisters who are younger than this node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function nextSisters()
     {
@@ -787,7 +786,7 @@ trait Nodeable
     /**
      * Get all siblings those are older than this node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function prevSiblings()
     {
@@ -814,7 +813,7 @@ trait Nodeable
     /**
      * Get the all previous brothers who are older than this node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function prevBrothers()
     {
@@ -842,7 +841,7 @@ trait Nodeable
     /**
      * Get the all previous sisters who are older than this node
      *
-     * @return \Girover\Tree\Database\Eloquent\NodeCollection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function prevSisters()
     {
