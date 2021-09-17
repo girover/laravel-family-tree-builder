@@ -120,7 +120,7 @@ After creating the Root in the tree, let's add first child for the Root.
     // Or you can do this instead
     $tree->movePointerToRoot()->newSon($first_child_data);
 ```
-Now our tree consists of two nodes, Root node and first child of Root.   
+Now our tree consists of two nodes, Root node and the first child of Root.   
 To view this tree in the browser you can do this:
 ```php
     <?php
@@ -175,14 +175,14 @@ You can call the following method on the object of Tree
 Every tree has a Pointer inside it, and this Pointer indicates to one node.    
 Pointer can move through all nodes in the tree.     
 Because the Pointer indicates to a node inside the tree, so it can call all [methods of Model ```Node```](#node) .   
-To get this pointer you can do the following:
+To get the pointer you can do the following:
 ```php
     use Girover\Tree\Models\Tree;
 
     $tree    = Tree::find(1);
     $pointer = $tree->pointer();
 ```
-And now you can use this pointer to make a lot of actions inside the tree, for example moving through nodes, deleting and retrieving more information about nodes.   
+And now you can use the pointer to make a lot of actions inside the tree, for example moving through nodes, deleting and retrieving more information about nodes.   
 Eg.
 To move the pointer to location ```aa.aa.df.se```:
 ```php
@@ -236,12 +236,12 @@ To get only husbands who are not divorced you can do this:
     $node->husband()->withoutDivorced()->get();
 ```
 ##
-To assign wife to this node:
+To assign wife to a node:
 ```php
     $wife = Node::find($female_node_id)
     return $node->getMarriedWith($wife);
 ```
-When trying to do this with of female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if ```$node``` is a woman Exception will be thrown.
+When trying to do this with a female node (woman) a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   so if ```$node``` is a woman Exception will be thrown.
 ##
 To divorce a wife
 ```php
@@ -249,7 +249,7 @@ To divorce a wife
     $wife    = Node::find($female_node_id)
     return $husband->divorce($wife);
 ```
-When trying to do this with of female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if ```$husband``` is a woman Exception will be thrown.
+When trying to do this with a female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if ```$husband``` is a woman Exception will be thrown.
 ##
 To determine if the node is root in the tree
 ```php
@@ -266,7 +266,7 @@ Determine if the node has siblings
     return $node->hasSiblings(); // returns true or false
 ```
 ##
-to get which generation number in the tree this node is:
+to get which generation number in the tree the node is:
 ```php
     return $node->generation(); // int or null
 ```
@@ -288,7 +288,7 @@ To get the ancestor that matches the given number as parameter.
     $node->ancestor(3); // returns the father of grandfather
 ```
 ##
-To get all ancestors of this node
+To get all ancestors of a node
 ```php
     return $node->ancestors();
 ```
@@ -541,13 +541,13 @@ to make an existing node as child of another node. Note this will move the node 
     $node->makeAsSonOf($location);
 ```
 ##
-The next code will create father for this node, only if this node is a Root in the tree.
+The next code will create father for a node, only if this node is a Root in the tree.
 ```php
     $data = ['name' => $name, 'birth_date' => $birth_date];
     $node->createFather($data);
 ```
 ##
-To display the tree of this node starting from the node itself.
+To display the tree of a node starting from the node itself.
 ```php
     $node->toHtml();
     // or
