@@ -101,7 +101,7 @@ Let's start adding the First node **```Root```** to the tree.
     $tree->createRoot($data);
 ```
 **What if you want to make a new Root?**   
-In this case you can use the method **```newRoot```** to create new Root, and the previous Root will become a child of the new created Root.
+In this case you can use the method **```newRoot```** to create new Root, and the previously created Root will become a child of the new created Root.
 ```php
     $new_root_data = ['name'=>'new_root', 'birth_date'=>'2001-01-01'];
 
