@@ -10,7 +10,6 @@ use Girover\Tree\GlobalScopes\ImagesEagerRelationScope;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
 use Girover\Tree\Location;
-use Girover\Tree\Models\Node;
 use Girover\Tree\Models\Tree;
 use Illuminate\Support\Facades\DB;
 
@@ -114,13 +113,13 @@ trait Nodeable
 
         // get wives
         if ($this->gender == 'f') {
-            return  $this->belongsToMany(get_class(), $pivot, 'node_wife_id', 'node_husband_id')
-                              ->withPivot('node_husband_id', 'node_wife_id', 'date_of_marriage', 'marriage_desc');
+            return  $this->belongsToMany(get_class(), $pivot, 'wife_id', 'husband_id')
+                              ->withPivot('husband_id', 'wife_id', 'date_of_marriage', 'marriage_desc');
         }
         
         // get husbands
-        return $this->belongsToMany(get_class(), $pivot, 'node_husband_id', 'node_wife_id')
-                         ->withPivot('node_husband_id', 'node_wife_id', 'date_of_marriage', 'marriage_desc');
+        return $this->belongsToMany(get_class(), $pivot, 'husband_id', 'wife_id')
+                         ->withPivot('husband_id', 'wife_id', 'date_of_marriage', 'marriage_desc');
     }
 
     /**
@@ -188,7 +187,7 @@ trait Nodeable
         if ($this->gender == 'f') {
             throw new TreeException($this->name." is a woman, but only men are allowed to divorce", 1);
         }
-        return $this->wives()->where('node_wife_id', $node->id)->update(['divorced'=> true]);
+        return $this->wives()->where('wife_id', $node->id)->update(['divorced'=> true]);
     }
 
     /**
