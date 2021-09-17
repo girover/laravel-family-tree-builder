@@ -215,6 +215,24 @@ To get all wives of the node:
     // to add constraints
     $node->wives()->where('name', $name)->get();
 ```
+When trying to get wives of female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   
+Note that this will get divorced wives too.   
+To get only wives who are not divorced you can do this:
+```php
+    $node->wives()->withoutDivorced()->get();
+```
+To get husbands of the node:
+```php
+    $node->husband;
+    // to add constraints
+    $node->husband()->where('name', $name)->get();
+```
+When trying to get husband of male node a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   
+Note that this will get divorced husbands too.   
+To get only husbands who are not divorced you can do this:
+```php
+    $node->husband()->withoutDivorced()->get();
+```
 To assign wife to this node:
 ```php
     $wife = Node::find($female_node_id)

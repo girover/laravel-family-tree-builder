@@ -10,7 +10,7 @@
         | string : Name of the model that holds trees information.
         | The database table that contains all trees.
         */
-        'tree_model' => \Girover\Tree\Models\Tree::class,
+        'tree_model' => Girover\Tree\Models\Tree::class,
         /*
         |--------------------------------------------------------------------------
         | Model That contain nodes data in database
@@ -19,7 +19,7 @@
         | string : Name of the model that tree gets data from.
         | The database table that contains all nodes.
         */
-        'node_model' => \Girover\Tree\Models\Node::class,
+        'node_model' => Girover\Tree\Models\Node::class,
         
         /*
         |--------------------------------------------------------------------------
@@ -29,7 +29,7 @@
         | string : Name of the model that tree's nodes' images has.
         | The database table that contains all nodes images.
         */
-        'images_model'=> \Girover\Tree\Models\NodeImage::class,
+        'images_model'=> Girover\Tree\Models\NodeImage::class,
         
         
         /*

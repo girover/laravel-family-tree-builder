@@ -93,6 +93,36 @@ trait Nodeable
         $this->fillable = array_merge($this->fillable, static::$fillable_cols);
     }
 
+    public function scopeWithoutDivorced($query)
+    {
+        return $query->where('divorced', false);
+    }
+
+    /**
+     * Get partners of the node
+     * if true is provided, get divorced partners with
+     * if false is provided, don't get divorced partners with
+     *
+     * @param bool $with_divorced
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * 
+     * @throws \Girover\Tree\Exceptions\TreeException
+     */
+    protected function partners()
+    {
+        $pivot = (config('node_relationships.wives.pivot'))??'marriages';
+
+        // get wives
+        if ($this->gender == 'f') {
+            return  $this->belongsToMany(get_class(), $pivot, 'node_wife_id', 'node_husband_id')
+                              ->withPivot('node_husband_id', 'node_wife_id', 'date_of_marriage', 'marriage_desc');
+        }
+        
+        // get husbands
+        return $this->belongsToMany(get_class(), $pivot, 'node_husband_id', 'node_wife_id')
+                         ->withPivot('node_husband_id', 'node_wife_id', 'date_of_marriage', 'marriage_desc');
+    }
+
     /**
      * Relationship for Getting wives og the node.
      *
@@ -100,10 +130,25 @@ trait Nodeable
      */
     public function wives()
     {
-        $pivot = (config('node_relationships.wives.pivot'))??'marriages';
+        if ($this->gender == 'f') {
+            throw new TreeException("Woman cannot have wives", 1);            
+        }
 
-        return $this->belongsToMany(get_class(), $pivot, 'node_husband_id', 'node_wife_id')
-                    ->withPivot('node_husband_id', 'node_wife_id', 'date_of_marriage', 'marriage_desc');
+        return $this->partners();
+    }
+
+    /**
+     * Get husband of the node
+     *
+     * @throws \Girover\Tree\Exceptions\TreeException
+     */
+    public function husband()
+    {
+        if ($this->gender == 'm') {
+            throw new TreeException("Man cannot have husband", 1);            
+        }
+
+        return $this->partners();
     }
 
     /**
@@ -120,6 +165,19 @@ trait Nodeable
         
         $this->wives()->attach($node->id,['date_of_marriage'=>$this->date_of_marriage]
         );
+    }
+
+    /**
+     * Divorce
+     *
+     * @param \Girover\Tree\Models\Node $node
+     */
+    public function divorce($node)
+    {
+        if (! $node instanceof static) {
+            throw new TreeException("Parameter passed to [".__METHOD__."] should be instance of [".get_class($this)."]", 1);
+        }
+        //
     }
 
     /**
@@ -1052,22 +1110,6 @@ trait Nodeable
 
             throw new TreeException("Error: ".$th->getMessage(), 1);
         }
-    }
-
-    /**
-     * Get all siblings those are older than this node
-     *
-     */
-    public function husband()
-    {
-        if ($this->gender == 'm') {
-            return null;
-        }
-        // return $this->tree($this->tree_id)
-        //             ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
-        //             ->locationNot($this->location)
-        //             ->where('location', '<', $this->location)
-        //             ->get();
     }
 
     /**
