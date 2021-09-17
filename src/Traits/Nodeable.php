@@ -176,13 +176,19 @@ trait Nodeable
      * Divorce
      *
      * @param \Girover\Tree\Models\Node $node
+     * @return int
      */
     public function divorce($node)
     {
         if (! $node instanceof static) {
             throw new TreeException("Parameter passed to [".__METHOD__."] should be instance of [".get_class($this)."]", 1);
         }
-        //
+
+        // only men are allowed to divorce
+        if ($this->gender == 'f') {
+            throw new TreeException($this->name." is a woman, but only men are allowed to divorce", 1);
+        }
+        return $this->wives()->where('node_wife_id', $node->id)->update(['divorced'=> true]);
     }
 
     /**
