@@ -221,6 +221,7 @@ To get only wives who are not divorced you can do this:
 ```php
     $node->wives()->withoutDivorced()->get();
 ```
+- - -
 To get husbands of the node:
 ```php
     $node->husband;
@@ -233,6 +234,7 @@ To get only husbands who are not divorced you can do this:
 ```php
     $node->husband()->withoutDivorced()->get();
 ```
+* * *
 To assign wife to this node:
 ```php
     $wife = Node::find($female_node_id)
