@@ -220,7 +220,7 @@ When trying to get wives of female node a ```Girover\Tree\Exceptions\TreeExcepti
 Note that this will get divorced wives too.   
 To get only wives who are not divorced you can do this:
 ```php
-    $node->wives()->withoutDivorced()->get();
+    $node->wives()->ignoreDivorced()->get();
 ```
 ##
 To get husbands of the node:

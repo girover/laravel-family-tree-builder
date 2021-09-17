@@ -92,7 +92,7 @@ trait Nodeable
         $this->fillable = array_merge($this->fillable, static::$fillable_cols);
     }
 
-    public function scopeWithoutDivorced($query)
+    public function scopeIgnoreDivorced($query)
     {
         return $query->where('divorced', false);
     }
