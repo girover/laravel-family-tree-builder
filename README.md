@@ -246,6 +246,7 @@ To determine if the node is root in the tree
 ```php
     return $node->isRoot(); // returns true or false
 ```
+##
 Determine if the node has children
 ```php
     return $node->hasChildren(); // returns true or false
