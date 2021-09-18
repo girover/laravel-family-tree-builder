@@ -5,12 +5,39 @@ namespace Girover\Tree\Tests;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Location;
 use Girover\Tree\Models\Node;
+use Girover\Tree\Models\Tree;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class NodeTest extends TestCase
 {
     use DatabaseTransactions;
 
+
+    /**
+     * -------------------------------------------
+     * testing isRoot method
+     * --------------------------------------------
+     */
+    /** @test */
+    public function test_isRoot_should_returns_true_when_applying_on_root_node()
+    {
+        // Create new Tree in database.
+        $tree = Tree::factory()->create();
+        // Create Root node for the created tree.
+        $root = $tree->createRoot(['name'=>'majed']); 
+        $this->assertTrue($root->isRoot());
+    }
+
+    /** @test */
+    public function test_isRoot_should_returns_false_when_applying_on_none_root_node()
+    {
+        // Create new Tree in database.
+        $tree = Tree::factory()->create();
+        // Create Root node for the created tree.
+        $root = $tree->createRoot(['name'=>'majed']); 
+        $son = $root->newSon(['name'=>'son name']);
+        $this->assertFalse($son->isRoot());
+    }
 
     /**
      * -------------------------------------------
@@ -37,8 +64,7 @@ class NodeTest extends TestCase
         // create new node in database table
         $father = Node::factory()->create();
 
-        $son = $father->newSon([]);
-        $this->assertDatabaseHas('nodes', ['name'=>$son->name]);
+        $father->newSon([]);
     }
 
     /** @test */
@@ -47,6 +73,7 @@ class NodeTest extends TestCase
         $this->expectException(TreeException::class);
         // create new node in database table
         $father = Node::factory()->create();
+        // no name is provided in data array
         $son_data  = ['f_name'=>'father name']; 
         $father->newSon($son_data);        
     }
