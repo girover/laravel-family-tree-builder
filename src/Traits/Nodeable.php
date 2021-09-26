@@ -8,8 +8,9 @@ use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\ImagesEagerRelationScope;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
+use Girover\Tree\Helpers\DBHelper;
+use Girover\Tree\Helpers\AssetsHelper;
 use Girover\Tree\Location;
-use Girover\Tree\Models\Tree;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -108,7 +109,7 @@ trait Nodeable
      */
     protected function partners()
     {
-        $pivot = (config('node_relationships.wives.pivot'))??'marriages';
+        $pivot = DBHelper::marriageTable();
 
         // get wives
         if ($this->gender == 'f') {
@@ -190,17 +191,27 @@ trait Nodeable
     }
 
     /**
-     * Relationship for Getting images og the node.
+     * Relationship for Getting images of the node.
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function images()
     {
-        $model = (null !== config('tree.node_relationships.images.model'))
-                ? config('tree.node_relationships.images.model')
-                : 'Girover\Tree\Models\images';
+        $model = DBHelper::nodeImageModel();
 
         return $this->hasMany($model, 'node_id', 'id');
+    }
+
+    /**
+     * Save photo for the node in the storage folder
+     *
+     * @return string
+     */
+    public function storePhoto($photo, $new_name = '')
+    {
+        $new_name = (!$new_name) ?: '_' . $new_name;
+        $photo_name = date('YmdHis') . $new_name . '.'.$photo->extension();
+        $photo->storeAs(AssetsHelper::photosStorageFolder(), $photo_name, 'public');
     }
 
     /**
@@ -1157,7 +1168,7 @@ trait Nodeable
      */
     public function toTree()
     {
-        $tree = Tree::find($this->tree_id);
+        $tree = DBHelper::treeModel()::find($this->tree_id);
         $tree->pointer()->to($this);
 
         return $tree->draw();

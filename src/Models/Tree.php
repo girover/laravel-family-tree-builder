@@ -15,8 +15,4 @@ class Tree extends Model
     // protected $fillable = ['user_id','name', 'basic_node'];
     protected $guarded = [];
 
-    protected static function newFactory()
-    {
-        return \Girover\Tree\Database\Factories\TreeFactory::new();
-    }
 }

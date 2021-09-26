@@ -21,10 +21,9 @@
 namespace Girover\Tree;
 
 use BadMethodCallException;
+use Girover\Tree\Helpers\DBHelper;
 use Girover\Tree\Database\Sql\Delete;
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Models\Node;
-use Girover\Tree\Models\Tree;
 use Illuminate\Support\Facades\DB;
 
 class Pointer
@@ -55,9 +54,9 @@ class Pointer
      * @return void
      */
     // public function __construct(FamilyTree $family_tree, Node $indicated_node = null)
-    public function __construct(Tree $tree = null)
+    public function __construct($tree = null)
     {
-        $this->tree = $tree; // This has to be the first init in Pointer, because next line depend on it
+        $this->tree = $tree;
     }
 
     /**
@@ -72,17 +71,17 @@ class Pointer
      */
     public function __call($name, $args)
     {
-        if ($this->node() === null && method_exists(Node::class, $name)) {
+        if ($this->node() === null && method_exists(DBHelper::nodeModel(), $name)) {
             throw new TreeException("Pointer is not indicating to any node in Tree [".$this->tree->name."].", 1);
         }
 
-        if ($this->node() instanceof Node) {
-            if (method_exists(Node::class, $name)) {
+        if ($this->node() instanceof (DBHelper::nodeModel())) {
+            if (method_exists(DBHelper::nodeModel(), $name)) {
                 return call_user_func([$this->node(), $name], ...$args);
             }
         }
 
-        throw new BadMethodCallException('Call undefined method [ '.$name.' ] on class: '.Node::class);
+        throw new BadMethodCallException('Call undefined method [ '.$name.' ] on class: '.DBHelper::nodeModel());
     }
 
     /**
@@ -92,7 +91,7 @@ class Pointer
     */
     public function model()
     {
-        return config('tree.node_model');
+        return DBHelper::nodeModel();
     }
 
     /**
@@ -171,7 +170,7 @@ class Pointer
     public function to($location)
     {
         // if ($location instanceof ($this->model())) {
-        if ($location instanceof (Node::class)) {
+        if ($location instanceof (DBHelper::nodeModel())) {
             
             if ($this->tree->id !== $location->tree_id) {
                 throw new TreeException("Error a passed node to the method [". __METHOD__ ." ] don't belong the tree", 1);                

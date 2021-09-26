@@ -3,9 +3,10 @@
 namespace Girover\Tree\Traits;
 
 use Girover\Tree\Exceptions\TreeException;
+use Girover\Tree\GlobalScopes\OrderByLocationScope;
+use Girover\Tree\Helpers\DBHelper;
+use Girover\Tree\Helpers\AssetsHelper;
 use Girover\Tree\Location;
-use Girover\Tree\Models\Node;
-use Girover\Tree\Models\Tree;
 use Girover\Tree\Pointer;
 use Illuminate\Support\Facades\Session;
 
@@ -14,6 +15,16 @@ use Illuminate\Support\Facades\Session;
  */
 trait Treeable
 {
+    /**
+     * mass assignment fillable properties
+     *
+     * @var array
+     */
+    protected static $fillable_cols = [
+        'user_id',
+        'name',
+    ];
+
     /**
      * represent a node in the tree [current node]
      *
@@ -41,30 +52,14 @@ trait Treeable
      */
     public $ancestors = []; // array holding ancestries of location
 
-    /**
-     * @var string
-     */
-    public $tree_photos_path = 'images/photos/';
-
     public static function bootTreeable()
     {
     }
 
     public function initializeTreeable()
     {
-        // $this->pointer = Node::find(1);
-        // $this->makePointer();
+        $this->fillable = array_merge($this->fillable, static::$fillable_cols);
         $this->makePointer();
-    }
-
-    public function nodeModel()
-    {
-        return Node::class;
-    }
-
-    public function treeModel()
-    {
-        return Tree::class;
     }
 
     /**
@@ -76,7 +71,7 @@ trait Treeable
     */
     public function nodesTable()
     {
-        return config('tree.nodes_table.name');
+        return DBHelper::nodeTable();
     }
 
     /**
@@ -116,7 +111,7 @@ trait Treeable
      */
     public function movePointerToRoot()
     {
-        return $this->pointer->to(Node::tree($this->id)->first());
+        return $this->pointer->to(DBHelper::nodeModel()::tree($this->id)->first());
     }
 
     /**
@@ -126,7 +121,7 @@ trait Treeable
     */
     public function nodesQuery()
     {
-        return Node::where('tree_id', $this->id);
+        return DBHelper::nodeModel()::where('tree_id', $this->id);
     }
 
     /**
@@ -211,10 +206,10 @@ trait Treeable
     * @param int $number_of_generations
     * @return \Illuminate\Database\Eloquent\Collection
     */
-    public function loadGenerations($number_of_generations)
+    public function loadGenerations($number_of_generations = 1)
     {
         return  $this->nodes = $this->nodesQuery()
-                                    ->where('location', 'REGEXP', Location::multiGenerationsREGEXP($this->pointer->location(), $number_of_generations))
+                                    ->locationREGEXP(Location::multiGenerationsREGEXP($this->pointer->location(), $number_of_generations))
                                     ->get();
     }
 
@@ -325,7 +320,7 @@ trait Treeable
      */
     public function nodesOfGeneration($generation = 1)
     {
-        return $this->nodesQuery()->where('location', 'REGEXP', Location::singleGenerationREGEXP($generation))
+        return $this->nodesQuery()->locationREGEXP(Location::singleGenerationREGEXP($generation))
                     ->get();
     }
 
@@ -335,7 +330,7 @@ trait Treeable
      */
     public function root()
     {
-        return $this->hasOne(Node::class)->first();
+        return $this->hasOne(DBHelper::nodeModel(), 'tree_id')->first();
     }
 
     /**
@@ -422,7 +417,7 @@ trait Treeable
      */
     public function nodes()
     {
-        return $this->hasMany(Node::class);
+        return $this->hasMany(DBHelper::nodeModel(), 'tree_id');
     }
 
     /**
@@ -485,7 +480,9 @@ trait Treeable
      */
     public function countGenerations()
     {
-        $node = $this->nodesQuery()->orderByRaw('LENGTH(location) DESC')->first();
+        $node = $this->nodesQuery()
+                     ->withoutGlobalScope(OrderByLocationScope::class)
+                     ->orderByRaw('LENGTH(location) DESC')->first();
 
         if (null !== $node) {
             return Location::generation($node->location);
@@ -525,7 +522,9 @@ trait Treeable
      */
     public function nodesOnTop()
     {
-        return $this->nodesQuery()->orderByRaw('LENGTH(location) DESC')->get();
+        return $this->nodesQuery()
+                    ->withoutGlobalScope(OrderByLocationScope::class)
+                    ->orderByRaw('LENGTH(location) DESC')->get();
     }
 
     /**
@@ -541,7 +540,7 @@ trait Treeable
                         <div class="empty-node">
                         <div class="node-info-wrapper">
                             <div class="node-info">
-                                <div class="node-img"><img src="'. asset(config('tree.assets.path_avatar').'icon_male.png').'"></div>
+                                <div class="node-img"><img src="'. asset(AssetsHelper::photosAssetFolder().'icon_male.png').'"></div>
                                 <div class="name">add new</div>                
                             </div>
                         </div>
@@ -626,7 +625,7 @@ trait Treeable
                          <div class="female-node wife empty">
                             <div class="node-info-wrapper">
                                 <div class="node-info">
-                                    <div class="node-img"><img src="'.asset(config('tree.assets.path_avatar').'icon_female.png').'"></div>
+                                    <div class="node-img"><img src="'.asset(AssetsHelper::photosAssetFolder().'icon_female.png').'"></div>
                                     <div class="name">'. __('add wife') .'</div>
                                     <div class="wife-number">0</div>
                                 </div>
@@ -649,7 +648,7 @@ trait Treeable
         $id = 2;
         $hText = '';
         foreach ($wives as $wife) {
-            $photo = public_path($this->tree_photos_path . $wife->photo);
+            $photo = public_path(AssetsHelper::photosAssetFolder() . $wife->photo);
             $photo = (file_exists($photo) and ! is_dir($photo)) ? $wife->photo : $this->photoIcon($wife->gender);
 
             $hText .= '<a class="node " data-id="'.$wife->id.'" data-counter="' . $this->nodesCount++ . '"
@@ -657,7 +656,7 @@ trait Treeable
                          <div class="female-node wife-'.$id.'">
                             <div class="node-info-wrapper">
                                 <div class="node-info">
-                                    <div class="node-img"><img src="'.asset(config('tree.assets.path_avatar').$photo).'"></div>
+                                    <div class="node-img"><img src="'.asset(AssetsHelper::photosAssetFolder().$photo).'"></div>
                                     <div class="name">'.$wife->name.'</div>
                                     <div class="wife-number">'.$id.'</div>
                                 </div>
@@ -684,8 +683,7 @@ trait Treeable
             return '';
         }
 
-        // $photo = public_path($this->tree_photos_path.$node->photo);
-        $photo = config('tree.assets.path_avatar').$node->photo;
+        $photo = AssetsHelper::photosAssetFolder().$node->photo;
         
         $photo = (file_exists($photo) && ! is_dir($photo))
                   ? $node->photo
@@ -706,7 +704,7 @@ trait Treeable
                     '<div class="'.$node_class.' '.$role.'">	    
                         <div class="node-info-wrapper">
                             <div class="node-info">
-                                <div class="node-img"><img src="'.asset(config('tree.assets.path_avatar').$photo).'"></div>
+                                <div class="node-img"><img src="'.asset(AssetsHelper::photosAssetFolder().$photo).'"></div>
                                 <div class="name">'.$node->name.'</div>
                                 '.(($role === 'wife') ? '<div class="wife-number">1</div>' : '').'
                             </div>

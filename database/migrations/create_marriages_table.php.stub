@@ -22,7 +22,7 @@ class CreateMarriagesTable extends Migration
             $table->boolean('divorced')->default(false);
             $table->timestamps();
 
-            $table->unique(['node_husband_id', 'node_wife_id']);
+            $table->unique(['husband_id', 'wife_id']);
         });
     }
 

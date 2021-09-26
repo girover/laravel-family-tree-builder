@@ -2,6 +2,7 @@
 
 namespace Girover\Tree\Traits;
 
+use Girover\Tree\Helpers\DBHelper;
 use Girover\Tree\Exceptions\TreeException;
 use Illuminate\Support\Facades\DB;
 
@@ -11,31 +12,22 @@ use Illuminate\Support\Facades\DB;
 trait HasTree
 {
     /**
-     * Create new tree for this user
-     *
-     * @param array $data data of the new tree
-     * @param int|null $id the id of this user
-     *
-     * @return
-     */
-    public function createTree($data, $id = null)
-    {
-        $data['user_id'] = $id;
-        if ($id === null) {
-            $data['user_id'] = $this->id;
-        }
-
-        return config('tree.tree_model')::create($data);
-    }
-
-    /**
      * Get all trees that belongs this user
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function trees()
     {
-        return $this->hasMany(config('tree.tree_model'), 'user_id', 'id');
+        return $this->hasMany(DBHelper::treeModel(), 'user_id', 'id');
+    }
+    /**
+     * Get all trees that belongs this user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function tree($id)
+    {
+        return DBHelper::treeModel()::find($id);
     }
 
     /**
@@ -50,12 +42,12 @@ trait HasTree
 
         try {
             // deleting tree from table `trees`
-            config('tree.tree_model')::where('user_id', $this->id)
+            DBHelper::treeModel()::where('user_id', $this->id)
                                      ->where('id', $id)
                                       ->delete();
 
             // deleting tree nodes from table `nodes`
-            config('tree.node_model')::where('tree_id', $id)
+            DBHelper::nodeModel()::where('tree_id', $id)
                                         ->delete();
 
             DB::commit();
@@ -75,7 +67,7 @@ trait HasTree
      */
     public function deleteAllTrees()
     {
-        return config('tree.tree_model')::where('user_id', $this->id)
+        return DBHelper::treeModel()::where('user_id', $this->id)
                                         ->delete();
     }
 

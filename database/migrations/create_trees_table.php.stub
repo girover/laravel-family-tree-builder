@@ -17,7 +17,7 @@ class CreateTreesTable extends Migration
             $table->integerIncrements('id')->unsigned();
             $table->bigInteger('user_id')->unsigned()->nullable();
             $table->string('name', 100)->unique();
-            $table->string('basic_node', 500)->nullable();
+            $table->string('basic_node', 255)->nullable();
             $table->enum('active', ['0', '1'])->default('1');
             $table->timestamps();
 

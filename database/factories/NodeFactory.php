@@ -11,8 +11,10 @@ class NodeFactory extends Factory
 {
     protected $model = Node::class;
 
+    
     public function definition()
     {
+        // $this->model =  ModelService::nodeModel();
         return [
             'name' => $this->faker->name(),
             'location' => Location::firstPossibleSegment(),

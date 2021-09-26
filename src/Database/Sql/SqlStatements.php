@@ -2,7 +2,7 @@
 
 namespace Girover\Tree\Database\Sql;
 
-use Girover\Tree\Location;
+use Girover\Tree\Helpers\DBHelper;
 
 class SqlStatements
 {
@@ -16,7 +16,7 @@ class SqlStatements
     public static function table()
     {
         if (is_null(static::$table)) {
-            static::$table = config('tree.nodes_table.name');
+            static::$table = DBHelper::nodeTable();
         }
 
         return static::$table;

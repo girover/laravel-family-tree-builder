@@ -2,6 +2,7 @@
 
 namespace Girover\Tree;
 
+use Girover\Tree\Commands\TreeCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -26,5 +27,23 @@ class TreeServiceProvider extends PackageServiceProvider
                 'create_nodes_table',
                 'create_trees_table'
             );
+    }
+
+    public function boot()
+    {
+        
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                TreeCommand::class,
+            ]);
+
+            // to publish photos folder to storage folder
+            $this->publishes([
+                $this->package->basePath('/../resources/storage') => base_path("storage/app/public"),
+            ], "{$this->package->shortName()}-storage");
+
+        }
+
+        parent::boot();
     }
 }

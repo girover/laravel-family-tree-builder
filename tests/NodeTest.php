@@ -4,13 +4,12 @@ namespace Girover\Tree\Tests;
 
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Location;
-use Girover\Tree\Models\Node;
-use Girover\Tree\Models\Tree;
+use Girover\Tree\Tests\Traits\Factoryable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class NodeTest extends TestCase
 {
-    use DatabaseTransactions;
+    use DatabaseTransactions, Factoryable;
 
 
     /**
@@ -22,9 +21,10 @@ class NodeTest extends TestCase
     public function test_isRoot_should_returns_true_when_applying_on_root_node()
     {
         // Create new Tree in database.
-        $tree = Tree::factory()->create();
+        $tree = $this->createTree();
         // Create Root node for the created tree.
         $root = $tree->createRoot(['name'=>'majed']); 
+
         $this->assertTrue($root->isRoot());
     }
 
@@ -32,9 +32,9 @@ class NodeTest extends TestCase
     public function test_isRoot_should_returns_false_when_applying_on_none_root_node()
     {
         // Create new Tree in database.
-        $tree = Tree::factory()->create();
+        $tree = $this->createTree();
         // Create Root node for the created tree.
-        $root = $tree->createRoot(['name'=>'majed']); 
+        $root = $tree->createRoot(['name'=>'root']); 
         $son = $root->newSon(['name'=>'son name']);
         $this->assertFalse($son->isRoot());
     }
@@ -45,12 +45,12 @@ class NodeTest extends TestCase
      * --------------------------------------------
      */
     /** @test */
-    public function test_can_create_new_son_for_node()
+    public function it_can_create_new_son_for_node()
     {
         // create new node in database table
-        $node = Node::factory()->create();
+        $node = $this->createNode();
 
-        $son = $node->newSon(Node::factory()->make()->toArray());
+        $son = $node->newSon($this->makeNode()->toArray());
         $this->assertDatabaseHas('nodes', ['name'=>$son->name]);
         
         $this->assertTrue(Location::areFatherAndSon($node->location, $son->location));
@@ -58,23 +58,23 @@ class NodeTest extends TestCase
     }
 
     /** @test */
-    public function test_can_not_create_new_son_for_node_if_no_data_are_provided()
+    public function it_can_not_create_new_son_for_node_if_no_data_are_provided()
     {
         $this->expectException(TreeException::class);
         // create new node in database table
-        $father = Node::factory()->create();
+        $father = $this->createNode();
 
         $father->newSon([]);
     }
 
     /** @test */
-    public function test_can_not_create_new_son_for_node_if_no_name_is_provided()
+    public function it_can_not_create_new_son_for_node_if_no_name_is_provided()
     {
         $this->expectException(TreeException::class);
         // create new node in database table
-        $father = Node::factory()->create();
+        $father = $this->createNode();
         // no name is provided in data array
         $son_data  = ['f_name'=>'father name']; 
-        $father->newSon($son_data);        
+        $father->newSon($son_data);      
     }
 }

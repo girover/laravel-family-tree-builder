@@ -64,19 +64,17 @@ this will publish config file ```config\tree.php```
 
 After publishing assets, they will be placed in `public` folder 
 of the project in a folder called `vendor/tree`.
-If you want to move any of these assets to other directories,
-you need to provide the new path.
-You can change assets configs in `config/tree.php` file.
+You are free to move any of these assets to other directories,
+but if you move images folder `vendor/tree/images`,   
+You need to provide the new path of images folder in assets configs in `config/tree.php` file.
 
 ```php
 'assets' => [
-    'path_avatar' => 'vendor/tree/images/', // Path to images folder
-    'path_css'    => 'vendor/tree/css/',    // Path to css folder
-    'path_js'     => 'vendor/tree/js/',     // Path to js folder
+    'path_to_avatars' => 'vendor/tree/images/', // Path to images folder
 ]
 ```
 
-Yous should add the CSS file ```public/vendor/tree/css/tree.css``` to your blade file to get the tree styled.
+You should add the CSS file ```public/vendor/tree/css/tree.css``` to your blade file to get the tree styled.
 
 ## Usage
 
@@ -233,7 +231,7 @@ When trying to get husband of male node a ```Girover\Tree\Exceptions\TreeExcepti
 Note that this will get divorced husbands too.   
 To get only husbands who are not divorced you can do this:
 ```php
-    $node->husband()->withoutDivorced()->get();
+    $node->husband()->ignoreDivorced()->get();
 ```
 ##
 To assign wife to a node:
