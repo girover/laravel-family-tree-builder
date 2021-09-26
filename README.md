@@ -31,35 +31,18 @@ This package allows you to build family trees.
 
 ## Installation
 
-You can install the package via **composer**:
+You can add the package via **composer**:
 
 ```bash
 composer require girover/tree
 ```
 
-To publish **migrations** and migrate them, run this command in your terminal:
-
+now you can install the package by running Artisan command   
 ```bash
-php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-migrations"
-php artisan migrate
+php artisan tree:install
 ```
 
-To publish **assets** you can run the following command:
-```bash
-php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-assets"
-```
-
-For publishing **translation** run the following command:
-```bash
-php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-translations"
-```
-
-You can publish the **config** files with command:
-```bash
-php artisan vendor:publish --provider="Girover\Tree\TreeServiceProvider" --tag="tree-config"
-```
-
-this will publish config file ```config\tree.php```
+this will publish config file ```config\tree.php``` to the config folder of your Laravel application
 ## Assets
 
 After publishing assets, they will be placed in `public` folder 
