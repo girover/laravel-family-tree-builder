@@ -48,13 +48,13 @@ php artisan tree:install
 ```
 
 this will publish these files:   
-**Config file ```config\tree.php``` to the config folder of your Laravel application.   
-**Migrations files to folder ```Database\migrations``` in your application.   
-**Migrate the published migrations.   
-**Assets (CSS, JS) to the public folder in your application and be placed in ```public\vendor\tree```.    
-**Photos folder for nodes to the storage folder in your application   ```Storage\app\public\vendor\tree\images```    
-**Translation JSON files to the ```resources\lang\vendor\tree```   
-**in addition it will create symbolic link to the storage folder.
+ - Config file ```config\tree.php``` to the config folder of your Laravel application.   
+ - Migrations files to folder ```Database\migrations``` in your application.   
+ - Migrate the published migrations.   
+ - Assets (CSS, JS) to the public folder in your application and be placed in ```public\vendor\tree```.    
+ - Photos folder for nodes to the storage folder in your application   ```Storage\app\public\vendor\tree\images```    
+ - Translation JSON files to the ```resources\lang\vendor\tree```   
+ - in addition it will create symbolic link to the storage folder.
 ## Assets
 
 After publishing assets, they will be placed in `public` folder 
