@@ -546,6 +546,29 @@ To create new daughter for the node:
     $node->newChild($data, 'f');
 ```
 ##
+To add add photo for the node:
+```php
+    <?php
+
+    namespace App\Http\Controllers;
+
+    use Illuminate\Http\Request;
+    use Girover\Tree\Models\Node;
+
+    class PersonController extends Controller
+    {
+        public function addPhoto(Request $request)
+        {
+            $person     = Node::find(1);
+            $photo      = $request->file('photo');
+
+            $person->newPhoto($photo, 'new name');
+
+            return view('persons.index')->with('message', 'photo was added');
+        }
+    }
+```
+##
 to make an existing node as child of another node. Note this will move the node with its children to be child of the given location
 ```php
     $location = 'aa.fd';
