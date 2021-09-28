@@ -4,11 +4,11 @@
 
         /*
         |--------------------------------------------------------------------------
-        | Model That contains trees information in database
+        | Model That contains tree information in database
         |--------------------------------------------------------------------------
         |
-        | string : Name of the model that holds trees information.
-        | The database table that contains all trees.
+        | If model in the Laravel application creates to represents Tree
+        | its name should be provided here
         */
         'tree_model' => \Girover\Tree\Models\Tree::class,
 
@@ -17,8 +17,8 @@
         | Model That contain nodes data in database
         |--------------------------------------------------------------------------
         |
-        | string : Name of the model that tree gets data from.
-        | The database table that contains all nodes.
+        | If model in the Laravel application creates to represents Node
+        | its name should be provided here
         */
         'node_model' => \Girover\Tree\Models\Node::class,
         
