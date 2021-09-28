@@ -105,6 +105,7 @@ $tree = Tree::create(
 );
 ```
 
+|     |
 | --- |
 | As you can see from the code, the model ```Girover\Tree\Models\Tree``` is used to represent the family tree, but if you want to use your own model, then you must use trait ```Girover\Tree\Traits\Nodeable``` in your model, and also add the model name to the ```config/tree.php```.| 
 
