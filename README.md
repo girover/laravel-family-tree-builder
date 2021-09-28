@@ -51,8 +51,8 @@ this command will take care of these things:
  - Publishing Config file ```config\tree.php``` to the config folder of your Laravel application.   
  - Publishing migration files to folder ```Database\migrations``` in your application.   
  - Migrate the published migrations.   
- - Publishing Assets (CSS, JS) to the public folder in your application and be placed in ```public\vendor\tree```.    
- - Copy Photos folder for nodes to the storage folder in your application   ```Storage\app\public\vendor\tree\images```    
+ - Publishing Assets (CSS, JS) to the public folder in your application and they will be placed in ```public\vendor\tree```.    
+ - Copying Photos folder for nodes to the storage folder in your application   ```Storage\app\public\vendor\tree\images```    
  - Publishing JSON Translation files to the ```resources\lang\vendor\tree```   
  - In addition it will create symbolic link to the storage folder.
 ## Assets
@@ -64,18 +64,28 @@ You are free to move any of these assets to other directories.
 You should add the CSS file ```public/vendor/tree/css/tree.css``` to your blade file to get the tree styled.
 
 ## Images
-Every node in a tree has a photo, and these photos will be stored in the 
-```storage/app/public/vendor/tree/images```   
-And they should be in storage not in public folder of the application,therefor it's important 
-to create symbolic link to the photos folder if you want to change the folder name or the path.
-but if you move images folder `vendor/tree/images`,   
-You need to provide the new path of images folder in assets configs in `config/tree.php` file.
-
+Every node in a tree has a photo, and these photos by default will be stored in the 
+```storage/app/public/vendor/tree/images```.   
+In the ```config\tree.php``` file you can see the photos configurations in order to when you want
+to save them, in the public folder or the storage folder.
 ```php
-'assets' => [
-    'path_to_avatars' => 'vendor/tree/images/', // Path to images folder
-]
+'photos' => [
+            'public'=>false, // if false, photos will be stored in Storage folder. 
+                             // if true, photos will be saved in public folder
+            'folder' => 'vendor/tree/images/', // images folder
+        ]
 ```
+So if you want photos to be placed in the public folder, you have to set ```true``` to ```public```.    
+and you are free to change the folder that contains photos, but you have to provide it.   
+For example if you want to save photos in folder named ```tree-images``` inside public folder, then 
+you should change configs to be like this:    
+```php
+'photos' => [
+            'public'=>true, 
+            'folder' => 'tree-images/',
+        ]
+```
+**Note:**  When saving photos in storage folder, it is important to create symbolic link to the photos folder.
 
 
 ## Usage

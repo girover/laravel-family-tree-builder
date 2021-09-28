@@ -63,8 +63,8 @@
         | change public value to 'true'.
         */
         'photos' => [
-            'public'=>false, // if true, photos will be stored in storage. 
-                            //if false, photos will be saved in public folder
+            'public'=>false, // if false, photos will be stored in Storage folder. 
+                             // if true, photos will be saved in public folder
             'folder' => 'vendor/tree/images/', // images folder
         ]
 
