@@ -104,7 +104,9 @@ $tree = Tree::create(
     ]
 );
 ```
-After creating the tree, you can start to add as many node as you like.    
+As you can see from the code, the model ```Girover\Tree\Models\Tree``` is used to represent the family tree, but if you want to use your own model, then you must use trait ```Girover\Tree\Traits\Nodeable``` in your model, and also add the model name to the ```config/tree.php```.   
+
+After creating the tree, you can start to add as many nodes as you like.    
 Let's start adding the First node **```Root```** to the tree.
 ```php
     $data = ['name'=>'root', 'birth_date'=>'2000-01-01'];
