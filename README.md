@@ -13,6 +13,7 @@
   - [Introduction](#introduction)
   - [Installation](#installation)
   - [Assets](#assets)
+  - [Images](#images)
   - [Usage](#usage)
     - [Tree](#tree)
     - [Pointer](#pointer)
@@ -75,7 +76,7 @@ to save them, in the public folder or the storage folder.
             'folder' => 'vendor/tree/images/', // images folder
         ]
 ```
-So if you want photos to be placed in the public folder, you have to set ```true``` to ```public```.    
+So if you want photos to be placed in the public folder, you have to set ```public``` to ```true```.    
 and you are free to change the folder that contains photos, but you have to provide it.   
 For example if you want to save photos in folder named ```tree-images``` inside public folder, then 
 you should change configs to be like this:    
