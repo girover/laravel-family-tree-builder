@@ -104,7 +104,7 @@ $tree = Tree::create(
     ]
 );
 ```
-***As you can see from the code, the model ```Girover\Tree\Models\Tree``` is used to represent the family tree, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Family```, but then you must use trait ```Girover\Tree\Traits\Nodeable``` in the model, and also change the model name in the ```config/tree.php```.***
+***As you can see from the code, the model ```Girover\Tree\Models\Tree``` is used to represent the family tree, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Family```, but then you must use trait ```Girover\Tree\Traits\Treeable``` in the model, and also change the model name in the ```config/tree.php```.***
 
 After creating the tree, you can start to add as many nodes as you like.    
 Let's start adding the First node **```Root```** to the tree.
@@ -212,9 +212,7 @@ And now you can get the node data by calling the method ```node()```
 Note that we called method ```node()``` after we had called the method ```to($location)```.   
 This is because when a tree instance created, its Pointer indicates to ```null```.
 ### Node
-Node is a person in the tree. Nodes in tree are connected with other nodes by using **Location mechanism**, where every node has its own location, which is a set of characters separated by ```dot```.    
-If the Root location in the tree is ```aa```, so the first child's location 
-of this root will be ```aa.aa```, and the second will be ```aa.ab``` and so on.
+Node is a person in a tree and every nodes in tree is connected with another one by using **Location mechanism**.
 
 To get the node you can do this:
 ```php
@@ -222,6 +220,7 @@ To get the node you can do this:
 
     $node    = Node::find(1);
 ```
+***As you can see from the code, the model ```Girover\Tree\Models\Node``` is used to represent the person in a tree, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Person```, but then you must use trait ```Girover\Tree\Traits\Nodeable``` in the model, and also change the model name in the ```config/tree.php```.***
 ##
 To get all wives of the node:
 ```php
