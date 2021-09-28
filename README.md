@@ -40,26 +40,34 @@ You can add the package via **composer**:
 composer require girover/tree
 ```
 
-before install the package you should configure your database.  
+Before installing the package you should configure your database.  
 
 now you can install the package by running Artisan command   
 ```bash
 php artisan tree:install
 ```
 
-this will publish these files:   
- - Config file ```config\tree.php``` to the config folder of your Laravel application.   
- - Migrations files to folder ```Database\migrations``` in your application.   
+this command will take care of these things:   
+ - Publishing Config file ```config\tree.php``` to the config folder of your Laravel application.   
+ - Publishing migration files to folder ```Database\migrations``` in your application.   
  - Migrate the published migrations.   
- - Assets (CSS, JS) to the public folder in your application and be placed in ```public\vendor\tree```.    
- - Photos folder for nodes to the storage folder in your application   ```Storage\app\public\vendor\tree\images```    
- - Translation JSON files to the ```resources\lang\vendor\tree```   
- - in addition it will create symbolic link to the storage folder.
+ - Publishing Assets (CSS, JS) to the public folder in your application and be placed in ```public\vendor\tree```.    
+ - Copy Photos folder for nodes to the storage folder in your application   ```Storage\app\public\vendor\tree\images```    
+ - Publishing JSON Translation files to the ```resources\lang\vendor\tree```   
+ - In addition it will create symbolic link to the storage folder.
 ## Assets
 
-After publishing assets, they will be placed in `public` folder 
+After publishing assets (CSS, JS), they will be placed in `public` folder 
 of the project in a folder called `vendor/tree`.
-You are free to move any of these assets to other directories,
+You are free to move any of these assets to other directories.    
+
+You should add the CSS file ```public/vendor/tree/css/tree.css``` to your blade file to get the tree styled.
+
+## Images
+Every node in a tree has a photo, and these photos will be stored in the 
+```storage/app/public/vendor/tree/images```   
+And they should be in storage not in public folder of the application,therefor it's important 
+to create symbolic link to the photos folder if you want to change the folder name or the path.
 but if you move images folder `vendor/tree/images`,   
 You need to provide the new path of images folder in assets configs in `config/tree.php` file.
 
@@ -69,7 +77,6 @@ You need to provide the new path of images folder in assets configs in `config/t
 ]
 ```
 
-You should add the CSS file ```public/vendor/tree/css/tree.css``` to your blade file to get the tree styled.
 
 ## Usage
 

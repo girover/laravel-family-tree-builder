@@ -55,15 +55,17 @@
 
         /*
         |--------------------------------------------------------------------------
-        | Photos folder inside storage folder
+        | Photos folder
         |--------------------------------------------------------------------------
-        | this folder will be placed in storage/app/public 
-        | Do not forget to create a symbolic link from 
-        | public/storage to storage/app/public by command:
-        | php artisan storage:link
+        | By default, photos will be stored in Storage folder
+        | under storage/app/public/vendor/tree/images/
+        | if you want to store them in public folder of the application,
+        | change public value to 'true'.
         */
-        'storage' => [
-            'photos_folder' => 'vendor/tree/images/', // Path to image folder
+        'photos' => [
+            'public'=>false, // if true, photos will be stored in storage. 
+                            //if false, photos will be saved in public folder
+            'folder' => 'vendor/tree/images/', // images folder
         ]
 
     ];

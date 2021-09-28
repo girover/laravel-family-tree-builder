@@ -9,7 +9,7 @@ use Girover\Tree\GlobalScopes\ImagesEagerRelationScope;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
 use Girover\Tree\Helpers\DBHelper;
-use Girover\Tree\Helpers\AssetsHelper;
+use Girover\Tree\Helpers\Photos;
 use Girover\Tree\Location;
 use Illuminate\Support\Facades\DB;
 
@@ -203,15 +203,22 @@ trait Nodeable
     }
 
     /**
-     * Save photo for the node in the storage folder
-     *
-     * @return string
+     * add photo to for node
+     * @param \Illuminate\Http\UploadedFile $photo
+     * @param string $name
+     * @return bool
      */
-    public function storePhoto($photo, $new_name = '')
+    public function newPhoto($photo, $name = '')
     {
-        $new_name = (!$new_name) ?: '_' . $new_name;
-        $photo_name = date('YmdHis') . $new_name . '.'.$photo->extension();
-        $photo->storeAs(AssetsHelper::photosStorageFolder(), $photo_name, 'public');
+        $new_name = Photos::newName($photo, $name);
+
+        if (Photos::store($photo, $new_name)) {
+            $this->photo = $new_name;
+            
+            return $this->save();
+        }
+        
+        return false;
     }
 
     /**

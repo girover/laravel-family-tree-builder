@@ -1,3 +1,5 @@
+Adding $node->newPhoto() to README.md
+--------------------------------------------------
 getMarriedWith($node)
 -Should pass date_of_marriage and marriage_desc to the method.
 -When calling method two times on the same node

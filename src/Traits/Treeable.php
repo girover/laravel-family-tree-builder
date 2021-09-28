@@ -5,7 +5,7 @@ namespace Girover\Tree\Traits;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\Helpers\DBHelper;
-use Girover\Tree\Helpers\AssetsHelper;
+use Girover\Tree\Helpers\Photos;
 use Girover\Tree\Location;
 use Girover\Tree\Pointer;
 use Illuminate\Support\Facades\Session;
@@ -540,7 +540,7 @@ trait Treeable
                         <div class="empty-node">
                         <div class="node-info-wrapper">
                             <div class="node-info">
-                                <div class="node-img"><img src="'. asset(AssetsHelper::photosAssetFolder().'icon_male.png').'"></div>
+                                <div class="node-img"><img src="'. asset(Photos::assetFolder().'icon_male.png').'"></div>
                                 <div class="name">add new</div>                
                             </div>
                         </div>
@@ -625,7 +625,7 @@ trait Treeable
                          <div class="female-node wife empty">
                             <div class="node-info-wrapper">
                                 <div class="node-info">
-                                    <div class="node-img"><img src="'.asset(AssetsHelper::photosAssetFolder().'icon_female.png').'"></div>
+                                    <div class="node-img"><img src="'.asset(Photos::assetFolder().'icon_female.png').'"></div>
                                     <div class="name">'. __('add wife') .'</div>
                                     <div class="wife-number">0</div>
                                 </div>
@@ -648,7 +648,7 @@ trait Treeable
         $id = 2;
         $hText = '';
         foreach ($wives as $wife) {
-            $photo = public_path(AssetsHelper::photosAssetFolder() . $wife->photo);
+            $photo = public_path(Photos::assetFolder() . $wife->photo);
             $photo = (file_exists($photo) and ! is_dir($photo)) ? $wife->photo : $this->photoIcon($wife->gender);
 
             $hText .= '<a class="node " data-id="'.$wife->id.'" data-counter="' . $this->nodesCount++ . '"
@@ -656,7 +656,7 @@ trait Treeable
                          <div class="female-node wife-'.$id.'">
                             <div class="node-info-wrapper">
                                 <div class="node-info">
-                                    <div class="node-img"><img src="'.asset(AssetsHelper::photosAssetFolder().$photo).'"></div>
+                                    <div class="node-img"><img src="'.asset(Photos::assetFolder().$photo).'"></div>
                                     <div class="name">'.$wife->name.'</div>
                                     <div class="wife-number">'.$id.'</div>
                                 </div>
@@ -683,7 +683,7 @@ trait Treeable
             return '';
         }
 
-        $photo = AssetsHelper::photosAssetFolder().$node->photo;
+        $photo = Photos::assetFolder().$node->photo;
         
         $photo = (file_exists($photo) && ! is_dir($photo))
                   ? $node->photo
@@ -704,7 +704,7 @@ trait Treeable
                     '<div class="'.$node_class.' '.$role.'">	    
                         <div class="node-info-wrapper">
                             <div class="node-info">
-                                <div class="node-img"><img src="'.asset(AssetsHelper::photosAssetFolder().$photo).'"></div>
+                                <div class="node-img"><img src="'.asset(Photos::assetFolder().$photo).'"></div>
                                 <div class="name">'.$node->name.'</div>
                                 '.(($role === 'wife') ? '<div class="wife-number">1</div>' : '').'
                             </div>
