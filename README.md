@@ -546,7 +546,7 @@ To create new daughter for the node:
     $node->newChild($data, 'f');
 ```
 ##
-To add add photo for the node:
+To add uploaded photo to the node:
 ```php
     <?php
 
@@ -559,12 +559,12 @@ To add add photo for the node:
     {
         public function addPhoto(Request $request)
         {
-            $person     = Node::find(1);
+            $person     = Node::find($request->person_id);
             $photo      = $request->file('photo');
 
             $person->newPhoto($photo, 'new name');
 
-            return view('persons.index')->with('message', 'photo was added');
+            return view('persons.index')->with('success', 'photo was added');
         }
     }
 ```
