@@ -169,6 +169,11 @@ trait Nodeable
             throw new TreeException($this->name." is a woman, and only men allowed to use ".__METHOD__, 1);
         }
 
+        // Person cannot get married with himself
+        if ($wife->gender == 'm') {
+            throw new TreeException("Man is not allowed to get married with a man ".__METHOD__, 1);
+        }
+
         // the person is already married with given wife
         $mar = $this->wives()->where('wife_id', $wife->id)
                              ->where('husband_id', $this->id)
@@ -176,10 +181,16 @@ trait Nodeable
         if (! is_null($mar)) {            
             throw new TreeException('"'.$this->name.'" is already married with "'.$wife->name.'"', 1);    
         }
+
+        // Person cannot get married with himself
+        if ($this->id === $wife->id) {            
+            throw new TreeException('Person cannot get married with himself', 1);    
+        }
         
         if (empty($data)) {
             return $this->wives()->attach($wife->id);
         }
+        
         $marriage_info['date_of_marriage'] = isset($data['date_of_marriage']) ?$data['date_of_marriage']: null;
         $marriage_info['marriage_desc'] = isset($data['marriage_desc']) ?$data['marriage_desc']: null;
 
