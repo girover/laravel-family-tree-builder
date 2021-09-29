@@ -104,7 +104,7 @@ $tree = Tree::create(
     ]
 );
 ```
-***As you can see, the model ```Girover\Tree\Models\Tree``` is corresponding table 'trees', but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Family```, but then you must use trait ```Girover\Tree\Traits\Treeable``` in the model, and also change the model name in the ```config/tree.php```.***
+***As you can see, the model ```Girover\Tree\Models\Tree``` is corresponding the table 'trees' in database, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Family```, but then you must use trait ```Girover\Tree\Traits\Treeable``` in the model, and also change the model name in the ```config/tree.php```.***
 
 After creating the tree, you can start to add as many nodes as you like.    
 Let's start adding the First node **```Root```** to the tree.
@@ -212,7 +212,7 @@ And now you can get the node data by calling the method ```node()```
 Note that we called method ```node()``` after we had called the method ```to($location)```.   
 This is because when a tree instance created, its Pointer indicates to ```null```.
 ### Node
-Node is a person in a tree and every nodes in tree is connected with another one by using **Location mechanism**.
+Node is a person in a tree and every node in tree is connected with another one by using **Location mechanism**.
 
 To get the node you can do this:
 ```php
@@ -220,7 +220,7 @@ To get the node you can do this:
 
     $node    = Node::find(1);
 ```
-***As you can see from the code, the model ```Girover\Tree\Models\Node``` is corresponding table 'nodes', but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Person```, but then you must use trait ```Girover\Tree\Traits\Nodeable``` in the model, and also change the model name in the ```config/tree.php```.***
+***As you can see, the model ```Girover\Tree\Models\Node``` is corresponding the table 'nodes' in database, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Person```, but then you must use trait ```Girover\Tree\Traits\Nodeable``` in the model, and also change the model name in the ```config/tree.php```.***
 ##
 To get all wives of the node:
 ```php
@@ -251,6 +251,7 @@ To get only husbands who are not divorced you can do this:
 To assign wife to a node:
 ```php
     $wife = Node::find($female_node_id)
+       
     return $node->getMarriedWith($wife);
 ```
 When trying to do this with a female node (woman) a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   so if ```$node``` is a woman Exception will be thrown.
@@ -259,6 +260,7 @@ To divorce a wife
 ```php
     $husband = Node::find($male_node_id)
     $wife    = Node::find($female_node_id)
+       
     return $husband->divorce($wife);
 ```
 When trying to do this with a female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if ```$husband``` is a woman Exception will be thrown.
@@ -508,6 +510,7 @@ To get the last sister of the node.
 To create new sibling for the node:
 ```php
     $data = ['name'=>$name, 'birth_date'=>$birth_date];
+       
     return $node->newSibling($data, 'm'); // m = male
 ```
 ##
@@ -576,7 +579,8 @@ to make an existing node as child of another node. Note this will move the node 
     $node->makeAsSonOf($location);
 ```
 ##
-The next code will create father for a node, only if this node is a Root in the tree.
+The next code will create father for a node, only if this node is a Root in the tree.   
+If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` will be thrown.
 ```php
     $data = ['name' => $name, 'birth_date' => $birth_date];
     $node->createFather($data);
