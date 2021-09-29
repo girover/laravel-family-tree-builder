@@ -251,8 +251,9 @@ To get only husbands who are not divorced you can do this:
 To assign wife to a node:
 ```php
     $wife = Node::find($female_node_id)
+    $data = ['date_of_marriage'=>'2000/01/01', 'marriage_desc'=>'description'];
        
-    return $node->getMarriedWith($wife);
+    return $node->getMarriedWith($wife, $data);
 ```
 When trying to do this with a female node (woman) a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   so if ```$node``` is a woman Exception will be thrown.
 ##

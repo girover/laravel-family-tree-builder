@@ -156,7 +156,7 @@ trait Nodeable
      * @param \Girover\Tree\Models\Node $node
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getMarriedWith($node)
+    public function getMarriedWith($node, $data=[])
     {
         if (! $node instanceof static) {
             throw new TreeException("Parameter passed to [".__METHOD__."] should be instance of [".get_class($this)."]", 1);
@@ -167,8 +167,13 @@ trait Nodeable
             throw new TreeException($this->name." is a woman, and only men allowed to use ".__METHOD__, 1);
         }
         
-        $this->wives()->attach($node->id,['date_of_marriage'=>$this->date_of_marriage]
-        );
+        if (empty($data)) {
+            return $this->wives()->attach($node->id);
+        }
+        $marriage_info['date_of_marriage'] = isset($data['date_of_marriage']) ?$data['date_of_marriage']: null;
+        $marriage_info['marriage_desc'] = isset($data['marriage_desc']) ?$data['marriage_desc']: null;
+
+        return $this->wives()->attach($node->id,$marriage_info);
     }
 
     /**
@@ -217,7 +222,7 @@ trait Nodeable
             
             return $this->save();
         }
-        
+
         return false;
     }
 
