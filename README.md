@@ -586,7 +586,7 @@ If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` wil
     $node->createFather($data);
 ```
 ##
-To display the tree of a node starting from the node itself.
+To convert the tree to Html starting from the node itself.
 ```php
     $node->toHtml();
     // or
@@ -622,7 +622,7 @@ for example:
 ## Testing
 
 ```bash
-composer test
+./vendor/bin/PHPUnit
 ```
 
 ## Changelog
