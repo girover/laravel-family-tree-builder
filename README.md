@@ -93,7 +93,7 @@ you should change configs to be like this:
 
 ### Tree
 
-To start building a tree or creating a new tree, it is very simple and thanks to [Eloquent](https://laravel.com/docs/8.x/eloquent) Models from [laravel](http://laravel.com). 
+To start building a tree or creating a new tree, it is very simple and thanks to [Eloquent](https://laravel.com/docs/8.x/eloquent) models from [Laravel](http://laravel.com). 
 
 ```php
 use Girover\Tree\Models\Tree;
