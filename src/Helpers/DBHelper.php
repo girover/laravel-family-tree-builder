@@ -2,7 +2,7 @@
 
 namespace Girover\Tree\Helpers;
 
-abstract class DBHelper{
+class DBHelper{
     /**
      * Eloquent model that corresponding the table 'trees'
      * @return string class of model

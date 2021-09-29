@@ -13,6 +13,8 @@ use Girover\Tree\Helpers\Photos;
 use Girover\Tree\Location;
 use Illuminate\Support\Facades\DB;
 
+use function PHPUnit\Framework\isNull;
+
 /**
  *
  */
@@ -153,12 +155,12 @@ trait Nodeable
     /**
      * assign a wife to this node
      *
-     * @param \Girover\Tree\Models\Node $node
+     * @param \Girover\Tree\Models\Node $wife
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getMarriedWith($node, $data=[])
+    public function getMarriedWith($wife, $data=[])
     {
-        if (! $node instanceof static) {
+        if (! $wife instanceof static) {
             throw new TreeException("Parameter passed to [".__METHOD__."] should be instance of [".get_class($this)."]", 1);
         }
 
@@ -166,14 +168,22 @@ trait Nodeable
         if ($this->gender == 'f') {
             throw new TreeException($this->name." is a woman, and only men allowed to use ".__METHOD__, 1);
         }
+
+        // the person is already married with given wife
+        $mar = $this->wives()->where('wife_id', $wife->id)
+                             ->where('husband_id', $this->id)
+                             ->first();
+        if (! is_null($mar)) {            
+            throw new TreeException('"'.$this->name.'" is already married with "'.$wife->name.'"', 1);    
+        }
         
         if (empty($data)) {
-            return $this->wives()->attach($node->id);
+            return $this->wives()->attach($wife->id);
         }
         $marriage_info['date_of_marriage'] = isset($data['date_of_marriage']) ?$data['date_of_marriage']: null;
         $marriage_info['marriage_desc'] = isset($data['marriage_desc']) ?$data['marriage_desc']: null;
 
-        return $this->wives()->attach($node->id,$marriage_info);
+        return $this->wives()->attach($wife->id,$marriage_info);
     }
 
     /**
