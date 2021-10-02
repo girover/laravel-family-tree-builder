@@ -14,7 +14,7 @@ class NNewSiblingTest extends TestCase
 
     /**
      * -------------------------------------------
-     * testing newChild method
+     * testing newSibling method
      * --------------------------------------------
      */
     /** @test */

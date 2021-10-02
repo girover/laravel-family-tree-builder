@@ -265,13 +265,33 @@ trait Treeable
     }
 
     /**
-     * Get the location of basic node in the current tree
+     * Get the main node in the current tree
      *
-     * @return string
+     * @return \Girover\Tree\Models\Node
      */
-    public function getBasicNode()
+    public function mainNode()
     {
-        return $this->basic_node;
+        return DBHelper::nodeModel()::where('location', $this->main_node)
+                                    ->where('tree_id', $this->id)
+                                    ->first();
+    }
+
+    /**
+     * set the node that has the given location to be main node in this tree
+     * @param string $location
+     * @return \Girover\Tree\Models\Node|false
+     */
+    public function setMainNode($location)
+    {
+        $node = DBHelper::nodeModel()::where('location', $location)
+                                     ->where('tree_id', $this->id)
+                                     ->first();
+        if ($node) {
+            $this->main_node = $location;
+            $this->save();
+            return $node;
+        }
+        return false;
     }
 
     /**

@@ -181,6 +181,8 @@ You can call the following method on the object of Tree
 | 13  | `ancestorsOf($location)`   | To get all ancestors of the given location            |                                               |
 | 14  | `countGenerations()`       | To get how many generations this tree has             |                                               |
 | 15  | `nodesOnTop()`             | Get the newest generation members in the tree         |                                               |
+| 16  | `mainNode()`               | Get the main node in the tree         |                                               |
+| 17  | `setMainNode($location)`   | Set the node that has given location as main node in the tree         |                                               |
 
 
 ### Pointer
