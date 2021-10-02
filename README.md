@@ -48,7 +48,7 @@ now you can install the package by running Artisan command
 php artisan tree:install
 ```
 
-this command will take care of these things:   
+this command will take care of the following tasks:   
  - Publishing Config file ```config\tree.php``` to the config folder of your Laravel application.   
  - Publishing migration files to folder ```Database\migrations``` in your application.   
  - Migrate the published migrations.   
