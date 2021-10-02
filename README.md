@@ -594,11 +594,6 @@ If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` wil
     $node->createFather($data);
 ```
 ##
-To check if the node is a main node in its tree.
-```php
-    $node->isMainNode();
-```
-##
 To check if the node is the main node in its tree.
 ```php
     $node->isMainNode();
