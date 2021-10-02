@@ -278,16 +278,21 @@ trait Treeable
 
     /**
      * set the node that has the given location to be main node in this tree
-     * @param string $location
+     * @param \Girover\Tree\Models\Node|string $node
      * @return \Girover\Tree\Models\Node|false
      */
-    public function setMainNode($location)
+    public function setMainNode($node)
     {
-        $node = DBHelper::nodeModel()::where('location', $location)
+        if ($node instanceof (DBHelper::nodeModel())) {
+            $this->main_node = $node->location;
+            $this->save();
+            return $node;
+        }
+        $main_node = DBHelper::nodeModel()::where('location', $node)
                                      ->where('tree_id', $this->id)
                                      ->first();
-        if ($node) {
-            $this->main_node = $location;
+        if ($main_node) {
+            $this->main_node = $node;
             $this->save();
             return $node;
         }

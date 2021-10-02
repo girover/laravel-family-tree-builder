@@ -182,7 +182,7 @@ You can call the following method on the object of Tree
 | 14  | `countGenerations()`       | To get how many generations this tree has             |                                               |
 | 15  | `nodesOnTop()`             | Get the newest generation members in the tree         |                                               |
 | 16  | `mainNode()`               | Get the main node in the tree         |                                               |
-| 17  | `setMainNode($location)`   | Set the node that has given location as main node in the tree         |                                               |
+| 17  | `setMainNode($node)`       | Set the given node as main node in the tree         |                                               |
 
 
 ### Pointer
@@ -223,6 +223,11 @@ To get the node you can do this:
     $node    = Node::find(1);
 ```
 ***As you can see, the model ```Girover\Tree\Models\Node``` is corresponding the table 'nodes' in database, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Person```, but then you must use trait ```Girover\Tree\Traits\Nodeable``` in the model, and also change the model name in the ```config/tree.php```.***
+##
+To get the tree that the node belongs to.
+```php
+    $node->tree();
+```
 ##
 To get all wives of the node:
 ```php
@@ -587,6 +592,21 @@ If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` wil
 ```php
     $data = ['name' => $name, 'birth_date' => $birth_date];
     $node->createFather($data);
+```
+##
+To check if the node is a main node in its tree.
+```php
+    $node->isMainNode();
+```
+##
+To check if the node is the main node in its tree.
+```php
+    $node->isMainNode();
+```
+##
+To make the node as the main node in its tree.   
+```php
+    $node->makeAsMainNode();
 ```
 ##
 To convert the tree to Html starting from the node itself.

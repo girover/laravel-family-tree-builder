@@ -139,6 +139,16 @@ trait Nodeable
     }
 
     /**
+     * Get the tree that this node belongs.
+     *
+     * @return \Girover\Tree\Models\Tree
+     */
+    public function tree()
+    {
+        return DBHelper::treeModel()::find($this->tree_id);
+    }
+
+    /**
      * Relationship for Getting wives og the node.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -1209,6 +1219,28 @@ trait Nodeable
         $this->location = Location::firstPossibleSegment();
 
         return $this->save();
+    }
+
+    /**
+     * Save new node as root in the tree
+     *
+     * @return \Girover\Tree\Models\Node|false
+     */
+    public function makeAsMainNode()
+    {
+        return $this->tree()->setMainNode($this);
+    }
+
+    /**
+     * Determine if the node is the main node in its tree.
+     *
+     * @return bool
+     */
+    public function isMainNode()
+    {
+        $main_node = $this->tree()->mainNode();
+
+        return ($main_node) ? $this->location===$main_node->location : false;
     }
 
     /**
