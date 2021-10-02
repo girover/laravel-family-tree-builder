@@ -100,6 +100,20 @@ trait Nodeable
     }
 
     /**
+     * Determine if the provider gender
+     * is a valid gender
+     * @param string $gender
+     * @return void
+     * @throws Girover\Tree\Exceptions\TreeException
+     */
+    protected function validateGender($gender)
+    {
+        if ($gender !== 'm' && $gender !== 'f') {
+            throw new TreeException("Invalid gender is provided", 1);            
+        }
+    }
+
+    /**
      * Get partners of the node
      * if true is provided, get divorced partners with
      * if false is provided, don't get divorced partners with
@@ -156,6 +170,7 @@ trait Nodeable
      * assign a wife to this node
      *
      * @param \Girover\Tree\Models\Node $wife
+     * @param array $data
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function getMarriedWith($wife, $data=[])
@@ -190,7 +205,7 @@ trait Nodeable
         if (empty($data)) {
             return $this->wives()->attach($wife->id);
         }
-        
+
         $marriage_info['date_of_marriage'] = isset($data['date_of_marriage']) ?$data['date_of_marriage']: null;
         $marriage_info['marriage_desc'] = isset($data['marriage_desc']) ?$data['marriage_desc']: null;
 
@@ -203,17 +218,22 @@ trait Nodeable
      * @param \Girover\Tree\Models\Node $node
      * @return int
      */
-    public function divorce($node)
+    public function divorce($wife)
     {
-        if (! $node instanceof static) {
+        if (! $wife instanceof static) {
             throw new TreeException("Parameter passed to [".__METHOD__."] should be instance of [".get_class($this)."]", 1);
+        }
+
+        // only women will be divorced
+        if ($wife->gender == 'm') {
+            throw new TreeException($wife->name." is not a woman to be divorced from a man", 1);
         }
 
         // only men are allowed to divorce
         if ($this->gender == 'f') {
             throw new TreeException($this->name." is a woman, but only men are allowed to divorce", 1);
         }
-        return $this->wives()->where('wife_id', $node->id)->update(['divorced'=> true]);
+        return $this->wives()->where('wife_id', $wife->id)->update(['divorced'=> true]);
     }
 
     /**
@@ -332,10 +352,17 @@ trait Nodeable
     /**
      * Get the father of this node
      *
-     * @param \Girover\Tree\Models\Node
+     * @return \Girover\Tree\Models\Node
+     * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function father()
     {
+        // can not get father of the root
+        if ($this->isRoot()) {
+            throw new TreeException("Root of a tree has no father", 1);
+            
+        }
+
         return static::tree($this->tree_id)
                      ->location(Location::father($this->location))
                      ->first();
@@ -523,6 +550,8 @@ trait Nodeable
      */
     protected function countSiblingsByGender($gender)
     {
+        $this->validateGender($gender);
+
         return static::tree($this->tree_id)
                     ->locationNot($this->location)
                     ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
@@ -620,6 +649,8 @@ trait Nodeable
      */
     protected function countDescendantsByGender($gender)
     {
+        $this->validateGender($gender);
+
         return $this->descendantsQuery()
                     ->where('gender', $gender)
                     ->count();
@@ -985,6 +1016,8 @@ trait Nodeable
     protected function createNewNode($data, $location, $gender = 'm')
     {
         Location::validate($location);
+        $this->validateGender($gender);
+
         if ($data instanceof static) {
             $data->tree_id = $this->tree_id;
             $data->location = $location;

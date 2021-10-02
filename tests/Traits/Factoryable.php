@@ -18,12 +18,26 @@ trait Factoryable
     {
         return Tree::factory()->make();
     }
-    public function createNode()
+    public function createNode($data = [])
     {
-        return Node::factory()->create();
+        return Node::factory()->create($data);
     }
-    public function makeNode()
+    public function makeNode($data = [])
     {
-        return Node::factory()->make();
+        return Node::factory()->make($data);
+    }
+    public function createMaleNode($data = [])
+    {
+        $data['gender'] = 'm';
+        return Node::factory()->create($data);
+    }
+    public function createFemaleNode($data = [])
+    {
+        $data['gender'] = 'f';
+        return Node::factory()->create($data);
+    }
+    public function makeFemaleNode()
+    {
+        return Node::factory()->make(['gender'=>'f']);
     }
 }
