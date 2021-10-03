@@ -596,7 +596,7 @@ If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` wil
 ##
 To check if the node is the main node in its tree.
 ```php
-    $node->isMainNode();
+    $node->isMainNode(); // returns true or false
 ```
 ##
 To make the node as the main node in its tree.   
