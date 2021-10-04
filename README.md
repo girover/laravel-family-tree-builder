@@ -154,10 +154,14 @@ To view this tree in the browser you can do this:
         }
     }
 ```
-And now inside your blade file you can render the tree
+And now inside your blade file you can render the tree by doing one of these two ways. 
 
 ```html
     // views/tree/index.blade.php
+    <div>
+        @tree($treeHtml)
+    </div>
+    // OR
     <div>
         {!! $treeHTML !!}
     </div>
@@ -176,13 +180,10 @@ You can call the following method on the object of Tree
 | 8   | `movePointerToRoot()`      | To move the pointer to indicate to the root           |                                               |
 | 9   | `movePointerTo($location)` | To move the pointer to the given location             |                                               |
 | 10  | `goTo($location)`          | To move the pointer to the given location             |                                               |
-| 11  | `fatherOf($location)`      | To get the father of the node that has given location |                                               |
-| 12  | `wivesOf($location)`       | To get all wives of the node that has given location  |                                               |
-| 13  | `ancestorsOf($location)`   | To get all ancestors of the given location            |                                               |
 | 14  | `countGenerations()`       | To get how many generations this tree has             |                                               |
 | 15  | `nodesOnTop()`             | Get the newest generation members in the tree         |                                               |
-| 16  | `mainNode()`               | Get the main node in the tree         |                                               |
-| 17  | `setMainNode($node)`       | Set the given node as main node in the tree         |                                               |
+| 16  | `mainNode()`               | Get the main node in the tree                         |                                               |
+| 17  | `setMainNode($node)`       | Set the given node as main node in the tree           |                                               |
 
 
 ### Pointer
@@ -283,9 +284,29 @@ Determine if the node has children
     return $node->hasChildren(); // returns true or false
 ```
 ##
+To determine if the node is child of another node:
+```php
+    use Girover\Tree\Models\Node;
+
+    $node = Node::find(1);
+    $another_node = Node::find(2);
+    
+    return $node->isChildOf($another_node);
+```
+##
 Determine if the node has siblings
 ```php
     return $node->hasSiblings(); // returns true or false
+```
+##
+To determine if the node is sibling of another node:
+```php
+    use Girover\Tree\Models\Node;
+
+    $node = Node::find(1);
+    $another_node = Node::find(2);
+    
+    return $node->isSiblingOf($another_node);
 ```
 ##
 to get which generation number in the tree the node is:
@@ -296,6 +317,16 @@ to get which generation number in the tree the node is:
 To get the father of the node:
 ```php
     return $node->father();
+```
+##
+To determine if the node is father of another node:
+```php
+    use Girover\Tree\Models\Node;
+
+    $node = Node::find(1);
+    $another_node = Node::find(2);
+
+    return $node->isFatherOf($another_node);
 ```
 ##
 To get the grandfather of the node:

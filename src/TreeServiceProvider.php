@@ -3,6 +3,7 @@
 namespace Girover\Tree;
 
 use Girover\Tree\Commands\TreeCommand;
+use Illuminate\Support\Facades\Blade;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -43,6 +44,10 @@ class TreeServiceProvider extends PackageServiceProvider
             ], "{$this->package->shortName()}-storage");
 
         }
+
+        Blade::directive('tree', function ($tree_html) {
+            return "<?php echo $tree_html; ?>";
+        });
 
         parent::boot();
     }

@@ -143,7 +143,7 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Tree
      */
-    public function tree()
+    public function getTree()
     {
         return DBHelper::treeModel()::find($this->tree_id);
     }
@@ -1228,7 +1228,49 @@ trait Nodeable
      */
     public function makeAsMainNode()
     {
-        return $this->tree()->setMainNode($this);
+        return $this->getTree()->setMainNode($this);
+    }
+
+    /**
+     * Determine if the node is the father of the given node.
+     *
+     * @return bool
+     */
+    public function isFatherOf($node)
+    {
+        if ((! $node instanceof static) || ($this->tree_id !== $node->tree_id)) {
+            return false;
+        }
+
+        return Location::areFatherAndSon($this->location, $node->location);
+    }
+
+    /**
+     * Determine if the node is the child of the given node.
+     *
+     * @return bool
+     */
+    public function isChildOf($node)
+    {
+        if ((! $node instanceof static) || ($this->tree_id !== $node->tree_id)) {
+            return false;
+        }
+
+        return Location::areFatherAndSon($node->location, $this->location);
+    }
+
+    /**
+     * Determine if the node is the child of the given node.
+     *
+     * @return bool
+     */
+    public function isSiblingOf($node)
+    {
+        if ((! $node instanceof static) || ($this->tree_id !== $node->tree_id)) {
+            return false;
+        }
+
+        return Location::areSiblings($this->location, $node->location);
     }
 
     /**
@@ -1238,7 +1280,7 @@ trait Nodeable
      */
     public function isMainNode()
     {
-        $main_node = $this->tree()->mainNode();
+        $main_node = $this->getTree()->mainNode();
 
         return ($main_node) ? $this->location===$main_node->location : false;
     }
