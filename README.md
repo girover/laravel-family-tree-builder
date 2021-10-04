@@ -291,7 +291,7 @@ To determine if the node is child of another node:
     $node = Node::find(1);
     $another_node = Node::find(2);
     
-    return $node->isChildOf($another_node);
+    return $node->isChildOf($another_node); // returns true OR false
 ```
 ##
 Determine if the node has siblings
@@ -306,7 +306,7 @@ To determine if the node is sibling of another node:
     $node = Node::find(1);
     $another_node = Node::find(2);
     
-    return $node->isSiblingOf($another_node);
+    return $node->isSiblingOf($another_node); // returns true OR false
 ```
 ##
 to get which generation number in the tree the node is:
@@ -326,7 +326,7 @@ To determine if the node is father of another node:
     $node = Node::find(1);
     $another_node = Node::find(2);
 
-    return $node->isFatherOf($another_node);
+    return $node->isFatherOf($another_node); // returns true OR false
 ```
 ##
 To get the grandfather of the node:
