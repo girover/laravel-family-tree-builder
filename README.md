@@ -18,6 +18,9 @@
     - [Tree](#tree)
     - [Pointer](#pointer)
     - [Node](#node)
+      - [Getting nodes](#getting-nodes)
+      - [Adding nodes](#adding-nodes)
+      - [Deleting nodes](#deleting-nodes)
   - [Testing](#testing)
   - [Changelog](#changelog)
   - [Contributing](#contributing)
@@ -227,7 +230,7 @@ To get the node you can do this:
 ##
 To get the tree that the node belongs to.
 ```php
-    $node->tree();
+    $node->getTree();
 ```
 ##
 To get all wives of the node:
@@ -681,7 +684,7 @@ To delete all children of a node:
 
     $node = Node::find(10);
 
-    $node->deleteChildren();
+    $node->deleteChildren(); // returns number od deleted nodes
 ```
 ##
 The next code will create father for a node, only if this node is a Root in the tree.   
