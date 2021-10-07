@@ -38,9 +38,9 @@ trait Nodeable
     ];
 
     /**
-     * to delete node with/without its children
-     * if false: delete node with its children
-     * if true: delete only the node, but move its children to be children for its father 
+     * to control deleting children or not when deleting a node
+     * false: delete node with its children
+     * true: delete only the node, but move its children to be children for its father 
      *
      * @var bool
      */
@@ -80,13 +80,15 @@ trait Nodeable
         });
 
         // When model is deleted
-        static::deleted(function ($model) {
+        static::deleted(function ($node) {
 
-            // if shift_children property is false
+            // if move_children_on_deleting property is false
             // then delete all children of the deleted node, otherwise delete only the node
-            if ($model->move_children === false) {
-                return $model->deleteChildren();
+            if ($node->move_children_on_deleting === false) {
+                return $node->deleteChildren();
             }
+
+            return $node->moveChildrenTo($node->father());
         });
     }
 
@@ -1236,6 +1238,8 @@ trait Nodeable
             DB::rollBack();            
             throw new TreeException("An error occurred during moving children", 1);            
         }
+
+        return $this;
     }
 
     /**
@@ -1417,6 +1421,21 @@ trait Nodeable
                      ->locationNot($this->location)
                      ->where('location', 'like', $this->location.'%')
                      ->delete();
+    }
+
+    /**
+     * To make sure that when a node will be deleted
+     * so its children will not
+     * but they will move to be children of the father
+     * of the deleted node
+     * 
+     * @return \Girover\Tree\Models\Node
+     */
+    public function moveChildren()
+    {
+        $this->move_children_on_deleting = true;
+
+        return $this;
     }
 
     /**

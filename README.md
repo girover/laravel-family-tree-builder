@@ -627,7 +627,7 @@ to move an existing node to be child of another node.
 
     $node->moveTo($location);
 ```
-
+##
 To move children of a node to be children of another node  
 you can do this:
 ```php
@@ -643,10 +643,46 @@ you can do this:
 
     $node->moveTo($location);
 ```
-**Note:** When trying to move a node1 to node2, if node2 is descendant of node1 
+
+**Note:** When trying to move node1 to node2, if node2 is descendant of node1 
 ```TreeException``` will be thrown.   
 The same exception will be thrown if node2 is a female node.
+##
+To delete a node.
+```php
+    use \Girover\Tree\Models\Node;
 
+    $node = Node::find(10)->delete();
+```
+**note:** The node will be deleted with all its descendants.   
+But if you want just to delete the node and not its descendants,   
+then you can move its descendants before deleting the node.
+```php
+    use \Girover\Tree\Models\Node;
+
+    $node = Node::find(10);
+    $another_node = Node::find(30);
+
+    $node->moveChildrenTo($another_node)->delete();
+```
+Or you can directly move children to the deleted node's father by 
+using ```moveChildren``` method.
+```php
+    use \Girover\Tree\Models\Node;
+
+    $node = Node::find(10);
+
+    $node->moveChildren()->delete();
+```
+##
+To delete all children of a node:
+```php
+    use \Girover\Tree\Models\Node;
+
+    $node = Node::find(10);
+
+    $node->deleteChildren();
+```
 ##
 The next code will create father for a node, only if this node is a Root in the tree.   
 If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` will be thrown.
