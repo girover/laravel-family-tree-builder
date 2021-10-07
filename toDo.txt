@@ -1,4 +1,9 @@
-
+$node->moveTo($node||$location)
+$node->moveChildrenTo($node||$location)
+--------------------------------------------------
+$node->deleteChildren();
+$node->delete();
+--------------------------------------------------
 Adding main node class to main node when building the tree.
 --------------------------------------------------
 Tree::nodesOnTop()

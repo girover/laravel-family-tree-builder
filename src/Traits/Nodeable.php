@@ -38,6 +38,15 @@ trait Nodeable
     ];
 
     /**
+     * to delete node with/without its children
+     * if false: delete node with its children
+     * if true: delete only the node, but move its children to be children for its father 
+     *
+     * @var bool
+     */
+    protected $move_children_on_deleting = false;
+
+    /**
      * {@inheritdoc}
      *
      * @param \Illuminate\Database\Query\Builder
@@ -73,12 +82,10 @@ trait Nodeable
         // When model is deleted
         static::deleted(function ($model) {
 
-            // if the model has shift_children property is not sat
-            // then delete children, otherwise delete just the node
-            if ($model->shift_children === null) {
-                return static::tree($model->tree_id)
-                             ->where('location', 'like', $model->location.'%')
-                             ->delete();
+            // if shift_children property is false
+            // then delete all children of the deleted node, otherwise delete only the node
+            if ($model->move_children === false) {
+                return $model->deleteChildren();
             }
         });
     }
@@ -128,7 +135,7 @@ trait Nodeable
         $pivot = DBHelper::marriageTable();
 
         // get wives
-        if ($this->gender == 'f') {
+        if ($this->isFemale()) {
             return  $this->belongsToMany(get_class(), $pivot, 'wife_id', 'husband_id')
                               ->withPivot('husband_id', 'wife_id', 'date_of_marriage', 'marriage_desc');
         }
@@ -155,7 +162,7 @@ trait Nodeable
      */
     public function wives()
     {
-        if ($this->gender == 'f') {
+        if ($this->isFemale()) {
             throw new TreeException("Woman cannot have wives", 1);            
         }
 
@@ -169,7 +176,7 @@ trait Nodeable
      */
     public function husband()
     {
-        if ($this->gender == 'm') {
+        if ($this->isMale()) {
             throw new TreeException("Man cannot have husband", 1);            
         }
 
@@ -190,12 +197,12 @@ trait Nodeable
         }
 
         // only male nodes allowed to do this
-        if ($this->gender == 'f') {
+        if ($this->isFemale()) {
             throw new TreeException($this->name." is a woman, and only men allowed to use ".__METHOD__, 1);
         }
 
         // Person cannot get married with himself
-        if ($wife->gender == 'm') {
+        if ($wife->isMale()) {
             throw new TreeException("Man is not allowed to get married with a man ".__METHOD__, 1);
         }
 
@@ -235,12 +242,12 @@ trait Nodeable
         }
 
         // only women will be divorced
-        if ($wife->gender == 'm') {
+        if ($wife->isMale()) {
             throw new TreeException($wife->name." is not a woman to be divorced from a man", 1);
         }
 
         // only men are allowed to divorce
-        if ($this->gender == 'f') {
+        if ($this->isFemale()) {
             throw new TreeException($this->name." is a woman, but only men are allowed to divorce", 1);
         }
         return $this->wives()->where('wife_id', $wife->id)->update(['divorced'=> true]);
@@ -1152,16 +1159,12 @@ trait Nodeable
      * to be child of the given location
      * Both nodes should belong to same tree
      *
-     * @param string $location: location to move node to it
+     * @param \Girover\Tree\Models\Node $node: location or node to move node to it
      * @return \Girover\Tree\Models\Node
      * @throws \Girover\Tree\Exceptions\TreeException
      */
-    public function makeAsSonOf($location)
+    protected function makeAsChildOf($node)
     {
-        // get the node that should be father of this node
-        if (! ($node = static::tree($this->tree_id)->location($location)->first())) {
-            throw new TreeException("Error: The location `".$location."` not found in this tree.", 1);
-        }
         // Generate new location for this node
         $new_location = (! $last_child = $node->lastChild())
                       ? $node->location.Location::SEPARATOR.Location::firstPossibleSegment()
@@ -1170,7 +1173,92 @@ trait Nodeable
         // Update locations of this node and its children in database
         DB::update(Update::changeLocations($this->tree_id, $this->location, $new_location));
 
+        $this->location = $new_location;
+
         return $this;
+    }
+    /**
+     * Move the node with its children
+     * to be child of the given location
+     * Both nodes should belong to same tree
+     *
+     * @param \Girover\Tree\Models\Node|string $location: location or node to move node to it
+     * @return \Girover\Tree\Models\Node
+     * @throws \Girover\Tree\Exceptions\TreeException
+     */
+    public function moveTo($location)
+    { 
+        $node = $this->getNodeOrThrowException($location);
+        // Not allowed to add children to female nodes.
+        if ($node->isFemale()) {
+            throw new TreeException("Error: Not allowed to add children to female nodes.", 1);
+        }
+        // Not allowed to move children from an ancestor to a descendant.
+        if ($this->isAncestorOf($node)) {
+            throw new TreeException("Error: Not allowed to move children from an ancestor to a descendant.", 1);
+        }
+        // Not allowed to move a node to its father.
+        if ($node->isFatherOf($this)) {
+            throw new TreeException("Error: Not allowed to move a node to its father.", 1);
+        }
+
+        return $this->makeAsChildOf($node);
+    }
+
+    /**
+     * Move all children of the node to be children of
+     * the given node or the node that has the given location.
+     *
+     * @param \Girover\Tree\Models\Node|string $location
+     * @return \Girover\Tree\Models\Node
+     */
+    public function moveChildrenTo($location = null)
+    {
+        $node = $this->getNodeOrThrowException($location);
+        // Not allowed to add children to female nodes.
+        if ($node->isFemale()) {
+            throw new TreeException("Error: Not allowed to add children to female nodes.", 1);
+        }
+        // Not allowed to move children from an ancestor to a descendant.
+        if ($this->isAncestorOf($node)) {
+            throw new TreeException("Error: Not allowed to move children from an ancestor to a descendant.", 1);
+        }
+        
+        $children = $this->children();
+        
+        DB::beginTransaction();
+        try {
+            foreach ($children as $child) {
+                $child->moveTo($location);
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();            
+            throw new TreeException("An error occurred during moving children", 1);            
+        }
+    }
+
+    /**
+     * To get a node from a location
+     * Or to check if the given parameter is a node then return it
+     * 
+     * @param \Girover\Tree\Models\Node|string $location
+     * @return \Girover\Tree\Models\Node
+     * @throws \Girover\Tree\Exceptions\TreeException
+     */
+    protected function getNodeOrThrowException($location)
+    {
+        if ($location instanceof static) {
+            return $location;
+        }
+
+        $node = static::tree($this->tree_id)->location($location)->first();
+
+        if ($node === null) {
+            throw new TreeException("Error: The location `".$location."` not found in this tree.", 1);
+        }
+
+        return $node;
     }
 
     /**
@@ -1232,8 +1320,20 @@ trait Nodeable
     }
 
     /**
+     * Determine if the node is an ancestor of the given node.
+     *
+     * @param \Girover\Tree\Models\Node
+     * @return bool
+     */
+    public function isAncestorOf($node)
+    {
+        return Location::areAncestorAndChild($this->location, $node->location);
+    }
+
+    /**
      * Determine if the node is the father of the given node.
      *
+     * @param \Girover\Tree\Models\Node
      * @return bool
      */
     public function isFatherOf($node)
@@ -1242,12 +1342,13 @@ trait Nodeable
             return false;
         }
 
-        return Location::areFatherAndSon($this->location, $node->location);
+        return Location::areFatherAndChild($this->location, $node->location);
     }
 
     /**
      * Determine if the node is the child of the given node.
      *
+     * @param \Girover\Tree\Models\Node
      * @return bool
      */
     public function isChildOf($node)
@@ -1256,7 +1357,7 @@ trait Nodeable
             return false;
         }
 
-        return Location::areFatherAndSon($node->location, $this->location);
+        return Location::areFatherAndChild($node->location, $this->location);
     }
 
     /**
@@ -1286,19 +1387,36 @@ trait Nodeable
     }
 
     /**
-     * Delete the node, and move
-     * all its children to be children for the its father.
+     * Determine if the node is a male node.
+     *
+     * @return bool
+     */
+    public function isMale()
+    {
+        return ($this->gender === 'm') ? true : false;
+    }
+
+    /**
+     * Determine if the node is a female node.
+     *
+     * @return bool
+     */
+    public function isFemale()
+    {
+        return ($this->gender === 'f') ? true : false;
+    }
+
+    /**
+     * Delete all children of this node
      *
      * @return int
      */
-    public function deleteAndShiftChildren()
+    public function deleteChildren()
     {
-        // to prevent the model observer from deleting children
-        $this->shift_children = true;
-        //
-        //
-        //
-        //
+        return static::tree($this->tree_id)
+                     ->locationNot($this->location)
+                     ->where('location', 'like', $this->location.'%')
+                     ->delete();
     }
 
     /**

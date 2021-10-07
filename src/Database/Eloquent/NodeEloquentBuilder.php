@@ -27,10 +27,6 @@ class NodeEloquentBuilder extends Builder
      */
     public function location($location)
     {
-        if ($location != null) {
-            Location::validate($location);
-        }
-
         $this->where('location', $location);
 
         return $this;

@@ -26,7 +26,7 @@ class NNewDaughterTest extends TestCase
         $daughter = $node->newDaughter($this->makeNode()->toArray());
         $this->assertDatabaseHas('nodes', ['name'=>$daughter->name]);
         
-        $this->assertTrue(Location::areFatherAndSon($node->location, $daughter->location));
+        $this->assertTrue(Location::areFatherAndChild($node->location, $daughter->location));
         $this->assertTrue($node->tree_id === $daughter->tree_id);
     }
 

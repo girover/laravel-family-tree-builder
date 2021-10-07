@@ -612,11 +612,41 @@ To add uploaded photo to the node:
     }
 ```
 ##
-to make an existing node as child of another node. Note this will move the node with its children to be child of the given location
+to move an existing node to be child of another node.   
+**Note** this will move the node with its children to be child of the other node or location.
 ```php
+    use \Girover\Tree\Models\Node;
+
+    $node = Node::find(10);
+    $another_node = Node::find(30);
+
+    $node->moveTo($another_node);
+
+    // OR
     $location = 'aa.fd';
-    $node->makeAsSonOf($location);
+
+    $node->moveTo($location);
 ```
+
+To move children of a node to be children of another node  
+you can do this:
+```php
+    use \Girover\Tree\Models\Node;
+
+    $node = Node::find(10);
+    $another_node = Node::find(30);
+
+    $node->moveChildrenTo($another_node);
+
+    // OR
+    $location = 'aa.fd';
+
+    $node->moveTo($location);
+```
+**Note:** When trying to move a node1 to node2, if node2 is descendant of node1 
+```TreeException``` will be thrown.   
+The same exception will be thrown if node2 is a female node.
+
 ##
 The next code will create father for a node, only if this node is a Root in the tree.   
 If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` will be thrown.

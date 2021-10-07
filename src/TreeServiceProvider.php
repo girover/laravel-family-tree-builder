@@ -44,7 +44,7 @@ class TreeServiceProvider extends PackageServiceProvider
             ], "{$this->package->shortName()}-storage");
 
         }
-
+        // @tree($html) Blade directive to render the tree 
         Blade::directive('tree', function ($tree_html) {
             return "<?php echo $tree_html; ?>";
         });

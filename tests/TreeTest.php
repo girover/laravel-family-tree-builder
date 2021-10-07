@@ -90,7 +90,7 @@ class TreeTest extends TestCase
         
         // Check if the new created root is father of the firstly created root.
         $old_root = Node::find($root->id);
-        $this->assertTrue(Location::areFatherAndSon($new_root->location, $old_root->location));
+        $this->assertTrue(Location::areFatherAndChild($new_root->location, $old_root->location));
     }
 
     /** @test */

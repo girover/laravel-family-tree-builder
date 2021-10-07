@@ -25,10 +25,13 @@ class TDrawTest extends TestCase
         $root = $tree->createRoot(['name'=>'Root']);
         $this->assertDatabaseHas('nodes', ['tree_id'=>$tree->id, 'name'=>$root->name]);
 
-        $root->newSon($this->makeNode()->toArray());
-        $root->newSon($this->makeNode()->toArray());
+        $son1 = $root->newSon($this->makeNode()->toArray());
+        $son2 = $root->newSon($this->makeNode()->toArray());
 
         $html = $tree->draw();
+        $this->assertStringContainsString($root->name, $html);
+        $this->assertStringContainsString($son1->name, $html);
+        $this->assertStringContainsString($son2->name, $html);
         $this->assertStringContainsString('<div id="tree" class="tree">', $html);
     }
 }

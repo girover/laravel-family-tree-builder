@@ -19,7 +19,7 @@ class TreeCommand extends Command
         $this->publishMigrations();
         $this->runMigrate();
         $this->publishAssets();
-        $this->publishStroage();
+        $this->publishStorage();
         $this->publishTranslations();
         $this->symbolicLink();
     }
@@ -66,7 +66,7 @@ class TreeCommand extends Command
         return $this->treePublish('tree-assets');
     }
 
-    public function publishStroage()
+    public function publishStorage()
     {
         $this->info('<fg=yellow>Publishing Photos Folder to Storage folder....</>');
         return $this->treePublish('tree-storage');

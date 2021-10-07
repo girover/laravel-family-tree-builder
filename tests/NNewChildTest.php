@@ -26,7 +26,7 @@ class NNewChildTest extends TestCase
         $child = $node->newChild($this->makeNode()->toArray());
         $this->assertDatabaseHas('nodes', ['name'=>$child->name]);
         
-        $this->assertTrue(Location::areFatherAndSon($node->location, $child->location));
+        $this->assertTrue(Location::areFatherAndChild($node->location, $child->location));
         $this->assertTrue($node->tree_id === $child->tree_id);
     }
 
@@ -39,7 +39,7 @@ class NNewChildTest extends TestCase
         $child = $node->newChild($this->makeNode()->toArray());
         $this->assertDatabaseHas('nodes', ['name'=>$child->name]);
         
-        $this->assertTrue(Location::areFatherAndSon($node->location, $child->location));
+        $this->assertTrue(Location::areFatherAndChild($node->location, $child->location));
         $this->assertTrue($node->tree_id === $child->tree_id);
         $this->assertTrue($child->gender === 'm');
     }
@@ -52,7 +52,7 @@ class NNewChildTest extends TestCase
 
         $child = $node->newChild($this->makeNode()->toArray(), 'f');
         
-        $this->assertTrue(Location::areFatherAndSon($node->location, $child->location));
+        $this->assertTrue(Location::areFatherAndChild($node->location, $child->location));
         $this->assertTrue($node->tree_id === $child->tree_id);
         $this->assertTrue($child->gender === 'f');
     }

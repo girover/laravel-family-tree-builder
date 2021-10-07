@@ -490,14 +490,35 @@ class Location
      * @param string $location_2 possible son location
      * @return bool
      */
-    public static function areFatherAndSon($location_1, $location_2)
+    public static function areFatherAndChild($location_1, $location_2)
     {
         if ($location_2 === null) {
             return false;
         }
 
-        $pattern = '#^'.$location_1.'\\'.static::SEPARATOR.'#';
+        $pattern = '#^'.$location_1.'\\'.static::SEPARATOR.static::segmentREGEXP().'$#';
         if (preg_match($pattern, $location_2) and ($location_1 !== $location_2)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine if the location_1 is an ancestor of location_1
+     *
+     * @param string $location_1 possible ancestor location
+     * @param string $location_2 possible child location
+     * @return bool
+     */
+    public static function areAncestorAndChild($ancestor, $child)
+    {
+        if ($ancestor === null || $child === null || $ancestor === $child) {
+            return false;
+        }
+
+        $pattern = '#^'.$ancestor.'\\'.static::SEPARATOR.'#';
+        if (preg_match($pattern, $child)) {
             return true;
         }
 
