@@ -20,6 +20,7 @@
     - [Node](#node)
       - [Getting nodes](#getting-nodes)
       - [Adding nodes](#adding-nodes)
+      - [Updating nodes](#updating-nodes)
       - [Deleting nodes](#deleting-nodes)
   - [Testing](#testing)
   - [Changelog](#changelog)
@@ -644,7 +645,7 @@ you can do this:
     // OR
     $location = 'aa.fd';
 
-    $node->moveTo($location);
+    $node->moveChildrenTo($location);
 ```
 
 **Note:** When trying to move node1 to node2, if node2 is descendant of node1 

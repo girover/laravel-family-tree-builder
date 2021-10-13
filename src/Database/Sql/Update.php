@@ -54,7 +54,7 @@ class Update extends SqlStatements
      * @param string $new_location
      * @return string
      */
-    public static function changeLocations($tree_id, $old_location, $new_location)
+    public static function updateLocations($tree_id, $old_location, $new_location)
     {
         return "UPDATE `". static::table() ."` 
                 SET `location` = CONCAT('".$new_location."', SUBSTRING(`location` FROM ".(strlen($old_location) + 1).")) 

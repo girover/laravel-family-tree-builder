@@ -1,3 +1,11 @@
+make node younger or older from a given node
+$node->moveAfter($another_node)
+$node->sendAfter($another_node)
+$node->After($another_node)
+$node->moveBefore($another_node)
+$node->bringBefore($another_node)
+$node->Before($another_node)
+--------------------------------------------------
 $node->moveTo($node||$location)
 $node->moveChildrenTo($node||$location)
 --------------------------------------------------

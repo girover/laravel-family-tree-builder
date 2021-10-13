@@ -11,6 +11,7 @@ use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
 use Girover\Tree\Helpers\DBHelper;
 use Girover\Tree\Helpers\Photos;
 use Girover\Tree\Location;
+use Girover\Tree\NodeRelocator;
 use Illuminate\Support\Facades\DB;
 
 use function PHPUnit\Framework\isNull;
@@ -756,6 +757,18 @@ trait Nodeable
     }
 
     /**
+     * getting all sibling of the node including the node itself
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function withSiblings()
+    {
+        return static::tree($this->tree_id)
+                     ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
+                     ->get();
+    }
+
+    /**
      * getting all brothers of the node
      *
      * @return \Illuminate\Database\Eloquent\Collection
@@ -1113,6 +1126,39 @@ trait Nodeable
     }
 
     /**
+     * Generating location for new child for this node.
+     * 
+     * @return string
+     */
+    protected function newChildLocation()
+    {
+        $last_child = $this->lastChild();
+
+        if ($last_child == null) {
+            return Location::firstChild($this->location);
+        } 
+
+        return Location::generateNextLocation($last_child->location);        
+    }
+
+    /**
+     * Generating location for new child for this node.
+     * 
+     * @param \Girover\Tree\Models\Node
+     * @return string
+     */
+    protected function newChildLocationFor($node)
+    {
+        $last_child = $node->lastChild();
+
+        if ($last_child == null) {
+            return Location::firstChild($node->location);
+        } 
+
+        return Location::generateNextLocation($last_child->location);        
+    }
+
+    /**
      * Create new child for this node
      *
      * @param array|static data for the new child
@@ -1121,15 +1167,7 @@ trait Nodeable
      */
     public function newChild($data, $gender = 'm')
     {
-        $last_child = $this->lastChild();
-
-        if ($last_child == null) {
-            $new_child_location = $this->location.Location::SEPARATOR.Location::firstPossibleSegment();
-        } else {
-            $new_child_location = Location::generateNextLocation($last_child->location);
-        }
-        
-        Location::validate($new_child_location);
+        $new_child_location = $this->newChildLocation();
 
         return $this->createNewNode($data, $new_child_location, $gender);
     }
@@ -1157,6 +1195,17 @@ trait Nodeable
     }
 
     /**
+     * Updating the location of the node
+     * this will update location for all the node's descendants too.
+     * 
+     * @return int
+     */
+    public function updateLocation($new_location)
+    {
+        return DB::update(Update::updateLocations($this->tree_id, $this->location, $new_location));
+    }
+
+    /**
      * Move the node with its children
      * to be child of the given location
      * Both nodes should belong to same tree
@@ -1168,12 +1217,10 @@ trait Nodeable
     protected function makeAsChildOf($node)
     {
         // Generate new location for this node
-        $new_location = (! $last_child = $node->lastChild())
-                      ? $node->location.Location::SEPARATOR.Location::firstPossibleSegment()
-                      : Location::nextSibling($last_child->location);
+        $new_location = $this->newChildLocationFor($node);
 
         // Update locations of this node and its children in database
-        DB::update(Update::changeLocations($this->tree_id, $this->location, $new_location));
+        $this->updateLocation($new_location);
 
         $this->location = $new_location;
 
@@ -1436,6 +1483,31 @@ trait Nodeable
         $this->move_children_on_deleting = true;
 
         return $this;
+    }
+
+    /**
+     * To change the location of a node
+     * to be after the given node
+     * 
+     * @param \Girover\Tree\Models\Node $node
+     * @throws \Girover\Tree\Exceptions\TreeException
+     */
+    public function moveAfter($node)
+    {
+        // Move the node after its sibling
+        NodeRelocator::moveAfter($this, $node);
+    }
+
+    /**
+     * To change the location of a node
+     * to be after the given node
+     * 
+     * @param \Girover\Tree\Models\Node $node
+     */
+    public function moveBefore($node)
+    {
+        // Move the node after its sibling
+        NodeRelocator::moveBefore($this, $node);  
     }
 
     /**
