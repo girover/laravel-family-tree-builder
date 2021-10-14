@@ -1,4 +1,5 @@
 ![tree-template-2](https://user-images.githubusercontent.com/53403538/128646183-8d716a2c-da22-473a-a06d-1563974afb76.png)
+![tree-template-3](https://user-images.githubusercontent.com/53403538/137398258-c43cba4a-8257-442a-9e0d-4c49f5e529d7.png)
 # Building family tree
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/girover/tree.svg?style=flat-square)](https://packagist.org/packages/girover/tree)
@@ -708,7 +709,7 @@ To add uploaded photo to the node:
 
 ### <!-- Relocating: to move a node to another node -->
 to move an existing node to be child of another node.   
-**Note** this will move the node with its children to be child of the other node or location.
+**Note** this will move the node with its children.
 ```php
     use \Girover\Tree\Models\Node;
 
@@ -716,11 +717,6 @@ to move an existing node to be child of another node.
     $another_node = Node::find(30);
 
     $node->moveTo($another_node);
-
-    // OR
-    $location = 'aa.fd';
-
-    $node->moveTo($location);
 ```
 
 ### <!-- Relocating: to move children of a node to another node -->
