@@ -651,6 +651,34 @@ you can do this:
 **Note:** When trying to move node1 to node2, if node2 is descendant of node1 
 ```TreeException``` will be thrown.   
 The same exception will be thrown if node2 is a female node.
+
+##
+
+To move a node after another node
+you can do this:
+```php
+    use \Girover\Tree\Models\Node;
+
+    $node = Node::find(10);
+    $another_node = Node::find(30);
+
+    $node->moveAfter($another_node);
+```
+##
+
+To move a node before another node
+you can do this:
+```php
+    use \Girover\Tree\Models\Node;
+
+    $node = Node::find(10);
+    $another_node = Node::find(30);
+
+    $node->moveBefore($another_node);
+```
+**Note:** When trying to move the Root or when trying to move a node after or before one of its descendants 
+```TreeException``` will be thrown.   
+
 ##
 To delete a node.
 ```php
