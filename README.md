@@ -192,7 +192,7 @@ You can call the following method on the object of Tree
 
 ### Pointer
 
-Every tree has a Pointer inside it, and this Pointer indicates to one node.    
+A tree has a **Pointer** inside it, and this **Pointer** indicates to one node.    
 Pointer can move through all nodes in the tree.     
 Because the Pointer indicates to a node inside the tree, so it can call all [methods of Model ```Node```](#node) .   
 To get the pointer you can do the following:
@@ -217,8 +217,12 @@ And now you can get the node data by calling the method ```node()```
 ```
 
 Note that we called method ```node()``` after we had called the method ```to($location)```.   
-This is because when a tree instance created, its Pointer indicates to ```null```.
-### Node
+This is because when a tree instance created, its **Pointer** indicates to ```null```.
+# Node
+ - [Getting nodes](#getting-nodes)
+ - [Adding nodes](#adding-nodes)
+ - [Updating nodes](#updating-nodes)
+ - [Deleting nodes](#deleting-nodes)
 Node is a person in a tree and every node in tree is connected with another one by using **Location mechanism**.
 
 To get the node you can do this:
@@ -227,7 +231,8 @@ To get the node you can do this:
 
     $node    = Node::find(1);
 ```
-***As you can see, the model ```Girover\Tree\Models\Node``` is corresponding the table 'nodes' in database, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Person```, but then you must use trait ```Girover\Tree\Traits\Nodeable``` in the model, and also change the model name in the ```config/tree.php```.***
+***As you can see, the model ```Girover\Tree\Models\Node``` is corresponding the table 'nodes' in database, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Person```, but then you must use trait ```Girover\Tree\Traits\Nodeable``` in the model, and also change the model class name in the ```config/tree.php```.***
+
 ##
 To get the tree that the node belongs to.
 ```php
@@ -742,7 +747,7 @@ To convert the tree to Html starting from the node itself.
     $node->toTree();
 ```
 ##
-**Note**: You can use the Pointer of tree to access all methods of class Node.   
+**Note**: You can use the **Pointer** of tree to access all methods of class Node.   
 for example:
 ```php
     use Girover\Tree\Models\Tree;
