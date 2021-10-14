@@ -93,9 +93,9 @@ you should change configs to be like this:
 **Note:**  When saving photos in storage folder, it is important to create symbolic link to the photos folder.
 
 
-## Usage
+# Usage
 
-### Tree
+## Tree
 
 To start building a tree or creating a new tree, it is very simple and thanks to [Eloquent](https://laravel.com/docs/8.x/eloquent) models from [Laravel](http://laravel.com). 
 
@@ -218,12 +218,16 @@ And now you can get the node data by calling the method ```node()```
 
 Note that we called method ```node()``` after we had called the method ```to($location)```.   
 This is because when a tree instance created, its **Pointer** indicates to ```null```.
+
 # Node
- - [Getting nodes](#getting-nodes)
+ - [Retrieving nodes](#retrieving-nodes)
  - [Adding nodes](#adding-nodes)
  - [Updating nodes](#updating-nodes)
- - [Deleting nodes](#deleting-nodes)
-Node is a person in a tree and every node in tree is connected with another one by using **Location mechanism**.
+ - [Deleting nodes](#deleting-nodes)   
+ - [Checking nodes](#checking-nodes)   
+ - [Relocating nodes](#relocating-nodes)   
+
+**Node** is a **person** in a tree and every node in tree is connected with another one by using **Location mechanism**.
 
 To get the node you can do this:
 ```php
@@ -238,7 +242,196 @@ To get the tree that the node belongs to.
 ```php
     $node->getTree();
 ```
-##
+
+## Retrieving nodes
+
+## <!-- getting father of node -->
+To get the father of the node:
+```php
+    return $node->father();
+```
+
+
+
+
+
+
+
+## <!-- getting grand father of node -->
+To get the grandfather of the node:
+```php
+    return $node->grandfather();
+```
+## <!-- getting ancestor of node that matches given generation -->
+To get the ancestor that matches the given number as parameter. 
+```php
+    $node->ancestor(); // returns father
+    $node->ancestor(2); // returns grandfather
+    $node->ancestor(3); // returns the father of grandfather
+```
+## <!-- getting all ancestors of a node -->
+To get all ancestors of a node
+```php
+    return $node->ancestors();
+```
+## <!-- getting all uncles of a node -->
+To get all uncles of the node:
+```php
+    return $node->uncles();
+```
+## <!-- getting all aunts of a node -->
+To get all aunts of the node:
+```php
+    return $node->aunts();
+```
+## <!-- getting all children of a node -->
+To get all children of the node:
+```php
+    return $node->children();
+```
+## <!-- getting all sons of a node -->
+To get all sons of the node:
+```php
+    return $node->sons();
+```
+
+## <!-- getting all daughters of a node -->
+To get all daughters of the node:
+```php
+    return $node->daughters();
+```
+## <!-- getting all descendants of a node -->
+To get all descendants of the node:
+```php
+    return $node->descendants();
+```
+## <!-- getting all male descendants of a node -->
+To get all male descendants of the node:
+```php
+    return $node->maleDescendants();
+```
+## <!-- getting all female descendants of a node -->
+To get all female descendants of the node:
+```php
+    return $node->femaleDescendants();
+```
+## <!-- getting the first child of a node -->
+To get the first child of the node:
+```php
+    return $node->firstChild();
+```
+## <!-- getting the last child of a node -->
+To get the last child of the node:
+```php
+    return $node->lastChild();
+```
+## <!-- getting all siblings of a node -->
+To get all siblings of the node:
+```php
+    return $node->siblings();
+```
+## <!-- getting all brothers of a node -->
+To get all brothers of the node:
+```php
+    return $node->brothers();
+```
+## <!-- getting all sisters of a node -->
+To get all sisters of the node:
+```php
+    return $node->sisters();
+```
+## <!-- getting the next(older) sibling of a node -->
+To get the next sibling of the node. gets only one sibling.
+```php
+    return $node->nextSibling();
+```
+## <!-- getting all next(older) siblings of a node -->
+To get all the next siblings of the node. siblings who are younger.
+```php
+    return $node->nextSiblings();
+```
+## <!-- getting the next(older) brother of a node -->
+To get the next brother of the node. gets only one brother.
+```php
+    return $node->nextBrother();
+```
+## <!-- getting all next(older) brothers of a node -->
+To get all the next brothers of the node. brothers who are younger.
+```php
+    return $node->nextBrothers();
+```
+## <!-- getting the next(older) sister of a node -->
+To get the next sister of the node. gets only one sister.
+```php
+    return $node->nextSister();
+```
+## <!-- getting all next(older) sisters of a node -->
+To get all the next sisters of the node. sisters who are younger.
+```php
+    return $node->nextSisters();
+```
+## <!-- getting the previous(younger) sibling of a node -->
+To get the previous sibling of the node. only one sibling.
+```php
+    return $node->prevSibling();
+```
+## <!-- getting all previous(younger) siblings of a node -->
+To get all the previous siblings of the node. siblings who are older.
+```php
+    return $node->prevSiblings();
+```
+## <!-- getting the previous(younger) brother of a node -->
+To get the previous brother of the node. only one brother.
+```php
+    return $node->prevBrother();
+```
+## <!-- getting all previous(younger) brothers of a node -->
+To get all the previous brothers of the node. brothers who are older.
+```php
+    return $node->prevBrothers();
+```
+## <!-- getting the previous(younger) sister of a node -->
+To get the previous sister of the node. only one sister.
+```php
+    return $node->prevSister();
+```
+## <!-- getting all previous(younger) sisters of a node -->
+To get all the previous sisters of the node. sisters who are older.
+```php
+    return $node->prevSisters();
+```
+## <!-- getting the first sibling of a node -->
+To get the first sibling of the node.
+```php
+    return $node->firstSibling();
+```
+## <!-- getting the last sibling of a node -->
+To get the last sibling of the node.
+```php
+    return $node->lastSibling();
+```
+## <!-- getting the first brother of a node -->
+To get the first brother of the node.
+```php
+    return $node->firstBrother();
+```
+## <!-- getting the last brother of a node -->
+To get the last brother of the node.
+```php
+    return $node->lastBrother();
+```
+## <!-- getting the first sister of a node -->
+To get the first sister of the node.
+```php
+    return $node->firstSister();
+```
+## <!-- getting the last sister of a node -->
+To get the last sister of the node.
+```php
+    return $node->lastSister();
+```
+## <!-- getting all wives of a node -->
+
 To get all wives of the node:
 ```php
     $node->wives;
@@ -251,7 +444,7 @@ To get only wives who are not divorced you can do this:
 ```php
     $node->wives()->ignoreDivorced()->get();
 ```
-##
+## <!-- getting husbands of a node -->
 To get husbands of the node:
 ```php
     $node->husband;
@@ -264,70 +457,10 @@ To get only husbands who are not divorced you can do this:
 ```php
     $node->husband()->ignoreDivorced()->get();
 ```
-##
-To assign wife to a node:
-```php
-    $wife = Node::find($female_node_id)
-    $data = ['date_of_marriage'=>'2000/01/01', 'marriage_desc'=>'description'];
-       
-    return $node->getMarriedWith($wife, $data);
-```
-When trying to do this with a female node (woman) a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   so if ```$node``` is a woman Exception will be thrown.
-##
-To divorce a wife
-```php
-    $husband = Node::find($male_node_id)
-    $wife    = Node::find($female_node_id)
-       
-    return $husband->divorce($wife);
-```
-When trying to do this with a female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if ```$husband``` is a woman Exception will be thrown.
-##
-To determine if the node is root in the tree
-```php
-    return $node->isRoot(); // returns true or false
-```
-##
-Determine if the node has children
-```php
-    return $node->hasChildren(); // returns true or false
-```
-##
-To determine if the node is child of another node:
-```php
-    use Girover\Tree\Models\Node;
 
-    $node = Node::find(1);
-    $another_node = Node::find(2);
-    
-    return $node->isChildOf($another_node); // returns true OR false
-```
-##
-Determine if the node has siblings
-```php
-    return $node->hasSiblings(); // returns true or false
-```
-##
-To determine if the node is sibling of another node:
-```php
-    use Girover\Tree\Models\Node;
+## Checking nodes
 
-    $node = Node::find(1);
-    $another_node = Node::find(2);
-    
-    return $node->isSiblingOf($another_node); // returns true OR false
-```
-##
-to get which generation number in the tree the node is:
-```php
-    return $node->generation(); // int or null
-```
-##
-To get the father of the node:
-```php
-    return $node->father();
-```
-##
+## <!-- Determining is father of -->
 To determine if the node is father of another node:
 ```php
     use Girover\Tree\Models\Node;
@@ -337,223 +470,113 @@ To determine if the node is father of another node:
 
     return $node->isFatherOf($another_node); // returns true OR false
 ```
-##
-To get the grandfather of the node:
+
+## <!-- Determining is Rot -->
+To determine if the node is root in the tree
 ```php
-    return $node->grandfather();
+    return $node->isRoot(); // returns true or false
 ```
-##
-To get the ancestor that matches the given number as parameter. 
+
+## <!-- Determining is main node -->
+To make the node as the main node in its tree.   
 ```php
-    $node->ancestor(); // returns father
-    $node->ancestor(2); // returns grandfather
-    $node->ancestor(3); // returns the father of grandfather
+    $node->makeAsMainNode();
 ```
-##
-To get all ancestors of a node
+
+## <!-- Determining ha children -->
+Determine if the node has children
 ```php
-    return $node->ancestors();
+    return $node->hasChildren(); // returns true or false
 ```
-##
-To get all uncles of the node:
+
+## <!-- Determining is child of -->
+To determine if the node is child of another node:
 ```php
-    return $node->uncles();
+    use Girover\Tree\Models\Node;
+
+    $node = Node::find(1);
+    $another_node = Node::find(2);
+    
+    return $node->isChildOf($another_node); // returns true OR false
 ```
-##
-To get all aunts of the node:
+
+## <!-- Determining has siblings -->
+Determine if the node has siblings
 ```php
-    return $node->aunts();
+    return $node->hasSiblings(); // returns true or false
 ```
-##
-To get all children of the node:
+
+## <!-- Determining is sibling of -->
+To determine if the node is sibling of another node:
 ```php
-    return $node->children();
+    use Girover\Tree\Models\Node;
+
+    $node = Node::find(1);
+    $another_node = Node::find(2);
+    
+    return $node->isSiblingOf($another_node); // returns true OR false
 ```
+
 ##
-To get all sons of the node:
+to get which generation number in the tree the node is:
 ```php
-    return $node->sons();
+    return $node->generation(); // int or null
 ```
-##
-To get all daughters of the node:
-```php
-    return $node->daughters();
-```
+
 ##
 To count the children of the node:
 ```php
     return $node->countChildren();
 ```
+
 ##
 To count all sons of the node:
 ```php
     return $node->countSons();
 ```
+
 ##
 To count all daughters of the node:
 ```php
     return $node->countDaughters();
 ```
+
 ##
 To count all siblings of the node:
 ```php
     return $node->countSiblings();
 ```
+
 ##
 To count all brothers of the node:
 ```php
     return $node->countBrothers();
 ```
+
 ##
 To count all sisters of the node:
 ```php
     return $node->countSisters();
 ```
-##
-To get all descendants of the node:
-```php
-    return $node->descendants();
-```
-##
-To get all male descendants of the node:
-```php
-    return $node->maleDescendants();
-```
-##
-To get all female descendants of the node:
-```php
-    return $node->femaleDescendants();
-```
+
 ##
 To count all descendants of the node:
 ```php
     return $node->countDescendants();
 ```
+
 ##
 To count all male descendants of the node:
 ```php
     return $node->countMaleDescendants();
 ```
+
 ##
 To count all female descendants of the node:
 ```php
     return $node->countFemaleDescendants();
 ```
-##
-To get the first child of the node:
-```php
-    return $node->firstChild();
-```
-##
-To get the last child of the node:
-```php
-    return $node->lastChild();
-```
-##
-To get all siblings of the node:
-```php
-    return $node->siblings();
-```
-##
-To get all brothers of the node:
-```php
-    return $node->brothers();
-```
-##
-To get all sisters of the node:
-```php
-    return $node->sisters();
-```
-##
-To get the next sibling of the node. gets only one sibling.
-```php
-    return $node->nextSibling();
-```
-##
-To get all the next siblings of the node. siblings who are younger.
-```php
-    return $node->nextSiblings();
-```
-##
-To get the next brother of the node. gets only one brother.
-```php
-    return $node->nextBrother();
-```
-##
-To get all the next brothers of the node. brothers who are younger.
-```php
-    return $node->nextBrothers();
-```
-##
-To get the next sister of the node. gets only one sister.
-```php
-    return $node->nextSister();
-```
-##
-To get all the next sisters of the node. sisters who are younger.
-```php
-    return $node->nextSisters();
-```
-##
-To get the previous sibling of the node. only one sibling.
-```php
-    return $node->prevSibling();
-```
-##
-To get all the previous siblings of the node. siblings who are older.
-```php
-    return $node->prevSiblings();
-```
-##
-To get the previous brother of the node. only one brother.
-```php
-    return $node->prevBrother();
-```
-##
-To get all the previous brothers of the node. brothers who are older.
-```php
-    return $node->prevBrothers();
-```
-##
-To get the previous sister of the node. only one sister.
-```php
-    return $node->prevSister();
-```
-##
-To get all the previous sisters of the node. sisters who are older.
-```php
-    return $node->prevSisters();
-```
-##
-To get the first sibling of the node.
-```php
-    return $node->firstSibling();
-```
-##
-To get the last sibling of the node.
-```php
-    return $node->lastSibling();
-```
-##
-To get the first brother of the node.
-```php
-    return $node->firstBrother();
-```
-##
-To get the last brother of the node.
-```php
-    return $node->lastBrother();
-```
-##
-To get the first sister of the node.
-```php
-    return $node->firstSister();
-```
-##
-To get the last sister of the node.
-```php
-    return $node->lastSister();
-```
+
 ##
 To create new sibling for the node:
 ```php
@@ -561,6 +584,7 @@ To create new sibling for the node:
        
     return $node->newSibling($data, 'm'); // m = male
 ```
+
 ##
 To create new brother for the node:
 ```php
@@ -570,6 +594,7 @@ To create new brother for the node:
     // or you can use the newSibling method
     $node->newSibling($data, 'm');
 ```
+
 ##
 To create new sister for the node:
 ```php
@@ -579,6 +604,7 @@ To create new sister for the node:
     // or you can use the newSibling method
     $node->newSibling($data, 'f');
 ```
+
 ##
 To create new son for the node:
 ```php
@@ -588,6 +614,7 @@ To create new son for the node:
     // or you can use the newChild method
     $node->newChild($data, 'm');
 ```
+
 ##
 To create new daughter for the node:
 ```php
@@ -597,6 +624,27 @@ To create new daughter for the node:
     // or you can use the newChild method
     $node->newChild($data, 'f');
 ```
+
+##
+To assign wife to a node:
+```php
+    $wife = Node::find($female_node_id)
+    $data = ['date_of_marriage'=>'2000/01/01', 'marriage_desc'=>'description'];
+       
+    return $node->getMarriedWith($wife, $data);
+```
+When trying to do this with a female node (woman) a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   so if ```$node``` is a woman Exception will be thrown.
+
+##
+To divorce a wife
+```php
+    $husband = Node::find($male_node_id)
+    $wife    = Node::find($female_node_id)
+       
+    return $husband->divorce($wife);
+```
+When trying to do this with a female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if ```$husband``` is a woman Exception will be thrown.
+
 ##
 To add uploaded photo to the node:
 ```php
@@ -620,6 +668,7 @@ To add uploaded photo to the node:
         }
     }
 ```
+
 ##
 to move an existing node to be child of another node.   
 **Note** this will move the node with its children to be child of the other node or location.
@@ -636,6 +685,7 @@ to move an existing node to be child of another node.
 
     $node->moveTo($location);
 ```
+
 ##
 To move children of a node to be children of another node  
 you can do this:
@@ -669,6 +719,7 @@ you can do this:
 
     $node->moveAfter($another_node);
 ```
+
 ##
 
 To move a node before another node
@@ -711,6 +762,7 @@ using ```moveChildren``` method.
 
     $node->moveChildren()->delete();
 ```
+
 ##
 To delete all children of a node:
 ```php
@@ -720,6 +772,7 @@ To delete all children of a node:
 
     $node->deleteChildren(); // returns number od deleted nodes
 ```
+
 ##
 The next code will create father for a node, only if this node is a Root in the tree.   
 If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` will be thrown.
@@ -727,16 +780,14 @@ If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` wil
     $data = ['name' => $name, 'birth_date' => $birth_date];
     $node->createFather($data);
 ```
+
 ##
 To check if the node is the main node in its tree.
 ```php
     $node->isMainNode(); // returns true or false
 ```
-##
-To make the node as the main node in its tree.   
-```php
-    $node->makeAsMainNode();
-```
+
+
 ##
 To convert the tree to Html starting from the node itself.
 ```php
@@ -746,6 +797,7 @@ To convert the tree to Html starting from the node itself.
     // or
     $node->toTree();
 ```
+
 ##
 **Note**: You can use the **Pointer** of tree to access all methods of class Node.   
 for example:
@@ -771,6 +823,7 @@ for example:
     .
     $tree->pointer()->toHtml();
 ```
+
 ## Testing
 
 ```bash
