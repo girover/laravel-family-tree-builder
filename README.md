@@ -18,10 +18,14 @@
     - [Tree](#tree)
     - [Pointer](#pointer)
     - [Node](#node)
-      - [Getting nodes](#getting-nodes)
-      - [Adding nodes](#adding-nodes)
-      - [Updating nodes](#updating-nodes)
-      - [Deleting nodes](#deleting-nodes)
+       - [Retrieving nodes](#retrieving-nodes)
+       - [Adding nodes](#adding-nodes)
+       - [Updating nodes](#updating-nodes)
+       - [Deleting nodes](#deleting-nodes)   
+       - [Checking nodes](#checking-nodes)   
+       - [Relationships](#relationships)   
+       - [Relocating nodes](#relocating-nodes) 
+    - [Drawing A Tree](#drawing-a-tree)
   - [Testing](#testing)
   - [Changelog](#changelog)
   - [Contributing](#contributing)
@@ -108,10 +112,10 @@ $tree = Tree::create(
     ]
 );
 ```
-***As you can see, the model ```Girover\Tree\Models\Tree``` is corresponding the table 'trees' in database, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Family```, but then you must use trait ```Girover\Tree\Traits\Treeable``` in the model, and also change the model name in the ```config/tree.php```.***
+***The model ```Girover\Tree\Models\Tree``` is corresponding the table 'trees' in database, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Family```, but then you must use trait ```Girover\Tree\Traits\Treeable``` in the model, and also change the model name in the ```config/tree.php```.***
 
-After creating the tree, you can start to add as many nodes as you like.    
-Let's start adding the First node **```Root```** to the tree.
+After creating the tree, you can start to add as many nodes as you want.    
+Let's start adding the First node, the **```Root```**, to the tree.
 ```php
     $data = ['name'=>'root', 'birth_date'=>'2000-01-01'];
 
@@ -130,48 +134,16 @@ After creating the Root in the tree, let's add first child for the Root.
 
     $tree = Tree::find(1);
 
-    $first_child_data = ['name'=>'first_child', 'birth_date'=>'2001-01-01'];
+    $first_child_data = ['name'=>'first child', 'birth_date'=>'2001-01-01'];
 
     $tree->movePointerToRoot()->newChild($first_child_data ,'m'); // m = male
 
     // Or you can do this instead
     $tree->movePointerToRoot()->newSon($first_child_data);
 ```
-Now our tree consists of two nodes, Root node and the first child of Root.   
-To view this tree in the browser you can do this:
-```php
-    <?php
+Now our tree consists of two nodes, the root and the first child of the root.   
 
-    namespace App\Http\Controllers;
-
-    use Illuminate\Http\Request;
-    use Girover\Tree\Models\Tree;
-
-    class TreeController extends Controller
-    {
-        public function index()
-        {
-            $tree     = Tree::find(1);
-            $treeHTML = $tree->toHtml()
-
-            return view('tree.index')->with('treeHTML', $treeHTML);
-        }
-    }
-```
-And now inside your blade file you can render the tree by doing one of these two ways. 
-
-```html
-    // views/tree/index.blade.php
-    <div>
-        @tree($treeHtml)
-    </div>
-    // OR
-    <div>
-        {!! $treeHTML !!}
-    </div>
-```
-
-You can call the following method on the object of Tree 
+You can call the following method on an object of Tree 
 | #   | function                   | Description                                           | Params                                        |
 | --- | -------------------------- | ----------------------------------------------------- | --------------------------------------------- |
 | 1   | `createRoot($data)`        | create root in the tree.                              | ```$data``` is array of root info             |
@@ -190,7 +162,7 @@ You can call the following method on the object of Tree
 | 17  | `setMainNode($node)`       | Set the given node as main node in the tree           |                                               |
 
 
-### Pointer
+## Pointer
 
 A tree has a **Pointer** inside it, and this **Pointer** indicates to one node.    
 Pointer can move through all nodes in the tree.     
@@ -204,11 +176,15 @@ To get the pointer you can do the following:
 ```
 And now you can use the pointer to make a lot of actions inside the tree, for example moving through nodes, deleting and retrieving more information about nodes.   
 Eg.
-To move the pointer to location ```aa.aa.df.se```:
+To move the pointer to specific node:
 ```php
-    $pointer->to('aa.aa.df.se');
+    use Girover\Tree\Models\Node;
+
+    $node    = Node::find(1);
+
+    $pointer->to($node);
 ```
-And now you can get the node data by calling the method ```node()```
+And now you can get the node data by calling the method ```node```
 ```php
     $node = $pointer->node();
     echo $node->location;
@@ -216,221 +192,216 @@ And now you can get the node data by calling the method ```node()```
     echo $node->gender;
 ```
 
-Note that we called method ```node()``` after we had called the method ```to($location)```.   
-This is because when a tree instance created, its **Pointer** indicates to ```null```.
+Note that we called method ```node``` after we had called the method ```to($node)```.   
+This is because when a tree object is created, its **Pointer** indicates to ```null```.
 
-# Node
+## Node
+ - [What is a node](#what-is-a-node)
  - [Retrieving nodes](#retrieving-nodes)
  - [Adding nodes](#adding-nodes)
  - [Updating nodes](#updating-nodes)
  - [Deleting nodes](#deleting-nodes)   
  - [Checking nodes](#checking-nodes)   
+ - [Relationships](#relationships)   
  - [Relocating nodes](#relocating-nodes)   
 
-**Node** is a **person** in a tree and every node in tree is connected with another one by using **Location mechanism**.
+### What is a node
 
-To get the node you can do this:
+**Node** is a **person** in a tree and every node in the tree is connected with another one by using **Location mechanism**.    
+
+To retrieve a nodes you can use Eloquent model ```Girover\Tree\Models\Node```
 ```php
     use Girover\Tree\Models\Node;
 
     $node    = Node::find(1);
 ```
-***As you can see, the model ```Girover\Tree\Models\Node``` is corresponding the table 'nodes' in database, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Person```, but then you must use trait ```Girover\Tree\Traits\Nodeable``` in the model, and also change the model class name in the ```config/tree.php```.***
+***The model ```Girover\Tree\Models\Node``` is corresponding the table 'nodes' in database, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Person```, but then you must use trait ```Girover\Tree\Traits\Nodeable``` in the model, and also change the model class name in the ```config/tree.php```.***
 
-##
+
+### Retrieving nodes
+### <!-- getting the tree of node -->
 To get the tree that the node belongs to.
 ```php
     $node->getTree();
 ```
-
-## Retrieving nodes
-
-## <!-- getting father of node -->
+### <!-- getting father of node -->
 To get the father of the node:
 ```php
     return $node->father();
 ```
-
-
-
-
-
-
-
-## <!-- getting grand father of node -->
+### <!-- getting grand father of node -->
 To get the grandfather of the node:
 ```php
     return $node->grandfather();
 ```
-## <!-- getting ancestor of node that matches given generation -->
+### <!-- getting ancestor of node that matches given generation -->
 To get the ancestor that matches the given number as parameter. 
 ```php
     $node->ancestor(); // returns father
     $node->ancestor(2); // returns grandfather
     $node->ancestor(3); // returns the father of grandfather
 ```
-## <!-- getting all ancestors of a node -->
+### <!-- getting all ancestors of a node -->
 To get all ancestors of a node
 ```php
     return $node->ancestors();
 ```
-## <!-- getting all uncles of a node -->
+### <!-- getting all uncles of a node -->
 To get all uncles of the node:
 ```php
     return $node->uncles();
 ```
-## <!-- getting all aunts of a node -->
+### <!-- getting all aunts of a node -->
 To get all aunts of the node:
 ```php
     return $node->aunts();
 ```
-## <!-- getting all children of a node -->
+### <!-- getting all children of a node -->
 To get all children of the node:
 ```php
     return $node->children();
 ```
-## <!-- getting all sons of a node -->
+### <!-- getting all sons of a node -->
 To get all sons of the node:
 ```php
     return $node->sons();
 ```
-
-## <!-- getting all daughters of a node -->
+### <!-- getting all daughters of a node -->
 To get all daughters of the node:
 ```php
     return $node->daughters();
 ```
-## <!-- getting all descendants of a node -->
+### <!-- getting all descendants of a node -->
 To get all descendants of the node:
 ```php
     return $node->descendants();
 ```
-## <!-- getting all male descendants of a node -->
+### <!-- getting all male descendants of a node -->
 To get all male descendants of the node:
 ```php
     return $node->maleDescendants();
 ```
-## <!-- getting all female descendants of a node -->
+### <!-- getting all female descendants of a node -->
 To get all female descendants of the node:
 ```php
     return $node->femaleDescendants();
 ```
-## <!-- getting the first child of a node -->
+### <!-- getting the first child of a node -->
 To get the first child of the node:
 ```php
     return $node->firstChild();
 ```
-## <!-- getting the last child of a node -->
+### <!-- getting the last child of a node -->
 To get the last child of the node:
 ```php
     return $node->lastChild();
 ```
-## <!-- getting all siblings of a node -->
+### <!-- getting all siblings of a node -->
 To get all siblings of the node:
 ```php
     return $node->siblings();
 ```
-## <!-- getting all brothers of a node -->
+### <!-- getting all brothers of a node -->
 To get all brothers of the node:
 ```php
     return $node->brothers();
 ```
-## <!-- getting all sisters of a node -->
+### <!-- getting all sisters of a node -->
 To get all sisters of the node:
 ```php
     return $node->sisters();
 ```
-## <!-- getting the next(older) sibling of a node -->
+### <!-- getting the next(older) sibling of a node -->
 To get the next sibling of the node. gets only one sibling.
 ```php
     return $node->nextSibling();
 ```
-## <!-- getting all next(older) siblings of a node -->
+### <!-- getting all next(older) siblings of a node -->
 To get all the next siblings of the node. siblings who are younger.
 ```php
     return $node->nextSiblings();
 ```
-## <!-- getting the next(older) brother of a node -->
+### <!-- getting the next(older) brother of a node -->
 To get the next brother of the node. gets only one brother.
 ```php
     return $node->nextBrother();
 ```
-## <!-- getting all next(older) brothers of a node -->
+### <!-- getting all next(older) brothers of a node -->
 To get all the next brothers of the node. brothers who are younger.
 ```php
     return $node->nextBrothers();
 ```
-## <!-- getting the next(older) sister of a node -->
+### <!-- getting the next(older) sister of a node -->
 To get the next sister of the node. gets only one sister.
 ```php
     return $node->nextSister();
 ```
-## <!-- getting all next(older) sisters of a node -->
+### <!-- getting all next(older) sisters of a node -->
 To get all the next sisters of the node. sisters who are younger.
 ```php
     return $node->nextSisters();
 ```
-## <!-- getting the previous(younger) sibling of a node -->
+### <!-- getting the previous(younger) sibling of a node -->
 To get the previous sibling of the node. only one sibling.
 ```php
     return $node->prevSibling();
 ```
-## <!-- getting all previous(younger) siblings of a node -->
+### <!-- getting all previous(younger) siblings of a node -->
 To get all the previous siblings of the node. siblings who are older.
 ```php
     return $node->prevSiblings();
 ```
-## <!-- getting the previous(younger) brother of a node -->
+### <!-- getting the previous(younger) brother of a node -->
 To get the previous brother of the node. only one brother.
 ```php
     return $node->prevBrother();
 ```
-## <!-- getting all previous(younger) brothers of a node -->
+### <!-- getting all previous(younger) brothers of a node -->
 To get all the previous brothers of the node. brothers who are older.
 ```php
     return $node->prevBrothers();
 ```
-## <!-- getting the previous(younger) sister of a node -->
+### <!-- getting the previous(younger) sister of a node -->
 To get the previous sister of the node. only one sister.
 ```php
     return $node->prevSister();
 ```
-## <!-- getting all previous(younger) sisters of a node -->
+### <!-- getting all previous(younger) sisters of a node -->
 To get all the previous sisters of the node. sisters who are older.
 ```php
     return $node->prevSisters();
 ```
-## <!-- getting the first sibling of a node -->
+### <!-- getting the first sibling of a node -->
 To get the first sibling of the node.
 ```php
     return $node->firstSibling();
 ```
-## <!-- getting the last sibling of a node -->
+### <!-- getting the last sibling of a node -->
 To get the last sibling of the node.
 ```php
     return $node->lastSibling();
 ```
-## <!-- getting the first brother of a node -->
+### <!-- getting the first brother of a node -->
 To get the first brother of the node.
 ```php
     return $node->firstBrother();
 ```
-## <!-- getting the last brother of a node -->
+### <!-- getting the last brother of a node -->
 To get the last brother of the node.
 ```php
     return $node->lastBrother();
 ```
-## <!-- getting the first sister of a node -->
+### <!-- getting the first sister of a node -->
 To get the first sister of the node.
 ```php
     return $node->firstSister();
 ```
-## <!-- getting the last sister of a node -->
+### <!-- getting the last sister of a node -->
 To get the last sister of the node.
 ```php
     return $node->lastSister();
 ```
-## <!-- getting all wives of a node -->
+### <!-- getting all wives of a node -->
 
 To get all wives of the node:
 ```php
@@ -444,7 +415,7 @@ To get only wives who are not divorced you can do this:
 ```php
     $node->wives()->ignoreDivorced()->get();
 ```
-## <!-- getting husbands of a node -->
+### <!-- getting husbands of a node -->
 To get husbands of the node:
 ```php
     $node->husband;
@@ -458,9 +429,117 @@ To get only husbands who are not divorced you can do this:
     $node->husband()->ignoreDivorced()->get();
 ```
 
-## Checking nodes
+### Adding nodes
 
-## <!-- Determining is father of -->
+### <!-- Creating father for a node -->
+The next code will create father for a node, only if this node is a Root in the tree.   
+If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` will be thrown.
+```php
+    $data = ['name' => $name, 'birth_date' => $birth_date];
+    $node->createFather($data);
+```
+
+### <!-- Creating new sibling for a node -->
+To create new sibling for the node:
+```php
+    $data = ['name'=>$name, 'birth_date'=>$birth_date];
+       
+    return $node->newSibling($data, 'm'); // m = male
+```
+
+### <!-- Creating new brother for a node -->
+To create new brother for the node:
+```php
+    $data = ['name'=>$name, 'birth_date'=>$birth_date];
+    $node->newBrother($data);
+
+    // or you can use the newSibling method
+    $node->newSibling($data, 'm');
+```
+
+### <!-- Creating new sister for a node -->
+To create new sister for the node:
+```php
+    $data = ['name'=>$name, 'birth_date'=>$birth_date];
+    $node->newSister($data);
+
+    // or you can use the newSibling method
+    $node->newSibling($data, 'f');
+```
+
+### <!-- Creating new son for a node -->
+To create new son for the node:
+```php
+    $data = ['name'=>$name, 'birth_date'=>$birth_date];
+    $node->newSon($data);
+
+    // or you can use the newChild method
+    $node->newChild($data, 'm');
+```
+
+### <!-- Creating new daughter for a node -->
+To create new daughter for the node:
+```php
+    $data = ['name'=>$name, 'birth_date'=>$birth_date];
+    $node->newDaughter($data);
+    
+    // or you can use the newChild method
+    $node->newChild($data, 'f');
+```
+
+### Updating nodes
+The field ```location``` in ```nodes``` table in database is responsible for connecting nodes with each others. Therefor you do not have to update this field using the default ```update``` method from Laravel Eloquent model, because you may come to destroy the whole tree by updating location of only one node.   
+And the same thing for the field ```tree_id```. other fields you are free to update what you want.
+
+### <!-- Updating: to make node as main node -->
+To make the node as the main node in its tree.   
+```php
+    $node->makeAsMainNode();
+```
+
+### Deleting nodes
+
+### <!-- Deleting: to delete a node -->
+To delete a node.
+```php
+    use \Girover\Tree\Models\Node;
+
+    $node = Node::find(10)->delete();
+```
+**note:** The node will be deleted with all its descendants.   
+But if you want just to delete the node and not its descendants,   
+then you can move its descendants before deleting the node.
+```php
+    use \Girover\Tree\Models\Node;
+
+    $node = Node::find(10);
+    $another_node = Node::find(30);
+
+    $node->moveChildrenTo($another_node)->delete();
+```
+Or you can directly move children to the father of deleted node by 
+using ```moveChildren``` method without passing any node as parameter.
+```php
+    use \Girover\Tree\Models\Node;
+
+    $node = Node::find(10);
+
+    $node->moveChildren()->delete();
+```
+
+### <!-- Deleting: to delete all children of a node -->
+To delete all children of a node:
+```php
+    use \Girover\Tree\Models\Node;
+
+    $node = Node::find(10);
+
+    return $node->deleteChildren(); // number of deleted nodes
+```
+
+### Checking nodes
+
+### <!-- Determining is father of -->
 To determine if the node is father of another node:
 ```php
     use Girover\Tree\Models\Node;
@@ -471,25 +550,19 @@ To determine if the node is father of another node:
     return $node->isFatherOf($another_node); // returns true OR false
 ```
 
-## <!-- Determining is Rot -->
+### <!-- Determining is Rot -->
 To determine if the node is root in the tree
 ```php
     return $node->isRoot(); // returns true or false
 ```
 
-## <!-- Determining is main node -->
-To make the node as the main node in its tree.   
-```php
-    $node->makeAsMainNode();
-```
-
-## <!-- Determining ha children -->
+### <!-- Determining ha children -->
 Determine if the node has children
 ```php
     return $node->hasChildren(); // returns true or false
 ```
 
-## <!-- Determining is child of -->
+### <!-- Determining is child of -->
 To determine if the node is child of another node:
 ```php
     use Girover\Tree\Models\Node;
@@ -500,13 +573,13 @@ To determine if the node is child of another node:
     return $node->isChildOf($another_node); // returns true OR false
 ```
 
-## <!-- Determining has siblings -->
+### <!-- Determining has siblings -->
 Determine if the node has siblings
 ```php
     return $node->hasSiblings(); // returns true or false
 ```
 
-## <!-- Determining is sibling of -->
+### <!-- Determining is sibling of -->
 To determine if the node is sibling of another node:
 ```php
     use Girover\Tree\Models\Node;
@@ -517,115 +590,76 @@ To determine if the node is sibling of another node:
     return $node->isSiblingOf($another_node); // returns true OR false
 ```
 
-##
-to get which generation number in the tree the node is:
+### <!-- Determining is the main node -->
+To check if the node is the main node in its tree.
+```php
+    $node->isMainNode(); // returns true or false
+```
+
+
+###
+to get the generation number of a node in a tree:
 ```php
     return $node->generation(); // int or null
 ```
 
-##
+### <!-- counting children of a node -->
 To count the children of the node:
 ```php
     return $node->countChildren();
 ```
 
-##
-To count all sons of the node:
+### <!-- counting sons of a node -->
+To count sons of a node:
 ```php
     return $node->countSons();
 ```
 
-##
-To count all daughters of the node:
+### <!-- counting daughter of a node -->
+To count daughters of the node:
 ```php
     return $node->countDaughters();
 ```
 
-##
+### <!-- counting siblings of a node -->
 To count all siblings of the node:
 ```php
     return $node->countSiblings();
 ```
 
-##
+### <!-- counting brothers of a node -->
 To count all brothers of the node:
 ```php
     return $node->countBrothers();
 ```
 
-##
+### <!-- counting sisters of a node -->
 To count all sisters of the node:
 ```php
     return $node->countSisters();
 ```
 
-##
+### <!-- counting all descendants of a node -->
 To count all descendants of the node:
 ```php
     return $node->countDescendants();
 ```
 
-##
+### <!-- counting male descendants of a node -->
 To count all male descendants of the node:
 ```php
     return $node->countMaleDescendants();
 ```
 
-##
+### <!-- counting female descendants of a node -->
 To count all female descendants of the node:
 ```php
     return $node->countFemaleDescendants();
 ```
 
-##
-To create new sibling for the node:
-```php
-    $data = ['name'=>$name, 'birth_date'=>$birth_date];
-       
-    return $node->newSibling($data, 'm'); // m = male
-```
+### Relations
 
-##
-To create new brother for the node:
-```php
-    $data = ['name'=>$name, 'birth_date'=>$birth_date];
-    $node->newBrother($data);
-
-    // or you can use the newSibling method
-    $node->newSibling($data, 'm');
-```
-
-##
-To create new sister for the node:
-```php
-    $data = ['name'=>$name, 'birth_date'=>$birth_date];
-    $node->newSister($data);
-
-    // or you can use the newSibling method
-    $node->newSibling($data, 'f');
-```
-
-##
-To create new son for the node:
-```php
-    $data = ['name'=>$name, 'birth_date'=>$birth_date];
-    $node->newSon($data);
-
-    // or you can use the newChild method
-    $node->newChild($data, 'm');
-```
-
-##
-To create new daughter for the node:
-```php
-    $data = ['name'=>$name, 'birth_date'=>$birth_date];
-    $node->newDaughter($data);
-    
-    // or you can use the newChild method
-    $node->newChild($data, 'f');
-```
-
-##
+### <!-- Relations to assign wife to a node -->
 To assign wife to a node:
 ```php
     $wife = Node::find($female_node_id)
@@ -635,7 +669,7 @@ To assign wife to a node:
 ```
 When trying to do this with a female node (woman) a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   so if ```$node``` is a woman Exception will be thrown.
 
-##
+### <!-- Relations to divorce a wife -->
 To divorce a wife
 ```php
     $husband = Node::find($male_node_id)
@@ -645,7 +679,7 @@ To divorce a wife
 ```
 When trying to do this with a female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if ```$husband``` is a woman Exception will be thrown.
 
-##
+### <!-- Relations to upload photo for a node -->
 To add uploaded photo to the node:
 ```php
     <?php
@@ -669,7 +703,10 @@ To add uploaded photo to the node:
     }
 ```
 
-##
+
+## Relocating nodes
+
+### <!-- Relocating: to move a node to another node -->
 to move an existing node to be child of another node.   
 **Note** this will move the node with its children to be child of the other node or location.
 ```php
@@ -686,7 +723,7 @@ to move an existing node to be child of another node.
     $node->moveTo($location);
 ```
 
-##
+### <!-- Relocating: to move children of a node to another node -->
 To move children of a node to be children of another node  
 you can do this:
 ```php
@@ -707,8 +744,7 @@ you can do this:
 ```TreeException``` will be thrown.   
 The same exception will be thrown if node2 is a female node.
 
-##
-
+### <!-- Relocating: to move a node to be after another node -->
 To move a node after another node
 you can do this:
 ```php
@@ -720,8 +756,7 @@ you can do this:
     $node->moveAfter($another_node);
 ```
 
-##
-
+### <!-- Relocating: to move a node to be before another node -->
 To move a node before another node
 you can do this:
 ```php
@@ -733,72 +768,11 @@ you can do this:
     $node->moveBefore($another_node);
 ```
 **Note:** When trying to move the Root or when trying to move a node after or before one of its descendants 
-```TreeException``` will be thrown.   
-
-##
-To delete a node.
-```php
-    use \Girover\Tree\Models\Node;
-
-    $node = Node::find(10)->delete();
-```
-**note:** The node will be deleted with all its descendants.   
-But if you want just to delete the node and not its descendants,   
-then you can move its descendants before deleting the node.
-```php
-    use \Girover\Tree\Models\Node;
-
-    $node = Node::find(10);
-    $another_node = Node::find(30);
-
-    $node->moveChildrenTo($another_node)->delete();
-```
-Or you can directly move children to the deleted node's father by 
-using ```moveChildren``` method.
-```php
-    use \Girover\Tree\Models\Node;
-
-    $node = Node::find(10);
-
-    $node->moveChildren()->delete();
-```
-
-##
-To delete all children of a node:
-```php
-    use \Girover\Tree\Models\Node;
-
-    $node = Node::find(10);
-
-    $node->deleteChildren(); // returns number od deleted nodes
-```
-
-##
-The next code will create father for a node, only if this node is a Root in the tree.   
-If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` will be thrown.
-```php
-    $data = ['name' => $name, 'birth_date' => $birth_date];
-    $node->createFather($data);
-```
-
-##
-To check if the node is the main node in its tree.
-```php
-    $node->isMainNode(); // returns true or false
-```
+```TreeException``` will be thrown.  
 
 
-##
-To convert the tree to Html starting from the node itself.
-```php
-    $node->toHtml();
-    // or
-    $node->draw();
-    // or
-    $node->toTree();
-```
 
-##
+###
 **Note**: You can use the **Pointer** of tree to access all methods of class Node.   
 for example:
 ```php
@@ -823,6 +797,102 @@ for example:
     .
     $tree->pointer()->toHtml();
 ```
+
+## Rendering a tree
+
+To show a tree in the browser you can use one of these methods ```toHtml```, ```toTree``` or ```draw``` on an object of model ```Girover\Tree\Models\Tree```
+```php
+    <?php
+
+    namespace App\Http\Controllers;
+
+    use Illuminate\Http\Request;
+    use Girover\Tree\Models\Tree;
+
+    class TreeController extends Controller
+    {
+        public function index()
+        {
+            $tree     = Tree::find(1);
+
+            $treeHTML = $tree->toHtml()
+            // OR
+            $treeHTML = $tree->toTree()
+            // OR
+            $treeHTML = $tree->Draw()
+
+            return view('tree.index')->with('treeHTML', $treeHTML);
+        }
+    }
+```
+And now inside your blade file you can render the tree by using custom blade directive 
+```@tree($treeHtml)``` or by using this syntax ```{!! toHtml !!}```. 
+
+```html
+    <!-- views/tree/index.blade.php -->
+    <div>
+        @tree($treeHtml)
+    </div>
+    <!-- OR -->
+    <div>
+        {!! $treeHTML !!}
+    </div>
+```
+**Note** the above example will render the entire tree, but if you want to render a part of tree starting from a specific node you can use the **Pinter** to do that:
+```php
+    <?php
+
+    namespace App\Http\Controllers;
+
+    use Illuminate\Http\Request;
+    use Girover\Tree\Models\Tree;
+    use Girover\Tree\Models\Node;
+
+    class TreeController extends Controller
+    {
+        public function index()
+        {
+            $tree     = Tree::find(1);
+
+            $girover     = Node::find(11);
+
+            $treeHTML = $tree->pointer()->to($girover)->toHtml();
+            // OR
+            $treeHTML = $tree->pointer()->to($girover)->toTree();
+            // OR
+            $treeHTML = $tree->pointer()->to($girover)->draw();
+
+            return view('tree.index')->with('treeHTML', $treeHTML);
+        }
+    }
+```
+
+You can also use a node model to do the same by using one of these methods ```toHtml```, ```toTree``` or ```draw``` on an object of model ```Girover\Tree\Models\Node```:
+```php
+    <?php
+
+    namespace App\Http\Controllers;
+
+    use Illuminate\Http\Request;
+    use Girover\Tree\Models\Node;
+
+    class TreeController extends Controller
+    {
+        public function index()
+        {
+            $girover  = Node::find(11);
+
+            $treeHTML = $girover->toHtml();
+            // OR
+            $treeHTML = $girover->toTree();
+            // OR
+            $treeHTML = $girover->draw();
+
+            return view('tree.index')->with('treeHTML', $treeHTML);
+        }
+    }
+```
+
 
 ## Testing
 

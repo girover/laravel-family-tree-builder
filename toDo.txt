@@ -1,3 +1,5 @@
+$node->toggleGender()
+--------------------------------------------------
 make node younger or older from a given node
 $node->moveAfter($another_node)
 $node->sendAfter($another_node)
