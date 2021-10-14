@@ -402,33 +402,7 @@ To get the last sister of the node.
 ```php
     return $node->lastSister();
 ```
-### <!-- getting all wives of a node -->
 
-To get all wives of the node:
-```php
-    $node->wives;
-    // to add constraints
-    $node->wives()->where('name', $name)->get();
-```
-When trying to get wives of female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   
-Note that this will get divorced wives too.   
-To get only wives who are not divorced you can do this:
-```php
-    $node->wives()->ignoreDivorced()->get();
-```
-### <!-- getting husbands of a node -->
-To get husbands of the node:
-```php
-    $node->husband;
-    // to add constraints
-    $node->husband()->where('name', $name)->get();
-```
-When trying to get husband of male node a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   
-Note that this will get divorced husbands too.   
-To get only husbands who are not divorced you can do this:
-```php
-    $node->husband()->ignoreDivorced()->get();
-```
 
 ### Adding nodes
 
@@ -598,11 +572,6 @@ To check if the node is the main node in its tree.
 ```
 
 
-###
-to get the generation number of a node in a tree:
-```php
-    return $node->generation(); // int or null
-```
 
 ### <!-- counting children of a node -->
 To count the children of the node:
@@ -659,6 +628,34 @@ To count all female descendants of the node:
 ```
 
 ### Relations
+
+### <!-- Relations: getting all wives of a node -->
+
+To get all wives of the node:
+```php
+    $node->wives;
+    // to add constraints
+    $node->wives()->where('name', $name)->get();
+```
+When trying to get wives of female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   
+Note that this will get divorced wives too.   
+To get only wives who are not divorced you can do this:
+```php
+    $node->wives()->ignoreDivorced()->get();
+```
+### <!-- Relations: getting husbands of a node -->
+To get husbands of the node:
+```php
+    $node->husband;
+    // to add constraints
+    $node->husband()->where('name', $name)->get();
+```
+When trying to get husband of male node a ```Girover\Tree\Exceptions\TreeException``` will be thrown.   
+Note that this will get divorced husbands too.   
+To get only husbands who are not divorced you can do this:
+```php
+    $node->husband()->ignoreDivorced()->get();
+```
 
 ### <!-- Relations to assign wife to a node -->
 To assign wife to a node:
@@ -766,9 +763,15 @@ you can do this:
 **Note:** When trying to move the Root or when trying to move a node after or before one of its descendants 
 ```TreeException``` will be thrown.  
 
+### <!-- Getting generation of a node -->
+to get the generation number of a node in a tree:
+```php
+    return $node->generation(); // int or null
+```
 
 
 ###
+
 **Note**: You can use the **Pointer** of tree to access all methods of class Node.   
 for example:
 ```php
