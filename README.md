@@ -36,7 +36,7 @@
 
 
 ## Introduction
-This package allows you to build family trees.
+**girover/laravel-tree** is a package that allows you to build family trees.
     With this package it will be very simple to create trees and add nodes to trees.   
 
 Every tree is allowed to have 85 generations. Assuming each generation has 20 years, this means that 1700 years of data can be stored in one tree.    
