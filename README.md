@@ -47,7 +47,7 @@ Every node in a tree is allowed to have 676 direct children.
 You can add the package via **composer**:
 
 ```bash
-composer require girover/tree
+composer require girover/laravel-tree
 ```
 
 Before installing the package you should configure your database.  
