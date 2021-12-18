@@ -2,7 +2,6 @@
 
 namespace Girover\Tree\Tests;
 
-use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Location;
 use Girover\Tree\Models\Node;
 use Girover\Tree\Tests\Traits\Factoryable;
@@ -10,7 +9,8 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class NMoveToTest extends TestCase
 {
-    use DatabaseTransactions, Factoryable;
+    use DatabaseTransactions;
+    use Factoryable;
 
     /**
      * -------------------------------------------
@@ -28,11 +28,11 @@ class NMoveToTest extends TestCase
 
         $this->assertTrue($son1->tree_id === $son2->tree_id);
         $this->assertTrue(Location::areSiblings($son1->location, $son2->location));
-        
+
         // Make son1 as son of son2
         $son1->moveTo($son2);
 
         $son2_son = $son2->firstChild();
-        $this->assertNotNull($son2_son);       
+        $this->assertNotNull($son2_son);
     }
 }

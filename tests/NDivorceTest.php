@@ -3,13 +3,13 @@
 namespace Girover\Tree\Tests;
 
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Location;
 use Girover\Tree\Tests\Traits\Factoryable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class NDivorceTest extends TestCase
 {
-    use DatabaseTransactions, Factoryable;
+    use DatabaseTransactions;
+    use Factoryable;
 
     /**
      * -------------------------------------------
@@ -20,14 +20,14 @@ class NDivorceTest extends TestCase
     public function it_can_divorce_a_node()
     {
         // create new node in database table
-        $man   = $this->createMaleNode();
-        $woman = $this->createFemaleNode(['location'=>'sd.er']);
+        $man = $this->createMaleNode();
+        $woman = $this->createFemaleNode(['location' => 'sd.er']);
 
         $man->getMarriedWith($woman);
 
         $man->divorce($woman);
 
-        $this->assertDatabaseHas('marriages', ['husband_id'=>$man->id, 'wife_id'=>$woman->id, 'divorced'=>true]);
+        $this->assertDatabaseHas('marriages', ['husband_id' => $man->id, 'wife_id' => $woman->id, 'divorced' => true]);
     }
 
     /** @test */
@@ -35,7 +35,7 @@ class NDivorceTest extends TestCase
     {
         $this->expectException(TreeException::class);
         // create new node in database table
-        $man   = $this->createMaleNode();
+        $man = $this->createMaleNode();
 
         $man->divorce('not node');
     }
@@ -45,9 +45,9 @@ class NDivorceTest extends TestCase
     {
         $this->expectException(TreeException::class);
         // create new node in database table
-        $woman    = $this->createFemaleNode();
+        $woman = $this->createFemaleNode();
         // creating another male node
-        $man   = $this->createMaleNode(['location'=>'aa.ww']);
+        $man = $this->createMaleNode(['location' => 'aa.ww']);
 
         $woman->divorce($man);
     }
@@ -57,9 +57,9 @@ class NDivorceTest extends TestCase
     {
         $this->expectException(TreeException::class);
         // create new node in database table
-        $man    = $this->createMaleNode();
+        $man = $this->createMaleNode();
         // creating another male node
-        $another_man   = $this->createMaleNode(['location'=>'aa.ww']);
+        $another_man = $this->createMaleNode(['location' => 'aa.ww']);
 
         $man->divorce($another_man);
     }

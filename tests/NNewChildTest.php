@@ -9,8 +9,8 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class NNewChildTest extends TestCase
 {
-    use DatabaseTransactions, Factoryable;
-
+    use DatabaseTransactions;
+    use Factoryable;
 
     /**
      * -------------------------------------------
@@ -24,8 +24,8 @@ class NNewChildTest extends TestCase
         $node = $this->createNode();
 
         $child = $node->newChild($this->makeNode()->toArray());
-        $this->assertDatabaseHas('nodes', ['name'=>$child->name]);
-        
+        $this->assertDatabaseHas('nodes', ['name' => $child->name]);
+
         $this->assertTrue(Location::areFatherAndChild($node->location, $child->location));
         $this->assertTrue($node->tree_id === $child->tree_id);
     }
@@ -37,8 +37,8 @@ class NNewChildTest extends TestCase
         $node = $this->createNode();
 
         $child = $node->newChild($this->makeNode()->toArray());
-        $this->assertDatabaseHas('nodes', ['name'=>$child->name]);
-        
+        $this->assertDatabaseHas('nodes', ['name' => $child->name]);
+
         $this->assertTrue(Location::areFatherAndChild($node->location, $child->location));
         $this->assertTrue($node->tree_id === $child->tree_id);
         $this->assertTrue($child->gender === 'm');
@@ -51,7 +51,7 @@ class NNewChildTest extends TestCase
         $node = $this->createNode();
 
         $child = $node->newChild($this->makeNode()->toArray(), 'f');
-        
+
         $this->assertTrue(Location::areFatherAndChild($node->location, $child->location));
         $this->assertTrue($node->tree_id === $child->tree_id);
         $this->assertTrue($child->gender === 'f');
@@ -84,7 +84,7 @@ class NNewChildTest extends TestCase
         // create new node in database table
         $father = $this->createNode();
         // no name is provided in data array
-        $daughter_data  = ['f_name'=>'father name']; 
-        $father->newChild($daughter_data);      
-    }    
+        $daughter_data = ['f_name' => 'father name'];
+        $father->newChild($daughter_data);
+    }
 }

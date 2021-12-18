@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Node extends Model
 {
-    use Nodeable, HasFactory;
+    use Nodeable;
+    use HasFactory;
 }

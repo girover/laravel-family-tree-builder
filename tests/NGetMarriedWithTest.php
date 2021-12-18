@@ -3,13 +3,13 @@
 namespace Girover\Tree\Tests;
 
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Location;
 use Girover\Tree\Tests\Traits\Factoryable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class NGetMarriedWithTest extends TestCase
 {
-    use DatabaseTransactions, Factoryable;
+    use DatabaseTransactions;
+    use Factoryable;
 
     /**
      * -------------------------------------------
@@ -20,12 +20,12 @@ class NGetMarriedWithTest extends TestCase
     public function it_can_get_married_with_female_node()
     {
         // create new node in database table
-        $man   = $this->createNode();
-        $woman = $this->createFemaleNode(['location'=>'aa.aa']);
+        $man = $this->createNode();
+        $woman = $this->createFemaleNode(['location' => 'aa.aa']);
 
         $man->getMarriedWith($woman);
 
-        $this->assertDatabaseHas('marriages', ['husband_id'=>$man->id, 'wife_id'=>$woman->id]);
+        $this->assertDatabaseHas('marriages', ['husband_id' => $man->id, 'wife_id' => $woman->id]);
     }
 
     /** @test 2 */
@@ -33,7 +33,7 @@ class NGetMarriedWithTest extends TestCase
     {
         $this->expectException(TreeException::class);
         // create new node in database table
-        $man   = $this->createNode();
+        $man = $this->createNode();
         $woman = 'string instead of Model object';
 
         // wrong date is provided
@@ -45,8 +45,8 @@ class NGetMarriedWithTest extends TestCase
     {
         $this->expectException(TreeException::class);
         // create new node in database table
-        $man   = $this->createMaleNode();
-        $woman = $this->createMaleNode(['location'=>'ss.dd']);
+        $man = $this->createMaleNode();
+        $woman = $this->createMaleNode(['location' => 'ss.dd']);
 
         // wrong date is provided
         $man->getMarriedWith($woman);
@@ -57,7 +57,7 @@ class NGetMarriedWithTest extends TestCase
     {
         $this->expectException(TreeException::class);
         // create new node in database table
-        $man   = $this->createFemaleNode(['location'=>'ss.dd']);
+        $man = $this->createFemaleNode(['location' => 'ss.dd']);
         $woman = $this->createFemaleNode();
 
         // wrong date is provided
@@ -69,8 +69,8 @@ class NGetMarriedWithTest extends TestCase
     {
         $this->expectException(TreeException::class);
         // create new node in database table
-        $man   = $this->createNode();
-        $woman = $this->createFemaleNode(['location'=>'aa.aa']);
+        $man = $this->createNode();
+        $woman = $this->createFemaleNode(['location' => 'aa.aa']);
 
         //Getting married with woman
         $man->getMarriedWith($woman);
@@ -83,7 +83,7 @@ class NGetMarriedWithTest extends TestCase
     {
         $this->expectException(TreeException::class);
         // create new node in database table
-        $man   = $this->createNode();
+        $man = $this->createNode();
 
         //Getting married with woman
         $man->getMarriedWith($man);
@@ -93,13 +93,13 @@ class NGetMarriedWithTest extends TestCase
     public function it_can_save_marriage_info_in_database_if_provided()
     {
         // create new node in database table
-        $man   = $this->createMaleNode();
-        $woman = $this->createFemaleNode(['location'=>'aa.aa']);
+        $man = $this->createMaleNode();
+        $woman = $this->createFemaleNode(['location' => 'aa.aa']);
 
-        $data = ['date_of_marriage'=>'2000/01/01','marriage_desc'=>'Marriage Description'];
+        $data = ['date_of_marriage' => '2000/01/01','marriage_desc' => 'Marriage Description'];
         //Getting married with woman
         $man->getMarriedWith($woman, $data);
 
-        $this->assertDatabaseHas('marriages', ['husband_id'=>$man->id, 'wife_id'=>$woman->id, 'date_of_marriage'=>$data['date_of_marriage'], 'marriage_desc'=>$data['marriage_desc']]);
+        $this->assertDatabaseHas('marriages', ['husband_id' => $man->id, 'wife_id' => $woman->id, 'date_of_marriage' => $data['date_of_marriage'], 'marriage_desc' => $data['marriage_desc']]);
     }
 }

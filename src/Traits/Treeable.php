@@ -36,7 +36,6 @@ trait Treeable
      */
     protected $nodes = null;
 
-
     public static function bootTreeable()
     {
     }
@@ -70,12 +69,13 @@ trait Treeable
         if ($this->pointer === null) {
             $this->makePointer();
         }
+
         return $this->pointer;
     }
 
     /**
      * Determine if the pointer is not indicating to any node yet.
-     * 
+     *
      * @return bool
      */
     public function isPointerFree()
@@ -188,6 +188,7 @@ trait Treeable
         if ($node instanceof (DBHelper::nodeModel())) {
             $this->main_node = $node->location;
             $this->save();
+
             return $node;
         }
         $main_node = DBHelper::nodeModel()::where('location', $node)
@@ -196,8 +197,10 @@ trait Treeable
         if ($main_node) {
             $this->main_node = $node;
             $this->save();
+
             return $node;
         }
+
         return false;
     }
 
@@ -245,7 +248,7 @@ trait Treeable
         if (empty($data)) {
             throw new TreeException("Error: no data are provided to create Root for the tree [ ".$this->name." ]", 1);
         }
-        if (!array_key_exists('name', $data)) {
+        if (! array_key_exists('name', $data)) {
             throw new TreeException("Error: the field 'name' should be provided", 1);
         }
         if ($this->isEmptyTree()) {
@@ -327,6 +330,7 @@ trait Treeable
 
         return $this;
     }
+
     /**
      * Move the pointer of the tree to a given node or location
      *
@@ -379,6 +383,7 @@ trait Treeable
     public function draw()
     {
         $tree_generator = new TreeBuilder($this);
+
         return $tree_generator->draw();
     }
 }

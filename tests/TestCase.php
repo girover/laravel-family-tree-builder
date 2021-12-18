@@ -42,7 +42,7 @@ class TestCase extends Orchestra
      */
     public function configureDatabase()
     {
-       config()->set('database.connections.testing',[
+        config()->set('database.connections.testing', [
         'driver' => 'mysql',
         'host' => '127.0.0.1',
         'port' => '3306',
@@ -59,6 +59,6 @@ class TestCase extends Orchestra
         'options' => extension_loaded('pdo_mysql') ? array_filter([
             \PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
         ]) : [],
-       ]); 
+       ]);
     }
 }

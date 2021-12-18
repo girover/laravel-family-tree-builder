@@ -21,9 +21,9 @@
 namespace Girover\Tree;
 
 use BadMethodCallException;
-use Girover\Tree\Helpers\DBHelper;
 use Girover\Tree\Database\Sql\Delete;
 use Girover\Tree\Exceptions\TreeException;
+use Girover\Tree\Helpers\DBHelper;
 use Illuminate\Support\Facades\DB;
 
 class Pointer
@@ -171,9 +171,8 @@ class Pointer
     {
         // if ($location instanceof ($this->model())) {
         if ($location instanceof (DBHelper::nodeModel())) {
-            
             if ($this->tree->id !== $location->tree_id) {
-                throw new TreeException("Error a passed node to the method [". __METHOD__ ." ] don't belong the tree", 1);                
+                throw new TreeException("Error a passed node to the method [". __METHOD__ ." ] don't belong the tree", 1);
             }
 
             $this->node = $location;

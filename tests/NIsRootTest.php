@@ -2,15 +2,13 @@
 
 namespace Girover\Tree\Tests;
 
-use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Location;
 use Girover\Tree\Tests\Traits\Factoryable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class NIsRootTest extends TestCase
 {
-    use DatabaseTransactions, Factoryable;
-
+    use DatabaseTransactions;
+    use Factoryable;
 
     /**
      * -------------------------------------------
@@ -23,7 +21,7 @@ class NIsRootTest extends TestCase
         // Create new Tree in database.
         $tree = $this->createTree();
         // Create Root node for the created tree.
-        $root = $tree->createRoot(['name'=>'majed']); 
+        $root = $tree->createRoot(['name' => 'majed']);
 
         $this->assertTrue($root->isRoot());
     }
@@ -34,8 +32,8 @@ class NIsRootTest extends TestCase
         // Create new Tree in database.
         $tree = $this->createTree();
         // Create Root node for the created tree.
-        $root = $tree->createRoot(['name'=>'root']); 
-        $son = $root->newSon(['name'=>'son name']);
+        $root = $tree->createRoot(['name' => 'root']);
+        $son = $root->newSon(['name' => 'son name']);
         $this->assertFalse($son->isRoot());
     }
 }

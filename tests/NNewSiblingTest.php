@@ -9,8 +9,8 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class NNewSiblingTest extends TestCase
 {
-    use DatabaseTransactions, Factoryable;
-
+    use DatabaseTransactions;
+    use Factoryable;
 
     /**
      * -------------------------------------------
@@ -25,8 +25,8 @@ class NNewSiblingTest extends TestCase
 
         $son = $root->newSon($this->makeNode()->toArray());
         $brother = $son->newSibling($this->makeNode()->toArray());
-        $this->assertDatabaseHas('nodes', ['name'=>$brother->name]);
-        
+        $this->assertDatabaseHas('nodes', ['name' => $brother->name]);
+
         $this->assertTrue($root->tree_id === $brother->tree_id);
         $this->assertTrue(Location::areSiblings($son->location, $brother->location));
     }
@@ -39,8 +39,8 @@ class NNewSiblingTest extends TestCase
 
         $son = $node->newChild($this->makeNode()->toArray());
         $sibling = $node->newChild($this->makeNode()->toArray());
-        $this->assertDatabaseHas('nodes', ['name'=>$son->name]);
-        
+        $this->assertDatabaseHas('nodes', ['name' => $son->name]);
+
         $this->assertTrue(Location::areSiblings($son->location, $sibling->location));
         $this->assertTrue($son->tree_id === $sibling->tree_id);
         $this->assertTrue($sibling->gender === 'm');
@@ -54,7 +54,7 @@ class NNewSiblingTest extends TestCase
 
         $child = $node->newChild($this->makeNode()->toArray());
         $sibling = $child->newSibling($this->makeNode()->toArray(), 'f');
-        
+
         $this->assertTrue(Location::areSiblings($child->location, $sibling->location));
         $this->assertTrue($child->tree_id === $sibling->tree_id);
         $this->assertTrue($sibling->gender === 'f');
@@ -89,7 +89,7 @@ class NNewSiblingTest extends TestCase
         $father = $this->createNode();
         $son = $father->newChild($this->makeNode()->toArray());
         // no name is provided in data array
-        $sibling_data  = ['f_name'=>'father name']; 
-        $son->newSibling($sibling_data);      
-    }    
+        $sibling_data = ['f_name' => 'father name'];
+        $son->newSibling($sibling_data);
+    }
 }

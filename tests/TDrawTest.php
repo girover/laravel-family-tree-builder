@@ -2,14 +2,13 @@
 
 namespace Girover\Tree\Tests;
 
-use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Location;
 use Girover\Tree\Tests\Traits\Factoryable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class TDrawTest extends TestCase
 {
-    use DatabaseTransactions, Factoryable;
+    use DatabaseTransactions;
+    use Factoryable;
 
     /**
      * -------------------------------------------
@@ -22,8 +21,8 @@ class TDrawTest extends TestCase
         // create new tree in database table
         $tree = $this->createTree();
 
-        $root = $tree->createRoot(['name'=>'Root']);
-        $this->assertDatabaseHas('nodes', ['tree_id'=>$tree->id, 'name'=>$root->name]);
+        $root = $tree->createRoot(['name' => 'Root']);
+        $this->assertDatabaseHas('nodes', ['tree_id' => $tree->id, 'name' => $root->name]);
 
         $son1 = $root->newSon($this->makeNode()->toArray());
         $son2 = $root->newSon($this->makeNode()->toArray());

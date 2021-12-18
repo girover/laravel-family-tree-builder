@@ -32,7 +32,6 @@ class TreeServiceProvider extends PackageServiceProvider
 
     public function boot()
     {
-        
         if ($this->app->runningInConsole()) {
             $this->commands([
                 TreeCommand::class,
@@ -42,9 +41,8 @@ class TreeServiceProvider extends PackageServiceProvider
             $this->publishes([
                 $this->package->basePath('/../resources/storage') => base_path("storage/app/public"),
             ], "{$this->package->shortName()}-storage");
-
         }
-        // @tree($html) Blade directive to render the tree 
+        // @tree($html) Blade directive to render the tree
         Blade::directive('tree', function ($tree_html) {
             return "<?php echo $tree_html; ?>";
         });

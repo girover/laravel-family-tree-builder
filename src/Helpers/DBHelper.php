@@ -2,7 +2,8 @@
 
 namespace Girover\Tree\Helpers;
 
-class DBHelper{
+class DBHelper
+{
     /**
      * Eloquent model that corresponding the table 'trees'
      * @return string class of model
@@ -37,7 +38,8 @@ class DBHelper{
     public static function nodeTable()
     {
         $model = static::nodeModel();
-        return (new $model)->getTable();
+
+        return (new $model())->getTable();
     }
 
     /**
@@ -47,7 +49,8 @@ class DBHelper{
     public static function treeTable()
     {
         $model = static::treeModel();
-        return (new $model)->getTable();
+
+        return (new $model())->getTable();
     }
 
     /**
@@ -57,7 +60,8 @@ class DBHelper{
     public static function nodeImageTable()
     {
         $model = static::nodeImageModel();
-        return (new $model)->getTable();
+
+        return (new $model())->getTable();
     }
 
     /**

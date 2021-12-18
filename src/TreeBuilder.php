@@ -12,7 +12,7 @@ class TreeBuilder
      * @var \Girover\Tree\Models\Tree|null
      */
     protected $tree = null;
- 
+
     /**
      * @var \Illuminate\Database\Eloquent\Collection|null
      */
@@ -25,11 +25,12 @@ class TreeBuilder
 
     /**
      * instantiate a tree generator
-     * 
+     *
      * @param \Girover\Tree\Models\Tree $tree
      * @return void
      */
-    public function __construct($tree) {
+    public function __construct($tree)
+    {
         $this->tree = $tree;
     }
 
@@ -87,7 +88,7 @@ class TreeBuilder
         if ($this->tree->isPointerFree()) {
             return $this->getAllNodes();
         }
-        
+
         return $this->tree->nodesQuery()
                     ->where('location', 'like', $this->tree->pointer()->location().'%')
                     ->get();
@@ -339,7 +340,7 @@ class TreeBuilder
         }
 
         $photo = Photos::assetFolder().$node->photo;
-        
+
         $photo = (file_exists($photo) && ! is_dir($photo))
                   ? $node->photo
                   : $this->photoIcon($node->gender);
@@ -370,7 +371,6 @@ class TreeBuilder
 
         return $html;
     }
-
 
     /**
      * Draw the current tree and return it as HTML

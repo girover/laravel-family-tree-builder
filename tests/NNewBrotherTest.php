@@ -9,8 +9,8 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class NNewBrotherTest extends TestCase
 {
-    use DatabaseTransactions, Factoryable;
-
+    use DatabaseTransactions;
+    use Factoryable;
 
     /**
      * -------------------------------------------
@@ -25,8 +25,8 @@ class NNewBrotherTest extends TestCase
 
         $son = $root->newSon($this->makeNode()->toArray());
         $brother = $son->newBrother($this->makeNode()->toArray());
-        $this->assertDatabaseHas('nodes', ['name'=>$brother->name]);
-        
+        $this->assertDatabaseHas('nodes', ['name' => $brother->name]);
+
         $this->assertTrue($root->tree_id === $brother->tree_id);
         $this->assertTrue(Location::areSiblings($son->location, $brother->location));
     }
@@ -58,6 +58,6 @@ class NNewBrotherTest extends TestCase
         $root = $this->createNode();
 
         $son = $root->newSon($this->makeNode()->toArray());
-        $son->newBrother(['f_name'=>'father name']);     
-    }   
+        $son->newBrother(['f_name' => 'father name']);
+    }
 }

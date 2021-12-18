@@ -2,13 +2,13 @@
 
 namespace Girover\Tree\Helpers;
 
-class Photos{
-
+class Photos
+{
     /**
-     * Determine if the photos will be stored in 
+     * Determine if the photos will be stored in
      * public folder of the application
      * or in Storage folder
-     * 
+     *
      * @return bool
      */
     public static function isPublic()
@@ -19,7 +19,7 @@ class Photos{
     /**
      * Photos folder is placed in storage/app/public
      * uses to store node photos
-     * 
+     *
      * @return string the name of photos folder inside storage/app/public
      */
     public static function folder()
@@ -29,8 +29,8 @@ class Photos{
 
     /**
      * for building url to photo
-     * 
-     * @return string 
+     *
+     * @return string
      */
     public static function assetFolder()
     {
@@ -47,7 +47,7 @@ class Photos{
      * Storing a photo in storage folder
      * @param \Illuminate\Http\UploadedFile $photo
      * @param string $name
-     * 
+     *
      * @return string|false
      */
     public static function store($photo, $name = '')
@@ -63,7 +63,7 @@ class Photos{
      * Storing a photo in storage folder
      * @param \Illuminate\Http\UploadedFile $photo
      * @param string $name
-     * 
+     *
      * @return string|false
      */
     public static function storeInStorage($photo, $name)
@@ -75,7 +75,7 @@ class Photos{
      * Storing a photo in storage folder
      * @param \Illuminate\Http\UploadedFile $photo
      * @param string $name
-     * 
+     *
      * @return string|false
      */
     public static function storeInPublic($photo, $name)
@@ -90,7 +90,7 @@ class Photos{
      * @return string
      */
     public static function newName($photo, $name = '')
-    {        
+    {
         if ($name === '') {
             return date('YmdHis') . '.' . $photo->extension();
         }

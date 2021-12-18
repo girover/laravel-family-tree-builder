@@ -14,8 +14,6 @@ use Girover\Tree\Location;
 use Girover\Tree\NodeRelocator;
 use Illuminate\Support\Facades\DB;
 
-use function PHPUnit\Framework\isNull;
-
 /**
  *
  */
@@ -41,7 +39,7 @@ trait Nodeable
     /**
      * to control deleting children or not when deleting a node
      * false: delete node with its children
-     * true: delete only the node, but move its children to be children for its father 
+     * true: delete only the node, but move its children to be children for its father
      *
      * @var bool
      */
@@ -119,7 +117,7 @@ trait Nodeable
     protected function validateGender($gender)
     {
         if ($gender !== 'm' && $gender !== 'f') {
-            throw new TreeException("Invalid gender is provided", 1);            
+            throw new TreeException("Invalid gender is provided", 1);
         }
     }
 
@@ -130,7 +128,7 @@ trait Nodeable
      *
      * @param bool $with_divorced
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     * 
+     *
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     protected function partners()
@@ -142,7 +140,7 @@ trait Nodeable
             return  $this->belongsToMany(get_class(), $pivot, 'wife_id', 'husband_id')
                               ->withPivot('husband_id', 'wife_id', 'date_of_marriage', 'marriage_desc');
         }
-        
+
         // get husbands
         return $this->belongsToMany(get_class(), $pivot, 'husband_id', 'wife_id')
                          ->withPivot('husband_id', 'wife_id', 'date_of_marriage', 'marriage_desc');
@@ -166,7 +164,7 @@ trait Nodeable
     public function wives()
     {
         if ($this->isFemale()) {
-            throw new TreeException("Woman cannot have wives", 1);            
+            throw new TreeException("Woman cannot have wives", 1);
         }
 
         return $this->partners();
@@ -180,7 +178,7 @@ trait Nodeable
     public function husband()
     {
         if ($this->isMale()) {
-            throw new TreeException("Man cannot have husband", 1);            
+            throw new TreeException("Man cannot have husband", 1);
         }
 
         return $this->partners();
@@ -193,7 +191,7 @@ trait Nodeable
      * @param array $data
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getMarriedWith($wife, $data=[])
+    public function getMarriedWith($wife, $data = [])
     {
         if (! $wife instanceof static) {
             throw new TreeException("Parameter passed to [".__METHOD__."] should be instance of [".get_class($this)."]", 1);
@@ -213,23 +211,23 @@ trait Nodeable
         $mar = $this->wives()->where('wife_id', $wife->id)
                              ->where('husband_id', $this->id)
                              ->first();
-        if (! is_null($mar)) {            
-            throw new TreeException('"'.$this->name.'" is already married with "'.$wife->name.'"', 1);    
+        if (! is_null($mar)) {
+            throw new TreeException('"'.$this->name.'" is already married with "'.$wife->name.'"', 1);
         }
 
         // Person cannot get married with himself
-        if ($this->id === $wife->id) {            
-            throw new TreeException('Person cannot get married with himself', 1);    
+        if ($this->id === $wife->id) {
+            throw new TreeException('Person cannot get married with himself', 1);
         }
-        
+
         if (empty($data)) {
             return $this->wives()->attach($wife->id);
         }
 
-        $marriage_info['date_of_marriage'] = isset($data['date_of_marriage']) ?$data['date_of_marriage']: null;
-        $marriage_info['marriage_desc'] = isset($data['marriage_desc']) ?$data['marriage_desc']: null;
+        $marriage_info['date_of_marriage'] = isset($data['date_of_marriage']) ? $data['date_of_marriage'] : null;
+        $marriage_info['marriage_desc'] = isset($data['marriage_desc']) ? $data['marriage_desc'] : null;
 
-        return $this->wives()->attach($wife->id,$marriage_info);
+        return $this->wives()->attach($wife->id, $marriage_info);
     }
 
     /**
@@ -253,7 +251,8 @@ trait Nodeable
         if ($this->isFemale()) {
             throw new TreeException($this->name." is a woman, but only men are allowed to divorce", 1);
         }
-        return $this->wives()->where('wife_id', $wife->id)->update(['divorced'=> true]);
+
+        return $this->wives()->where('wife_id', $wife->id)->update(['divorced' => true]);
     }
 
     /**
@@ -280,7 +279,7 @@ trait Nodeable
 
         if (Photos::store($photo, $new_name)) {
             $this->photo = $new_name;
-            
+
             return $this->save();
         }
 
@@ -380,7 +379,6 @@ trait Nodeable
         // can not get father of the root
         if ($this->isRoot()) {
             throw new TreeException("Root of a tree has no father", 1);
-            
         }
 
         return static::tree($this->tree_id)
@@ -564,7 +562,7 @@ trait Nodeable
 
     /**
      * to get siblings of the node that has the given gender
-     * 
+     *
      * @param string $gender 'm'|'f'
      * @return int
      */
@@ -623,7 +621,7 @@ trait Nodeable
 
     /**
      * getting all descendants fo the node
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function descendants()
@@ -633,7 +631,7 @@ trait Nodeable
 
     /**
      * getting all male descendants fo the node
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function maleDescendants()
@@ -643,7 +641,7 @@ trait Nodeable
 
     /**
      * getting all female descendants fo the node
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function femaleDescendants()
@@ -934,7 +932,7 @@ trait Nodeable
     /**
      * Get the previous sister that is older than this node
      *
-     * @return \Girover\Tree\Models\Node 
+     * @return \Girover\Tree\Models\Node
      */
     public function prevSister()
     {
@@ -1041,7 +1039,7 @@ trait Nodeable
      * @param \Girover\Tree\Models\Node|array $data data for the new node
      * @param string $location the location of the new [child|sibling|...]
      * @param string $gender the gender of the person
-     * 
+     *
      * @throws \Girover\Tree\Exceptions\TreeException
      * @return \Girover\Tree\Models\Node
      */
@@ -1127,7 +1125,7 @@ trait Nodeable
 
     /**
      * Generating location for new child for this node.
-     * 
+     *
      * @return string
      */
     protected function newChildLocation()
@@ -1136,14 +1134,14 @@ trait Nodeable
 
         if ($last_child == null) {
             return Location::firstChild($this->location);
-        } 
+        }
 
-        return Location::generateNextLocation($last_child->location);        
+        return Location::generateNextLocation($last_child->location);
     }
 
     /**
      * Generating location for new child for this node.
-     * 
+     *
      * @param \Girover\Tree\Models\Node
      * @return string
      */
@@ -1153,9 +1151,9 @@ trait Nodeable
 
         if ($last_child == null) {
             return Location::firstChild($node->location);
-        } 
+        }
 
-        return Location::generateNextLocation($last_child->location);        
+        return Location::generateNextLocation($last_child->location);
     }
 
     /**
@@ -1197,7 +1195,7 @@ trait Nodeable
     /**
      * Updating the location of the node
      * this will update location for all the node's descendants too.
-     * 
+     *
      * @return int
      */
     public function updateLocation($new_location)
@@ -1226,6 +1224,7 @@ trait Nodeable
 
         return $this;
     }
+
     /**
      * Move the node with its children
      * to be child of the given location
@@ -1236,7 +1235,7 @@ trait Nodeable
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function moveTo($location)
-    { 
+    {
         $node = $this->getNodeOrThrowException($location);
         // Not allowed to add children to female nodes.
         if ($node->isFemale()) {
@@ -1272,18 +1271,20 @@ trait Nodeable
         if ($this->isAncestorOf($node)) {
             throw new TreeException("Error: Not allowed to move children from an ancestor to a descendant.", 1);
         }
-        
+
         $children = $this->children();
-        
+
         DB::beginTransaction();
+
         try {
             foreach ($children as $child) {
                 $child->moveTo($location);
             }
             DB::commit();
         } catch (\Throwable $th) {
-            DB::rollBack();            
-            throw new TreeException("An error occurred during moving children", 1);            
+            DB::rollBack();
+
+            throw new TreeException("An error occurred during moving children", 1);
         }
 
         return $this;
@@ -1292,7 +1293,7 @@ trait Nodeable
     /**
      * To get a node from a location
      * Or to check if the given parameter is a node then return it
-     * 
+     *
      * @param \Girover\Tree\Models\Node|string $location
      * @return \Girover\Tree\Models\Node
      * @throws \Girover\Tree\Exceptions\TreeException
@@ -1434,7 +1435,7 @@ trait Nodeable
     {
         $main_node = $this->getTree()->mainNode();
 
-        return ($main_node) ? $this->location===$main_node->location : false;
+        return ($main_node) ? $this->location === $main_node->location : false;
     }
 
     /**
@@ -1475,7 +1476,7 @@ trait Nodeable
      * so its children will not
      * but they will move to be children of the father
      * of the deleted node
-     * 
+     *
      * @return \Girover\Tree\Models\Node
      */
     public function moveChildren()
@@ -1488,7 +1489,7 @@ trait Nodeable
     /**
      * To change the location of a node
      * to be after the given node
-     * 
+     *
      * @param \Girover\Tree\Models\Node $node
      * @throws \Girover\Tree\Exceptions\TreeException
      */
@@ -1501,13 +1502,13 @@ trait Nodeable
     /**
      * To change the location of a node
      * to be after the given node
-     * 
+     *
      * @param \Girover\Tree\Models\Node $node
      */
     public function moveBefore($node)
     {
         // Move the node after its sibling
-        NodeRelocator::moveBefore($this, $node);  
+        NodeRelocator::moveBefore($this, $node);
     }
 
     /**

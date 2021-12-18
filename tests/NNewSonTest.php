@@ -9,7 +9,8 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class NNewSonTest extends TestCase
 {
-    use DatabaseTransactions, Factoryable;
+    use DatabaseTransactions;
+    use Factoryable;
 
     /**
      * -------------------------------------------
@@ -23,8 +24,8 @@ class NNewSonTest extends TestCase
         $node = $this->createNode();
 
         $son = $node->newSon($this->makeNode()->toArray());
-        $this->assertDatabaseHas('nodes', ['name'=>$son->name]);
-        
+        $this->assertDatabaseHas('nodes', ['name' => $son->name]);
+
         $this->assertTrue(Location::areFatherAndChild($node->location, $son->location));
         $this->assertTrue($node->tree_id === $son->tree_id);
     }
@@ -46,7 +47,7 @@ class NNewSonTest extends TestCase
         // create new node in database table
         $father = $this->createNode();
         // no name is provided in data array
-        $son_data  = ['f_name'=>'father name']; 
-        $father->newSon($son_data);      
+        $son_data = ['f_name' => 'father name'];
+        $father->newSon($son_data);
     }
 }

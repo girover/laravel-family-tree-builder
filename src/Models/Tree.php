@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Tree extends Model
 {
     // use SoftDeletes;
-    use Treeable, HasFactory;
+    use Treeable;
+    use HasFactory;
 
     // protected $fillable = ['user_id','name', 'basic_node'];
     protected $guarded = [];
-
 }

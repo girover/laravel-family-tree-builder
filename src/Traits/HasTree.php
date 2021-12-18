@@ -2,8 +2,8 @@
 
 namespace Girover\Tree\Traits;
 
-use Girover\Tree\Helpers\DBHelper;
 use Girover\Tree\Exceptions\TreeException;
+use Girover\Tree\Helpers\DBHelper;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -20,6 +20,7 @@ trait HasTree
     {
         return $this->hasMany(DBHelper::treeModel(), 'user_id', 'id');
     }
+
     /**
      * Get all trees that belongs this user
      *
