@@ -1,7 +1,8 @@
 <?php
 
     return [
-        // new repository 11
+        // Laravel-Family-tree
+        // Laravel-Family-tree
         /*
         |--------------------------------------------------------------------------
         | Model That contains tree information in database
