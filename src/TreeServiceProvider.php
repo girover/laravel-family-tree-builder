@@ -23,7 +23,7 @@ class TreeServiceProvider extends PackageServiceProvider
             ->hasAssets()
             ->hasTranslations()
             ->hasMigrations(
-                'create_node_images_table',
+                // 'create_node_images_table',
                 'create_marriages_table',
                 'create_nodes_table',
                 'create_trees_table'

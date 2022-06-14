@@ -15,4 +15,5 @@ class Tree extends Model
     // protected $fillable = ['user_id','name', 'basic_node'];
     protected $guarded = [];
 
+
 }

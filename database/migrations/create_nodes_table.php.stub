@@ -15,16 +15,11 @@ class CreateNodesTable extends Migration
     {
         Schema::create('nodes', function (Blueprint $table) {
             $table->id(); // unsigned big integer
-            $table->integer('tree_id')->unsigned();
+            // $table->bigInteger('tree_id')->unsigned();
+            $table->foreignId('tree_id')->constrained('trees')->onDelete('cascade');
             $table->string('location', 255);
-            $table->string('name', 50);
-            $table->string('f_name', 50)->nullable();
-            $table->string('l_name', 50)->nullable();
-            $table->string('m_name', 50)->nullable();
-            $table->date('birth_date')->nullable();
-            $table->string('birth_place', 255)->nullable();
             $table->enum('gender', ['m', 'f'])->default('m');
-            $table->string('photo', 255)->nullable();
+            $table->string('photo', 255)->nullable();         // Path to the avatar
             $table->timestamps();
             
 

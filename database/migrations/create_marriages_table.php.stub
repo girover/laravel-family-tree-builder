@@ -15,10 +15,10 @@ class CreateMarriagesTable extends Migration
     {
         Schema::create('marriages', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('husband_id')->unsigned()->nullable();
-            $table->bigInteger('wife_id')->unsigned()->nullable();
-            $table->date('date_of_marriage')->nullable();
-            $table->string('marriage_desc', '500')->nullable();
+            // $table->bigInteger('husband_id')->unsigned()->nullable();
+            $table->foreignId('husband_id')->constrained('nodes')->onDelete('cascade');
+            // $table->bigInteger('wife_id')->unsigned()->nullable();
+            $table->foreignId('wife_id')->constrained('nodes')->onDelete('cascade');
             $table->boolean('divorced')->default(false);
             $table->timestamps();
 
