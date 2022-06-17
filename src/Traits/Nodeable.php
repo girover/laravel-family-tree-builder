@@ -5,14 +5,11 @@ namespace Girover\Tree\Traits;
 use Girover\Tree\Database\Eloquent\NodeEloquentBuilder;
 use Girover\Tree\Database\Sql\Update;
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\GlobalScopes\ImagesEagerRelationScope;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
-use Girover\Tree\Helpers\Photos;
 use Girover\Tree\Location;
 use Girover\Tree\Models\Node;
 use Girover\Tree\NodeRelocator;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 use function PHPUnit\Framework\isNull;
@@ -108,6 +105,18 @@ trait Nodeable
         }
     }
 
+    // NEW
+    /**
+     * To check if the nodeable model is connected with a node
+     * 
+     * @return bool
+     */
+    public function isNode()
+    {
+        return $this->location ? true : false;
+        // return $this->node() ? true : false;
+    }
+
     /**
      * Get partners of the node
      * if true is provided, get divorced partners with
@@ -137,6 +146,10 @@ trait Nodeable
      */
     public function getTree($tree_model)
     {
+        if (!$this->isNode()) {
+            throw new TreeException("This model is not a node yet!", 1);
+        }
+
         if (!is_subclass_of($tree_model, 'Illuminate\Database\Eloquent\Model')){
             throw new TreeException('The given parameter is not a model', 1);
         }
@@ -296,14 +309,17 @@ trait Nodeable
      */
     public function isRoot()
     {
+        $this->throwExceptionIfNotNode();
+
         if (Location::isRoot($this->location)) {
             return true;
         }
         $father_location = Location::father($this->location);
 
-        return (static::tree($this->treeable_id)->location($father_location)->count())
-                ? false
-                : true;
+        return (static::tree($this->treeable_id)->location($father_location)
+                                                ->count())
+                                                ? false
+                                                : true;
     }
 
     /**
@@ -342,7 +358,7 @@ trait Nodeable
      */
     public function hasSiblings()
     {
-        return static::tree($this->treeable_id)
+        return (bool)static::tree($this->treeable_id)
                      ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
                      ->count();
     }
@@ -354,6 +370,10 @@ trait Nodeable
      */
     public function generation()
     {
+        if (!$this->isNode()) {
+            throw new TreeException("This model is not a node yet!!!", 1);
+            
+        }
         return Location::generation($this->location);
     }
 
@@ -394,6 +414,8 @@ trait Nodeable
      */
     public function grandfather()
     {
+        $this->throwExceptionIfNotNode();
+
         return static::tree($this->treeable_id)
                      ->location(Location::grandfather($this->location))
                      ->first();
@@ -1562,7 +1584,10 @@ trait Nodeable
      */
     public function toTree()
     {
-        $tree = Node::find($this->treeable_id);
+        $this->throwExceptionIfNotNode();
+
+        $tree = ($this->treeable_model())::find($this->treeable_id);
+        
         $tree->pointer()->to($this);
 
         return $tree->draw();
@@ -1591,8 +1616,18 @@ trait Nodeable
     // NEW
     public function node()
     {
-        return $this->hasOne(Node::class, 'nodeable_id', $this->getKeyName());
+        return $this->hasOne(Node::class, 'nodeable_id', $this->getKeyName())->first();
     }
-
-    
+    // NEW
+    public function throwExceptionIfNotNode()
+    {
+        if (!$this->isNode()) {
+            throw new TreeException("This model is not a node yet!!!", 1);            
+        }
+    }
+    // NEW
+    public function treeable_model()
+    {
+        return config('tree.treeable_model');
+    }
 }

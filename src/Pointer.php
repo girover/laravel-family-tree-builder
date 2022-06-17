@@ -96,7 +96,7 @@ class Pointer
     /**
      * Make query start point to database table [ model -> Nodes ]
      *
-     * starts with select from `nodes` where tree_id = {current tree id}
+     * starts with select from `nodes` where treeable_id = {current tree id}
      *
      * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
      */
@@ -171,7 +171,7 @@ class Pointer
         // if ($location instanceof ($this->model())) {
         if ($location instanceof ($this->nodeableModel())) {
             
-            if ($this->tree->id !== $location->tree_id) {
+            if ($this->tree->id !== $location->treeable_id) {
                 throw new TreeException("Error a passed node to the method [". __METHOD__ ." ] don't belong the tree", 1);                
             }
 
