@@ -13,6 +13,7 @@ class Tree extends Model
     use Treeable, HasFactory;
 
     // protected $fillable = ['user_id','name', 'basic_node'];
+    // protected $fillable = ['treeable_id'];
     protected $guarded = [];
 
 

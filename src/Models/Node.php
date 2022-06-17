@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Node extends Model
 {
-    use Nodeable, HasFactory;
+    use HasFactory;
 
+    protected $primaryKey = 'node_id';
+
+    protected $fillable = ['nodeable_id','treeable_id','location','gender','photo'];
 }

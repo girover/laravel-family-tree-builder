@@ -4,7 +4,6 @@ namespace Girover\Tree\Traits;
 
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
-use Girover\Tree\Helpers\DBHelper;
 use Girover\Tree\Location;
 use Girover\Tree\Pointer;
 use Girover\Tree\TreeBuilder;
@@ -19,10 +18,12 @@ trait Treeable
      *
      * @var array
      */
-    protected static $fillable_cols = [
-        'user_id',
-        'name',
-    ];
+    // protected static $fillable_cols = [
+    //     'user_id',
+    //     'name',
+    // ];
+
+    protected $foreign_key = 'treeable_id';
 
     /**
      * represent a node in the tree [current node]
@@ -39,6 +40,7 @@ trait Treeable
 
     public static function bootTreeable()
     {
+        
     }
 
     /**
@@ -48,7 +50,12 @@ trait Treeable
      */
     public function initializeTreeable()
     {
-        $this->fillable = array_merge($this->fillable, static::$fillable_cols);
+        // $this->fillable = array_merge($this->fillable, static::$fillable_cols);
+    }
+
+    public function nodeableModel()
+    {
+        return config('tree.nodeable_model');
     }
 
     /**
@@ -90,7 +97,7 @@ trait Treeable
      */
     public function movePointerToRoot()
     {
-        return $this->pointer()->to(DBHelper::nodeModel()::tree($this->id)->first());
+        return $this->pointer()->to(($this->nodeableModel())::tree($this->getKey())->first());
     }
 
     /**
@@ -100,17 +107,7 @@ trait Treeable
     */
     public function nodesQuery()
     {
-        return DBHelper::nodeModel()::where('tree_id', $this->id);
-    }
-
-    /**
-     * Check if this tree is active
-     *
-     * @return bool
-     */
-    public function isActive()
-    {
-        return (bool)$this->active;
+        return ($this->nodeableModel())::where($this->foreign_key, $this->getKey());
     }
 
     /**
@@ -148,33 +145,14 @@ trait Treeable
     }
 
     /**
-     * Get Information about the current tree
-     *
-     * @return array
-     */
-    public function getTreeInfo()
-    {
-        return [
-            'userName' => $this->user()[0]->name,
-            'treeName' => $this->name,
-            'members' => $this->countNodes(),
-            'wives' => $this->wivesCount(),
-            'males' => $this->genderCount(1),
-            'females' => $this->genderCount(2),
-            'generations' => $this->countGenerations(),
-            'settings' => $this->getSettingsAsArray(),
-        ];
-    }
-
-    /**
      * Get the main node in the current tree
      *
      * @return \Girover\Tree\Models\Node
      */
-    public function mainNode()
+    public function mainNode() // Should Removes
     {
-        return DBHelper::nodeModel()::where('location', $this->main_node)
-                                    ->where('tree_id', $this->id)
+        return $this->nodesQuery()->where('location', $this->main_node)
+                                    ->where($this->foreign_key, $this->getKey())
                                     ->first();
     }
 
@@ -183,16 +161,15 @@ trait Treeable
      * @param \Girover\Tree\Models\Node|string $node
      * @return \Girover\Tree\Models\Node|false
      */
-    public function setMainNode($node)
+    public function setMainNode($node) // Should Removes
     {
-        if ($node instanceof (DBHelper::nodeModel())) {
+        if ($node instanceof ($this->nodeableModel())) {
             $this->main_node = $node->location;
             $this->save();
             return $node;
         }
-        $main_node = DBHelper::nodeModel()::where('location', $node)
-                                     ->where('tree_id', $this->id)
-                                     ->first();
+        $main_node = $this->nodesQuery()->where('location', $node)->first();
+
         if ($main_node) {
             $this->main_node = $node;
             $this->save();
@@ -229,7 +206,7 @@ trait Treeable
      */
     public function root()
     {
-        return $this->hasOne(DBHelper::nodeModel(), 'tree_id')->first();
+        return $this->nodesQuery()->first(); 
     }
 
     /**
@@ -243,16 +220,14 @@ trait Treeable
     public function createRoot($data = [])
     {
         if (empty($data)) {
-            throw new TreeException("Error: no data are provided to create Root for the tree [ ".$this->name." ]", 1);
+            throw new TreeException("Error: no data are provided to create Root for the tree.", 1);
         }
-        if (!array_key_exists('name', $data)) {
-            throw new TreeException("Error: the field 'name' should be provided", 1);
-        }
+        
         if ($this->isEmptyTree()) {
-            return $this->nodes()->create(array_merge($data, ['tree_id' => $this->id, 'location' => Location::generateRootLocation()]));
+            return $this->nodes()->create(array_merge($data, [$this->foreign_key => $this->getKey(), 'location' => Location::generateRootLocation()]));
         }
         // The tree is not empty, e.i. There is already a Root for this tree.
-        throw new TreeException("Root for tree {$this->name} is already exists", 1);
+        throw new TreeException("Root for tree is already exists", 1);
     }
 
     /**
@@ -282,7 +257,7 @@ trait Treeable
      */
     public function nodes()
     {
-        return $this->hasMany(DBHelper::nodeModel(), 'tree_id');
+        return $this->nodesQuery()->get();
     }
 
     /**
@@ -380,5 +355,12 @@ trait Treeable
     {
         $tree_generator = new TreeBuilder($this);
         return $tree_generator->draw();
+    }
+
+
+    // NEW
+    public function getForeignKeyName()
+    {
+        $this->foreign_key;
     }
 }

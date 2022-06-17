@@ -2,23 +2,23 @@
 
 namespace Girover\Tree\Helpers;
 
-class DBHelper{
+class TreeHelper{
     /**
      * Eloquent model that corresponding the table 'trees'
      * @return string class of model
      */
-    public static function nodeModel()
+    public static function nodeableModel()
     {
-        return config('tree.node_model');
+        return config('tree.nodeable_model');
     }
 
     /**
      * Eloquent model that corresponding the table 'nodes'
      * @return string class of model
      */
-    public static function treeModel()
+    public static function treeableModel()
     {
-        return config('tree.tree_model');
+        return config('tree.treeable_model');
     }
 
     /**

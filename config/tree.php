@@ -1,4 +1,34 @@
 <?php
+    return [
+        /*
+        |--------------------------------------------------------------------------
+        | Model That uses trait Girover\Tree\Traits\Treeable
+        |--------------------------------------------------------------------------
+        |
+        | example: App\Models\Family::class
+        */
+        'treeable_model' => null,
+        /*
+        |--------------------------------------------------------------------------
+        | Model That uses trait Girover\Tree\Traits\Nodeable
+        |--------------------------------------------------------------------------
+        |
+        | example: App\Models\Person::class
+        */
+        'nodeable_model' => null,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Pivot table between nodeable_table and nodeable_table
+        |--------------------------------------------------------------------------
+        |
+        */
+        'marriages' => [
+            'table'     =>'marriages',
+            'first_id'  => 'nodeable_husband_id',
+            'second_id' => 'nodeable_husband_id',
+        ],
+    ];
 
     return [
         // Laravel-Family-tree

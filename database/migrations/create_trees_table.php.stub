@@ -15,6 +15,7 @@ class CreateTreesTable extends Migration
     {
         Schema::create('trees', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('treeable_id')->unSigned();
             $table->string('name', 100)->unique();
             $table->string('main_node', 255)->nullable();
             $table->timestamps();

@@ -8,10 +8,11 @@ use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\ImagesEagerRelationScope;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
-use Girover\Tree\Helpers\DBHelper;
 use Girover\Tree\Helpers\Photos;
 use Girover\Tree\Location;
+use Girover\Tree\Models\Node;
 use Girover\Tree\NodeRelocator;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 use function PHPUnit\Framework\isNull;
@@ -21,23 +22,6 @@ use function PHPUnit\Framework\isNull;
  */
 trait Nodeable
 {
-    /**
-     * mass assignment fillable properties
-     *
-     * @var array
-     */
-    protected static $fillable_cols = [
-        'tree_id',
-        'location',
-        'name',
-        'f_name',
-        'l_name',
-        'm_name',
-        'birth_date',
-        'birth_place',
-        'gender',
-    ];
-
     /**
      * to control deleting children or not when deleting a node
      * false: delete node with its children
@@ -55,7 +39,8 @@ trait Nodeable
      */
     public function newEloquentBuilder($query)
     {
-        return new NodeEloquentBuilder($query);
+        $eloquentBuilder = new NodeEloquentBuilder($query);
+        return $eloquentBuilder->leftJoin('nodes', 'nodes.nodeable_id', (new static)->getTable().'.'.$this->getKeyName());
     }
 
     /**
@@ -74,7 +59,7 @@ trait Nodeable
         // Adding global scope o the model
         static::addGlobalScope(new OrderByLocationScope());
         static::addGlobalScope(new WivesEagerRelationScope());
-        static::addGlobalScope(new ImagesEagerRelationScope());
+        // static::addGlobalScope(new ImagesEagerRelationScope());
 
         static::saving(function ($model) {
             // dd($model);
@@ -101,7 +86,7 @@ trait Nodeable
     public function initializeNodeable()
     {
         // Adding mass assignment fields to fillable array
-        $this->fillable = array_merge($this->fillable, static::$fillable_cols);
+        //$this->fillable = array_merge($this->fillable, static::$fillable_cols);
     }
 
     public function scopeIgnoreDivorced($query)
@@ -129,33 +114,34 @@ trait Nodeable
      * if false is provided, don't get divorced partners with
      *
      * @param bool $with_divorced
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Collection
      * 
      * @throws \Girover\Tree\Exceptions\TreeException
      */
-    protected function partners()
+    public function partners()
     {
-        $pivot = DBHelper::marriageTable();
-
         // get wives
-        if ($this->isFemale()) {
-            return  $this->belongsToMany(get_class(), $pivot, 'wife_id', 'husband_id')
-                              ->withPivot('husband_id', 'wife_id', 'date_of_marriage', 'marriage_desc');
+        if ($this->isMale()) {
+            return  $this->wives()->get();
         }
         
         // get husbands
-        return $this->belongsToMany(get_class(), $pivot, 'husband_id', 'wife_id')
-                         ->withPivot('husband_id', 'wife_id', 'date_of_marriage', 'marriage_desc');
+        return $this->husband()->get();
     }
 
     /**
      * Get the tree that this node belongs.
      *
+     * @param Illuminate\Database\Eloquent\Model
      * @return \Girover\Tree\Models\Tree
      */
-    public function getTree()
+    public function getTree($tree_model)
     {
-        return DBHelper::treeModel()::find($this->tree_id);
+        if (!is_subclass_of($tree_model, 'Illuminate\Database\Eloquent\Model')){
+            throw new TreeException('The given parameter is not a model', 1);
+        }
+
+        return ($tree_model)::find($this->treeable_id);
     }
 
     /**
@@ -165,43 +151,35 @@ trait Nodeable
      */
     public function wives()
     {
-        if ($this->isFemale()) {
-            throw new TreeException("Woman cannot have wives", 1);            
-        }
-
-        return $this->partners();
+        return  $this->belongsToMany(get_class(), 'marriages', 'nodeable_husband_id', 'nodeable_wife_id')
+                     ->withPivot('nodeable_husband_id', 'nodeable_wife_id', 'divorced');
     }
 
     /**
      * Get husband of the node
      *
+     * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * 
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function husband()
     {
-        if ($this->isMale()) {
-            throw new TreeException("Man cannot have husband", 1);            
-        }
-
-        return $this->partners();
+        return $this->belongsToMany(get_class(), 'marriages', 'nodeable_wife_id', 'nodeable_husband_id')
+                    ->withPivot('nodeable_husband_id', 'nodeable_wife_id', 'divorced');
     }
 
     /**
      * assign a wife to this node
      *
      * @param \Girover\Tree\Models\Node $wife
-     * @param array $data
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function getMarriedWith($wife, $data=[])
+    public function getMarriedWith(self $wife)
     {
-        if (! $wife instanceof static) {
-            throw new TreeException("Parameter passed to [".__METHOD__."] should be instance of [".get_class($this)."]", 1);
-        }
-
         // only male nodes allowed to do this
         if ($this->isFemale()) {
-            throw new TreeException($this->name." is a woman, and only men allowed to use ".__METHOD__, 1);
+            throw new TreeException("Only men are allowed to use this".__METHOD__, 1);
         }
 
         // Person cannot get married with himself
@@ -209,9 +187,9 @@ trait Nodeable
             throw new TreeException("Man is not allowed to get married with a man ".__METHOD__, 1);
         }
 
-        // the person is already married with given wife
-        $mar = $this->wives()->where('wife_id', $wife->id)
-                             ->where('husband_id', $this->id)
+        // Person already married with the given woman
+        $mar = $this->wives()->where('nodeable_wife_id', $wife->id)
+                             ->where('nodeable_husband_id', $this->id)
                              ->first();
         if (! is_null($mar)) {            
             throw new TreeException('"'.$this->name.'" is already married with "'.$wife->name.'"', 1);    
@@ -222,14 +200,35 @@ trait Nodeable
             throw new TreeException('Person cannot get married with himself', 1);    
         }
         
-        if (empty($data)) {
-            return $this->wives()->attach($wife->id);
+        return $this->wives()->attach($wife->id);
+    }
+
+    // NEW
+    /**
+     * Check if nodeable is married with the given nodeable
+     * @param Illuminate\Database\Eloquent\Model
+     * 
+     * @return bool 
+     * @throws Girover\Tree\Exceptions\TreeException
+     */
+    public function isMarriedWith(self $wife)
+    {
+        if ($this->isMale()) {
+
+            if ($wife->isMale()) {
+                throw new TreeException("Man Can not be married with a man", 1);
+            }
+
+            return (bool)$this->wives()->where('marriages.nodeable_wife_id', $wife->id)
+                                       ->count();
         }
 
-        $marriage_info['date_of_marriage'] = isset($data['date_of_marriage']) ?$data['date_of_marriage']: null;
-        $marriage_info['marriage_desc'] = isset($data['marriage_desc']) ?$data['marriage_desc']: null;
+        if ($wife->isFemale()) {
+            throw new TreeException("Woman Can not be married with a woman", 1);
+        }
 
-        return $this->wives()->attach($wife->id,$marriage_info);
+        return (bool)$this->husband()->where('nodeable_husband_id', $wife->id)
+                                   ->count();
     }
 
     /**
@@ -238,12 +237,8 @@ trait Nodeable
      * @param \Girover\Tree\Models\Node $node
      * @return int
      */
-    public function divorce($wife)
+    public function divorce(self $wife)
     {
-        if (! $wife instanceof static) {
-            throw new TreeException("Parameter passed to [".__METHOD__."] should be instance of [".get_class($this)."]", 1);
-        }
-
         // only women will be divorced
         if ($wife->isMale()) {
             throw new TreeException($wife->name." is not a woman to be divorced from a man", 1);
@@ -251,9 +246,9 @@ trait Nodeable
 
         // only men are allowed to divorce
         if ($this->isFemale()) {
-            throw new TreeException($this->name." is a woman, but only men are allowed to divorce", 1);
+            throw new TreeException("This is a woman, however only men are allowed to divorce", 1);
         }
-        return $this->wives()->where('wife_id', $wife->id)->update(['divorced'=> true]);
+        return $this->wives()->where('nodeable_wife_id', $wife->id)->update(['divorced'=> true]);
     }
 
     /**
@@ -261,12 +256,12 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function images()
-    {
-        $model = DBHelper::nodeImageModel();
+    // public function images()
+    // {
+    //     $model = DBHelper::nodeImageModel();
 
-        return $this->hasMany($model, 'node_id', 'id');
-    }
+    //     return $this->hasMany($model, 'node_id', 'id');
+    // }
 
     /**
      * add photo to for node
@@ -274,17 +269,24 @@ trait Nodeable
      * @param string $name
      * @return bool
      */
-    public function newPhoto($photo, $name = '')
-    {
-        $new_name = Photos::newName($photo, $name);
+    // public function newPhoto($photo, $name = '')
+    // {
+    //     $new_name = Photos::newName($photo, $name);
 
-        if (Photos::store($photo, $new_name)) {
-            $this->photo = $new_name;
+    //     if (Photos::store($photo, $new_name)) {
+    //         $this->photo = $new_name;
             
-            return $this->save();
-        }
+    //         return $this->save();
+    //     }
 
-        return false;
+    //     return false;
+    // }
+    // NEW
+    public function setAvatar(string $avatar_name)
+    {
+        $this->photo = $avatar_name;
+
+        return $this->save();
     }
 
     /**
@@ -299,7 +301,7 @@ trait Nodeable
         }
         $father_location = Location::father($this->location);
 
-        return (static::tree($this->tree_id)->location($father_location)->count())
+        return (static::tree($this->treeable_id)->location($father_location)->count())
                 ? false
                 : true;
     }
@@ -307,7 +309,7 @@ trait Nodeable
     /**
      * Determine if the node has parent in the tree
      *
-     * @return \Girover\Tree\Models\Node | null
+     * @return bool
      */
     public function hasParent()
     {
@@ -316,22 +318,21 @@ trait Nodeable
         }
         $father_location = Location::father($this->location);
 
-        return static::tree($this->tree_id)
+        return (bool)static::tree($this->treeable_id)
                      ->location($father_location)
-                     ->first();
+                     ->count();
     }
 
     /**
      * Determine if the node has children
      *
-     * @return \Girover\Tree\Models\Node | null
+     * @return 
      */
     public function hasChildren()
     {
-        return static::tree($this->tree_id)
+        return (bool)static::tree($this->treeable_id)
                      ->locationREGEXP(Location::childrenREGEXP($this->location))
-                     ->count()
-                     ? true : false;
+                     ->count();
     }
 
     /**
@@ -341,10 +342,9 @@ trait Nodeable
      */
     public function hasSiblings()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                      ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
-                     ->count() > 1
-                     ? true : false;
+                     ->count();
     }
 
     /**
@@ -360,11 +360,11 @@ trait Nodeable
     /**
      * Get the Root of this node
      *
-     * @param \Girover\Tree\Models\Node
+     * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function root()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                      ->location(Location::firstPossibleSegment())
                      ->first();
     }
@@ -372,18 +372,17 @@ trait Nodeable
     /**
      * Get the father of this node
      *
-     * @return \Girover\Tree\Models\Node
+     * @return \Illuminate\Database\Eloquent\Model|null
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function father()
     {
         // can not get father of the root
         if ($this->isRoot()) {
-            throw new TreeException("Root of a tree has no father", 1);
-            
+            throw new TreeException("Root of a tree has no father", 1);            
         }
 
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                      ->location(Location::father($this->location))
                      ->first();
     }
@@ -395,7 +394,7 @@ trait Nodeable
      */
     public function grandfather()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                      ->location(Location::grandfather($this->location))
                      ->first();
     }
@@ -412,7 +411,7 @@ trait Nodeable
             return $this->father();
         }
 
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                      ->location(Location::ancestor($this->location, $ancestor))
                      ->first();
     }
@@ -424,7 +423,7 @@ trait Nodeable
      */
     public function ancestors()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                      ->locationNot($this->location)
                      ->whereIn('location', Location::allLocationsToRoot($this->location))
                      ->get();
@@ -437,7 +436,7 @@ trait Nodeable
      */
     protected function siblingsOfFatherQuery()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                     ->locationNot(Location::father($this->location))
                     ->locationREGEXP(Location::withSiblingsREGEXP(Location::father($this->location)));
     }
@@ -449,7 +448,7 @@ trait Nodeable
      */
     protected function siblingsOfFather()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                     ->locationNot(Location::father($this->location))
                     ->locationREGEXP(Location::withSiblingsREGEXP(Location::father($this->location)))
                     ->get();
@@ -483,7 +482,7 @@ trait Nodeable
      */
     protected function childrenQuery()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                     ->locationREGEXP(Location::childrenREGEXP($this->location));
     }
 
@@ -556,7 +555,7 @@ trait Nodeable
      */
     protected function countAllSiblings()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                     ->locationNot($this->location)
                     ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
                     ->count();
@@ -572,7 +571,7 @@ trait Nodeable
     {
         $this->validateGender($gender);
 
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                     ->locationNot($this->location)
                     ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
                     ->where('gender', $gender)
@@ -616,7 +615,7 @@ trait Nodeable
      */
     protected function descendantsQuery()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                      ->locationNot($this->location)
                      ->where('location', 'like', $this->location.'%');
     }
@@ -713,7 +712,7 @@ trait Nodeable
      */
     public function firstChild()
     {
-        return  static::tree($this->tree_id)
+        return  static::tree($this->treeable_id)
                      ->locationREGEXP(Location::childrenREGEXP($this->location))
                      ->locationOrder('ASC')
                      ->first();
@@ -727,10 +726,28 @@ trait Nodeable
      */
     public function lastChild()
     {
-        return  static::tree($this->tree_id)
+        return  static::tree($this->treeable_id)
                      ->locationREGEXP(Location::childrenREGEXP($this->location))
                      ->locationOrder('DESC')
                      ->first();
+    }
+
+    // NEW
+    /**
+     * To get child that has the given order in the family
+     * 
+     * @param int $order
+     * 
+     * @return \Illuminate\Database\Eloquent\Model|null 
+     */
+    public function child(int $order)
+    {
+        $children = $this->children();
+        if ($order < 1 || $order > $children->count()) {
+            return null;
+        }
+
+        return $children[$order - 1];
     }
 
     /**
@@ -741,7 +758,7 @@ trait Nodeable
      */
     protected function siblingsQuery()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                     ->locationNot($this->location)
                     ->locationREGEXP(Location::withSiblingsREGEXP($this->location));
     }
@@ -763,7 +780,7 @@ trait Nodeable
      */
     public function withSiblings()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                      ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
                      ->get();
     }
@@ -796,7 +813,7 @@ trait Nodeable
      */
     public function siblingsAndSelf()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                      ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
                      ->get();
     }
@@ -806,7 +823,8 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node
      */
-    public function nextSibling()
+    // public function nextSibling()
+    public function youngerSibling()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
@@ -818,7 +836,8 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function nextSiblings()
+    // public function nextSiblings()
+    public function youngerSiblings()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
@@ -830,12 +849,13 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node
      */
-    public function nextBrother()
+    // public function nextBrother()
+    public function youngerBrother()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
                     ->male()
-                     ->first();
+                    ->first();
     }
 
     /**
@@ -843,12 +863,13 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function nextBrothers()
+    // public function nextBrothers()
+    public function youngerBrothers()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
                     ->male()
-                     ->get();
+                    ->get();
     }
 
     /**
@@ -856,12 +877,13 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node
      */
-    public function nextSister()
+    // public function nextSister()
+    public function youngerSister()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
                     ->female()
-                     ->first();
+                    ->first();
     }
 
     /**
@@ -869,7 +891,8 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function nextSisters()
+    // public function nextSisters()
+    public function youngerSisters()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
@@ -882,7 +905,8 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node
      */
-    public function prevSibling()
+    // public function prevSibling()
+    public function olderSibling()
     {
         return $this->siblingsQuery()
                      ->withoutGlobalScope(OrderByLocationScope::class)
@@ -896,7 +920,8 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function prevSiblings()
+    // public function prevSiblings()
+    public function olderSiblings()
     {
         return $this->siblingsQuery()
                     ->locationBefore($this->location)
@@ -908,7 +933,8 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node
      */
-    public function prevBrother()
+    // public function prevBrother()
+    public function olderBrother()
     {
         return $this->siblingsQuery()
                     ->withoutGlobalScope(OrderByLocationScope::class)
@@ -923,12 +949,13 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function prevBrothers()
+    // public function prevBrothers()
+    public function olderBrothers()
     {
         return $this->siblingsQuery()
                     ->locationBefore($this->location)
                     ->male()
-                     ->get();
+                    ->get();
     }
 
     /**
@@ -936,7 +963,8 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node 
      */
-    public function prevSister()
+    // public function prevSister()
+    public function olderSister()
     {
         return $this->siblingsQuery()
                     ->withoutGlobalScope(OrderByLocationScope::class)
@@ -951,7 +979,8 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function prevSisters()
+    // public function prevSisters()
+    public function olderSisters()
     {
         return $this->siblingsQuery()
                     ->locationBefore($this->location)
@@ -1048,35 +1077,51 @@ trait Nodeable
     protected function createNewNode($data, $location, $gender = 'm')
     {
         Location::validate($location);
+
         $this->validateGender($gender);
 
-        if ($data instanceof static) {
-            $data->tree_id = $this->tree_id;
-            $data->location = $location;
-            $data->gender = $gender;
-            $data->save();
+        try {
+            DB::beginTransaction();
 
-            return $data;
+            $nodeable = $this->createNodeable($data);
+            
+            $node     = $this->createNode(['nodeable_id'=>$nodeable->id, 'treeable_id'=>$this->treeable_id, 'location'=>$location, 'gender'=>$gender]);
+
+            if(!$nodeable || !$node){
+                throw new TreeException("Failed to insert data", 1);               
+            }
+
+            DB::commit();
+
+        } catch (\Throwable $th) {            
+            DB::rollBack();
+            throw $th;            
+        }
+    }
+
+    // NEW
+    public function createNodeable($data)
+    {
+        if ($data instanceof static) {
+            if ($data->exists){
+                return $data;
+            }
+
+            return $data->save();
         }
 
         if (! is_array($data)) {
             throw new TreeException("Bad argument type. The argument passed to ".__METHOD__." must be an array or an instance of [".static::class."]. ".gettype($data)." is given", 1);
         }
 
-        if (empty($data)) {
-            throw new TreeException("No data for the new node are provided ", 1);
-        }
-
-        if (! key_exists('name', $data)) {
-            throw new TreeException("The name of person is not provided", 1);
-        }
-        $data['tree_id'] = $this->tree_id;
-        $data['location'] = $location;
-        $data['gender'] = $gender;
-
         return static::create($data);
     }
 
+    // NEW
+    public function createNode($data)
+    {
+        return Node::create($data);
+    }
     /**
      * Create new sibling for this node
      * by default the new node is son.
@@ -1202,7 +1247,7 @@ trait Nodeable
      */
     public function updateLocation($new_location)
     {
-        return DB::update(Update::updateLocations($this->tree_id, $this->location, $new_location));
+        return DB::update(Update::updateLocations($this->treeable_id, $this->location, $new_location));
     }
 
     /**
@@ -1303,7 +1348,7 @@ trait Nodeable
             return $location;
         }
 
-        $node = static::tree($this->tree_id)->location($location)->first();
+        $node = static::tree($this->treeable_id)->location($location)->first();
 
         if ($node === null) {
             throw new TreeException("Error: The location `".$location."` not found in this tree.", 1);
@@ -1330,9 +1375,9 @@ trait Nodeable
             // update all nodes locations in this tree.
             // Firstly prepend all locations with separator '.'
             // to prevent duplicated locations in same tree
-            DB::update(Update::prependLocationsWithSeparator(), [$this->tree_id]);
+            DB::update(Update::prependLocationsWithSeparator(), [$this->treeable_id]);
             // then prepend all locations with 'aaa'
-            DB::update(Update::prependLocationsWithFirstPossibleSegmetn(), [$this->tree_id]);
+            DB::update(Update::prependLocationsWithFirstPossibleSegmetn(), [$this->treeable_id]);
 
             // create th new root node with given data
             $new_root = $this->createNewNode($data, Location::firstPossibleSegment());
@@ -1389,7 +1434,7 @@ trait Nodeable
      */
     public function isFatherOf($node)
     {
-        if ((! $node instanceof static) || ($this->tree_id !== $node->tree_id)) {
+        if ((! $node instanceof static) || ($this->treeable_id !== $node->treeable_id)) {
             return false;
         }
 
@@ -1404,7 +1449,7 @@ trait Nodeable
      */
     public function isChildOf($node)
     {
-        if ((! $node instanceof static) || ($this->tree_id !== $node->tree_id)) {
+        if ((! $node instanceof static) || ($this->treeable_id !== $node->treeable_id)) {
             return false;
         }
 
@@ -1418,7 +1463,7 @@ trait Nodeable
      */
     public function isSiblingOf($node)
     {
-        if ((! $node instanceof static) || ($this->tree_id !== $node->tree_id)) {
+        if ((! $node instanceof static) || ($this->treeable_id !== $node->treeable_id)) {
             return false;
         }
 
@@ -1464,7 +1509,7 @@ trait Nodeable
      */
     public function deleteChildren()
     {
-        return static::tree($this->tree_id)
+        return static::tree($this->treeable_id)
                      ->locationNot($this->location)
                      ->where('location', 'like', $this->location.'%')
                      ->delete();
@@ -1517,7 +1562,7 @@ trait Nodeable
      */
     public function toTree()
     {
-        $tree = DBHelper::treeModel()::find($this->tree_id);
+        $tree = Node::find($this->treeable_id);
         $tree->pointer()->to($this);
 
         return $tree->draw();
@@ -1542,4 +1587,12 @@ trait Nodeable
     {
         return $this->toTree();
     }
+
+    // NEW
+    public function node()
+    {
+        return $this->hasOne(Node::class, 'nodeable_id', $this->getKeyName());
+    }
+
+    
 }

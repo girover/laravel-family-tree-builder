@@ -11,12 +11,12 @@ class NodeEloquentBuilder extends Builder
      * to add constraint [models that belongs the given tree number]
      * to QueryBuilder
      * to achieve where tree_id = $tree_id on QueryBuilder
-     * @param int $tree_id
+     * @param int $treeable_id
      * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
      */
-    public function tree($tree_id)
+    public function tree($treeable_id)
     {
-        return $this->where('tree_id', $tree_id);
+        return $this->where('treeable_id', $treeable_id);
     }
 
     /**

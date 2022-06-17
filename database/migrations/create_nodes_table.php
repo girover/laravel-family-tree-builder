@@ -14,9 +14,11 @@ class CreateNodesTable extends Migration
     public function up()
     {
         Schema::create('nodes', function (Blueprint $table) {
-            $table->id(); // unsigned big integer
+            $table->id('node_id'); // unsigned big integer
             // $table->bigInteger('tree_id')->unsigned();
-            $table->foreignId('tree_id')->constrained('trees')->onDelete('cascade');
+            $table->bigInteger('nodeable_id')->unsigned();
+            // $table->foreignId('tree_id')->constrained('trees')->onDelete('cascade');
+            $table->bigInteger('treeable_id')->unsigned();
             $table->string('location', 255);
             $table->enum('gender', ['m', 'f'])->default('m');
             $table->string('photo', 255)->nullable();         // Path to the avatar
@@ -25,7 +27,8 @@ class CreateNodesTable extends Migration
 
             $table->index('tree_id');
             $table->index('location');
-            $table->unique(['tree_id', 'location']);
+            $table->unique(['treeable_id', 'location']);
+            // $table->unique(['tree_id', 'location']);
         });
     }
 

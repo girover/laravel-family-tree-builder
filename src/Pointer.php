@@ -21,7 +21,6 @@
 namespace Girover\Tree;
 
 use BadMethodCallException;
-use Girover\Tree\Helpers\DBHelper;
 use Girover\Tree\Database\Sql\Delete;
 use Girover\Tree\Exceptions\TreeException;
 use Illuminate\Support\Facades\DB;
@@ -71,17 +70,17 @@ class Pointer
      */
     public function __call($name, $args)
     {
-        if ($this->node() === null && method_exists(DBHelper::nodeModel(), $name)) {
+        if ($this->node() === null && method_exists($this->nodeableModel(), $name)) {
             throw new TreeException("Pointer is not indicating to any node in Tree [".$this->tree->name."].", 1);
         }
 
-        if ($this->node() instanceof (DBHelper::nodeModel())) {
-            if (method_exists(DBHelper::nodeModel(), $name)) {
+        if ($this->node() instanceof ($this->nodeableModel())) {
+            if (method_exists($this->nodeableModel(), $name)) {
                 return call_user_func([$this->node(), $name], ...$args);
             }
         }
 
-        throw new BadMethodCallException('Call undefined method [ '.$name.' ] on class: '.DBHelper::nodeModel());
+        throw new BadMethodCallException('Call undefined method [ '.$name.' ] on class: '.$this->nodeableModel());
     }
 
     /**
@@ -89,9 +88,9 @@ class Pointer
     *
     * @return string Girover\Tree\Models\Node::class
     */
-    public function model()
+    public function nodeableModel()
     {
-        return DBHelper::nodeModel();
+        return config('tree.nodeable_model');
     }
 
     /**
@@ -101,7 +100,7 @@ class Pointer
      *
      * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
      */
-    public function query()
+    public function nodesQuery()
     {
         return $this->tree->nodesQuery();
     }
@@ -154,7 +153,7 @@ class Pointer
      */
     public function find($location)
     {
-        return  $this->query()
+        return  $this->nodesQuery()
                      ->where('location', $location)
                      ->first();
     }
@@ -170,7 +169,7 @@ class Pointer
     public function to($location)
     {
         // if ($location instanceof ($this->model())) {
-        if ($location instanceof (DBHelper::nodeModel())) {
+        if ($location instanceof ($this->nodeableModel())) {
             
             if ($this->tree->id !== $location->tree_id) {
                 throw new TreeException("Error a passed node to the method [". __METHOD__ ." ] don't belong the tree", 1);                
@@ -325,7 +324,7 @@ class Pointer
      */
     public function longestLocation()
     {
-        return $this->query()
+        return $this->nodesQuery()
                     ->where('location', 'like', $this->location().Location::SEPARATOR.'%')
                     ->orderByRaw('LENGTH(location) DESC')
                     ->orderBy('location', 'desc')
