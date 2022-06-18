@@ -12,6 +12,7 @@
 ## Content
 
   - [Introduction](#introduction)
+  - [prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Assets](#assets)
   - [Images](#images)
@@ -41,6 +42,12 @@
 
 Every tree is allowed to have 85 generations. Assuming each generation has 20 years, this means that 1700 years of data can be stored in one tree.    
 Every node in a tree is allowed to have 676 direct children.
+
+## prerequisites
+
+- Laravel 8+
+- PHP 8+
+- Mysql
 
 ## Installation
 
@@ -77,18 +84,12 @@ Every node in tree has an avatar photo. Male and Female Icons by default will be
 ```public/vendor/tree/images```. however you are free to choose another folder for the images, but
 you must provide it in the ```config\tree.php``` file.
 ```php
-'photos' => [
-        'path'  => public_path('path/to/your/images/folder'),
-        'asset' => 'path/from/public/folder'
-    ],
+    'photos_folder' => 'vendor/tree/images',
 ```
 So your images folder should be in the **```public```** folder.
 Example: if images are stored in folder called ```images/avatars``` the configs must be:  
 ```php
-'photos' => [
-            'path'  => public_path('images/avatars'),
-            'asset' => 'images/avatars'
-        ]
+    'photos_folder' => 'images/avatars',
 ```
 **Note:**  When saving photos in storage folder, it is important to create symbolic link to the photos folder.
 
