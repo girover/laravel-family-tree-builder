@@ -52,7 +52,7 @@ class TreeHelpers{
      */
     public static function photoPath()
     {
-        return rtrim(config('tree.photos.path'), '/\\') . DIRECTORY_SEPARATOR;
+        return public_path(rtrim(config('tree.photos_folder'), '/\\') . DIRECTORY_SEPARATOR);
     }
     // NEW
     /**
@@ -63,7 +63,7 @@ class TreeHelpers{
      */
     public static function photoUrl()
     {
-        return rtrim(config('tree.photos.asset'), '/\\') . '/';
+        return rtrim(config('tree.photos_folder'), '/\\') . '/';
     }
 
     /**

@@ -36,7 +36,7 @@
 
 
 ## Introduction
-**girover/laravel-tree** is a package that allows you to build family trees.
+**girover/laravel-family-tree** is a package that allows you to build family trees.
     With this package it will be very simple to create trees and add nodes to trees.   
 
 Every tree is allowed to have 85 generations. Assuming each generation has 20 years, this means that 1700 years of data can be stored in one tree.    
@@ -47,12 +47,12 @@ Every node in a tree is allowed to have 676 direct children.
 You can add the package via **composer**:
 
 ```bash
-composer require girover/laravel-tree
+composer require girover/laravel-family-tree
 ```
 
 Before installing the package you should configure your database.  
 
-now you can install the package by running Artisan command   
+Then you can install the package by running Artisan command   
 ```bash
 php artisan tree:install
 ```
@@ -62,9 +62,8 @@ this command will take care of the following tasks:
  - Publishing migration files to folder ```Database\migrations``` in your application.   
  - Migrate the published migrations.   
  - Publishing Assets (CSS, JS) to the public folder in your application and they will be placed in ```public\vendor\tree```.    
- - Copying Photos folder for nodes to the storage folder in your application   ```Storage\app\public\vendor\tree\images```    
+ - Copying Photos folder for nodes to the public folder in your application   ```public\vendor\tree\images```    
  - Publishing JSON Translation files to the ```resources\lang\vendor\tree```   
- - In addition it will create symbolic link to the storage folder.
 ## Assets
 
 After publishing assets (CSS, JS), they will be placed in `public` folder 
@@ -74,25 +73,21 @@ You are free to move any of these assets to other directories.
 You should add the CSS file ```public/vendor/tree/css/tree.css``` to your blade file to get the tree styled.
 
 ## Images
-Every node in a tree has a photo, and these photos by default will be stored in the 
-```storage/app/public/vendor/tree/images```.   
-In the ```config\tree.php``` file you can see the photos configurations in order to when you want
-to save them, in the public folder or the storage folder.
+Every node in tree has an avatar photo. Male and Female Icons by default will be stored in the 
+```public/vendor/tree/images```. however you are free to choose another folder for the images, but
+you must provide it in the ```config\tree.php``` file.
 ```php
 'photos' => [
-            'public'=>false, // if false, photos will be stored in Storage folder. 
-                             // if true, photos will be saved in public folder
-            'folder' => 'vendor/tree/images/', // images folder
-        ]
+        'path'  => public_path('path/to/your/images/folder'),
+        'asset' => 'path/from/public/folder'
+    ],
 ```
-So if you want photos to be placed in the public folder, you have to set ```public``` to ```true```.    
-and you are free to change the folder that contains photos, but you have to provide it.   
-For example if you want to save photos in folder named ```tree-images``` inside public folder, then 
-you should change configs to be like this:    
+So your images folder should be in the **```public```** folder.
+Example: if images are stored in folder called ```images/avatars``` the configs must be:  
 ```php
 'photos' => [
-            'public'=>true, 
-            'folder' => 'tree-images/',
+            'path'  => public_path('images/avatars'),
+            'asset' => 'images/avatars'
         ]
 ```
 **Note:**  When saving photos in storage folder, it is important to create symbolic link to the photos folder.

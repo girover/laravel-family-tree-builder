@@ -19,16 +19,15 @@
 
         /*
         |--------------------------------------------------------------------------
-        | Avatars files for the nodes
+        | Folder name for images in the public folder
         |--------------------------------------------------------------------------
         |
-        | example: path = /Users/user/sites/laravel-family-tree-test/public/avatars
-        | example: asset = vendor/tree/images
+        | should be in the public folder
+        | example: vendor/tree/images
+        |        means that the folder is:
+        |        path-to-project/public/vendor/tree/images
         */
-        'photos' => [
-            'path'  => public_path('vendor/tree/images'),
-            'asset' => 'vendor/tree/images'
-        ],
+        'photos_folder' => 'vendor/tree/images',
     ];
 
     return [
