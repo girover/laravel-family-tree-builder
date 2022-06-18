@@ -7,6 +7,7 @@ use Girover\Tree\Database\Sql\Update;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
+use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\Models\Node;
 use Girover\Tree\NodeRelocator;
@@ -1586,7 +1587,7 @@ trait Nodeable
     {
         $this->throwExceptionIfNotNode();
 
-        $tree = ($this->treeable_model())::find($this->treeable_id);
+        $tree = (TreeHelpers::treeableModel())::find($this->treeable_id);
         
         $tree->pointer()->to($this);
 
@@ -1614,20 +1615,26 @@ trait Nodeable
     }
 
     // NEW
+    /**
+     * Getting the node that this nodeable is connected with
+     * 
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
     public function node()
     {
         return $this->hasOne(Node::class, 'nodeable_id', $this->getKeyName())->first();
     }
     // NEW
+    /**
+     * Throw an exception when trying to get som of these
+     * methods if the nodeable model is not connected with a node yet
+     * 
+     * @throws Girover\Tree\Exceptions\TreeException
+     */
     public function throwExceptionIfNotNode()
     {
         if (!$this->isNode()) {
             throw new TreeException("This model is not a node yet!!!", 1);            
         }
-    }
-    // NEW
-    public function treeable_model()
-    {
-        return config('tree.treeable_model');
     }
 }
