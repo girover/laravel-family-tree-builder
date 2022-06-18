@@ -6,7 +6,7 @@ use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\Location;
 use Girover\Tree\Pointer;
-use Girover\Tree\TreeBuilder;
+use Girover\Tree\TreeBuilder\HtmlTreeBuilder;
 
 /**
  *  The model `Tree` has to use this trait
@@ -30,13 +30,12 @@ trait Treeable
      *
      * @var \Girover\Tree\Pointer|null
      */
-    private $pointer = null;
+    private  $pointer = null;
 
     /**
      * @var \Illuminate\Database\Eloquent\Collection|null
      */
     protected $nodes = null;
-
 
     public static function bootTreeable()
     {
@@ -353,7 +352,7 @@ trait Treeable
      */
     public function draw()
     {
-        $tree_generator = new TreeBuilder($this);
+        $tree_generator = new HtmlTreeBuilder($this);
         return $tree_generator->draw();
     }
 

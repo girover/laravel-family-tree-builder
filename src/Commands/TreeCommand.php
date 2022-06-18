@@ -19,9 +19,10 @@ class TreeCommand extends Command
         $this->publishMigrations();
         $this->runMigrate();
         $this->publishAssets();
-        $this->publishStorage();
+        $this->publishAvatars();
+        // $this->publishStorage();
         $this->publishTranslations();
-        $this->symbolicLink();
+        // $this->symbolicLink();
     }
 
     public function treePublish($tag = '')
@@ -66,11 +67,16 @@ class TreeCommand extends Command
         return $this->treePublish('tree-assets');
     }
 
-    public function publishStorage()
+    public function publishAvatars()
     {
-        $this->info('<fg=yellow>Publishing Photos Folder to Storage folder....</>');
-        return $this->treePublish('tree-storage');
+        $this->info('<fg=yellow>Publishing Photos Folder to public folder....</>');
+        return $this->treePublish('tree-avatars');
     }
+    // public function publishStorage()
+    // {
+    //     $this->info('<fg=yellow>Publishing Photos Folder to Storage folder....</>');
+    //     return $this->treePublish('tree-storage');
+    // }
 
     public function publishTranslations()
     {
@@ -84,7 +90,7 @@ class TreeCommand extends Command
         if(Artisan::call('storage:link') === 0){
             return $this->line('<fg=green>Succeed</>');
         }
-        return $this->line('<fg=green>Faild</>');
+        return $this->line('<fg=green>Failed</>');
     }
 
 }

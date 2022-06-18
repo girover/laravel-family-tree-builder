@@ -43,6 +43,11 @@ class TreeServiceProvider extends PackageServiceProvider
                 $this->package->basePath('/../resources/storage') => base_path("storage/app/public"),
             ], "{$this->package->shortName()}-storage");
 
+            // to publish photos folder to storage folder
+            $this->publishes([
+                $this->package->basePath('/../resources/storage') => public_path(),
+            ], "{$this->package->shortName()}-avatars");
+
         }
         // @tree($html) Blade directive to render the tree 
         Blade::directive('tree', function ($tree_html) {

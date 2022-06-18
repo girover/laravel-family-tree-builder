@@ -19,14 +19,15 @@
 
         /*
         |--------------------------------------------------------------------------
-        | Pivot table between nodeable_table and nodeable_table
+        | Avatars files for the nodes
         |--------------------------------------------------------------------------
         |
+        | example: path = /Users/user/sites/laravel-family-tree-test/public/avatars
+        | example: asset = vendor/tree/images
         */
-        'marriages' => [
-            'table'     =>'marriages',
-            'first_id'  => 'nodeable_husband_id',
-            'second_id' => 'nodeable_husband_id',
+        'photos' => [
+            'path'  => public_path('vendor/tree/images'),
+            'asset' => 'vendor/tree/images'
         ],
     ];
 

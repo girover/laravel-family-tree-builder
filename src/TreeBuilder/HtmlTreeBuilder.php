@@ -1,15 +1,18 @@
 <?php
 
-namespace Girover\Tree;
+namespace Girover\Tree\TreeBuilder;
 
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Helpers\Photos;
+use Girover\Tree\Helpers\TreeHelpers;
+use Girover\Tree\Location;
+use Girover\Tree\TreeBuilder\TreeBuilderInterface;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Database\Eloquent\Model;
 
-class TreeBuilder
+class HtmlTreeBuilder implements TreeBuilderInterface
 {
     /**
-     * @var \Girover\Tree\Models\Tree|null
+     * @var \Illuminate\Database\Eloquent\Model|null
      */
     protected $tree = null;
  
@@ -26,22 +29,11 @@ class TreeBuilder
     /**
      * instantiate a tree generator
      * 
-     * @param \Girover\Tree\Models\Tree $tree
+     * @param \Illuminate\Database\Eloquent\Model $tree
      * @return void
      */
-    public function __construct($tree) {
+    public function __construct(Model $tree) {
         $this->tree = $tree;
-    }
-
-    /**
-     * return photo name for node [male, female]
-     *
-     * @param int|string $gender
-     * @return string
-     */
-    public static function photoIcon($gender = 'm')
-    {
-        return ($gender === 'm') ? 'icon_male.png' : 'icon_female.png';
     }
 
     /**
@@ -57,7 +49,7 @@ class TreeBuilder
                         <div class="empty-node">
                         <div class="node-info-wrapper">
                             <div class="node-info">
-                                <div class="node-img"><img src="'. asset(Photos::assetFolder().'icon_male.png').'"></div>
+                                <div class="node-img"><img src="'. TreeHelpers::maleAsset() .'"></div>
                                 <div class="name">add new</div>                
                             </div>
                         </div>
@@ -280,7 +272,7 @@ class TreeBuilder
                          <div class="female-node wife empty">
                             <div class="node-info-wrapper">
                                 <div class="node-info">
-                                    <div class="node-img"><img src="'.asset(Photos::assetFolder().'icon_female.png').'"></div>
+                                    <div class="node-img"><img src="'. TreeHelpers::femaleAsset() .'"></div>
                                     <div class="name">'. __('add wife') .'</div>
                                     <div class="wife-number">0</div>
                                 </div>
@@ -303,15 +295,16 @@ class TreeBuilder
         $id = 2;
         $hText = '';
         foreach ($wives as $wife) {
-            $photo = public_path(Photos::assetFolder() . $wife->photo);
-            $photo = (file_exists($photo) and ! is_dir($photo)) ? $wife->photo : $this->photoIcon($wife->gender);
+            // $photo = public_path(Photos::assetFolder() . $wife->photo);
+            // $photo = TreeHelpers::avatarPath() . $wife->photo;
+            // $photo = (file_exists($photo) and ! is_dir($photo)) ? $wife->photo : $this->photoIcon($wife->gender);
 
             $hText .= '<a class="node " data-id="'.$wife->id.'" data-counter="' . $this->nodesCount++ . '"
                             data-tree="'.$wife->tree_id.'" data-location="'.$wife->location.'" data-id="'.$wife->id.'" data-name="'.$wife->name.'" data-f_name="'.$wife->f_name.'" data-l_name="'.$wife->l_name.'" data-m_name="'.$wife->m_name.'" data-birthdate="'.$wife->birth_date.'" data-gender="'.$wife->gender.'" data-role="wife">
                          <div class="female-node wife-'.$id.'">
                             <div class="node-info-wrapper">
                                 <div class="node-info">
-                                    <div class="node-img"><img src="'.asset(Photos::assetFolder().$photo).'"></div>
+                                    <div class="node-img"><img src="'.TreeHelpers::photoAsset($wife).'"></div>
                                     <div class="name">'.$wife->name.'</div>
                                     <div class="wife-number">'.$id.'</div>
                                 </div>
@@ -338,16 +331,10 @@ class TreeBuilder
             return '';
         }
 
-        $photo = Photos::assetFolder().$node->photo;
-        
-        $photo = (file_exists($photo) && ! is_dir($photo))
-                  ? $node->photo
-                  : $this->photoIcon($node->gender);
         $node_class = ($node->gender == 'm') ? 'male-node' : 'female-node';
-        //$active_class = ($item->location == '1')?'active-node':'';
+        
         $active_class = ((Session::get('activeNode') == $node->id) and ($role != 'wife')) ? 'active-node' : '';
-        //$location = ($role =='wife')?$item->location:$item->location;
-
+        
         $addFather = ((strpos($node->location, Location::SEPARATOR) === false) and ($role != 'wife')) ? '<div id="add-father" data-location="'.$node->location.'" data-toggle="modal" data-target="#addChildModal" alt="add Father"><i class="fa fa-plus"></i></div>' : '';
         $showFather = (($node->location == $this->tree->pointer()->location()) and ($role != 'wife') and (strpos($node->location, Location::SEPARATOR) > 0)) ? '<div id="show-father" data-location="'.$node->location.'"  title="show Father"><i class="fa fa-arrow-up"></i></div>' : '';
         $nodeCollapse = ($role === 'husband') ? '<div class="node-collapse down"><i class="fa fa-chevron-circle-up"></i></div>' : '';
@@ -359,7 +346,7 @@ class TreeBuilder
                     '<div class="'.$node_class.' '.$role.'">	    
                         <div class="node-info-wrapper">
                             <div class="node-info">
-                                <div class="node-img"><img src="'.asset(Photos::assetFolder().$photo).'"></div>
+                                <div class="node-img"><img src="'.TreeHelpers::photoAsset($node).'"></div>
                                 <div class="name">'.$node->name.'</div>
                                 '.(($role === 'wife') ? '<div class="wife-number">1</div>' : '').'
                             </div>
