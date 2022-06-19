@@ -95,7 +95,10 @@ Example: if images are stored in folder called ```images/avatars``` the configs 
 
 
 # Usage
-
+To start building family trees, you must have two models. The first represents trees in database and it must use the trait:    
+```Girover\Tree\Traits\Treeable```   
+The second model represents nodes in these trees, and it must use trait:   
+```Girover\Tree\Traits\nodeable```
 ## Tree
 
 To start building a tree or creating a new tree, it is very simple and thanks to [Eloquent](https://laravel.com/docs/8.x/eloquent) models from [Laravel](http://laravel.com).
