@@ -99,7 +99,31 @@ To start building family trees, you must have two models. The first one represen
 ```Girover\Tree\Traits\Treeable```   
 The second model represents nodes in these trees, and it must use trait:   
 ```Girover\Tree\Traits\nodeable```   
-Names of the two models must be provided in config file: ```config/tree.php```
+***NOTE: The names of the models that represents trees and nodes in database must be provided in ```config/tree.php```.***    
+
+```php
+    // config/tree.php
+    return [
+        /*
+        |----------------------------------------------------------
+        | Model That uses trait Girover\Tree\Traits\Treeable
+        |----------------------------------------------------------
+        |
+        | example: App\Models\Family::class
+        */
+        'treeable_model' => App\Models\Family::class,
+        /*
+        |----------------------------------------------------------
+        | Model That uses trait Girover\Tree\Traits\Nodeable
+        |----------------------------------------------------------
+        |
+        | example: App\Models\Person::class
+        */
+        'nodeable_model' => App\Models\Person::class,
+        .
+        .
+        .
+```
 ## Tree
 
 To start building a tree or creating a new tree, it is very simple and thanks to [Eloquent](https://laravel.com/docs/8.x/eloquent) models from [Laravel](http://laravel.com).   
@@ -116,25 +140,7 @@ class Tree extends Model
     use Treeable;
 }
 
-```
-
-***NOTE: The name of the model that represents trees in database must be provided in ```config/tree.php```.***    
-
-```php
-    // config/tree.php
-    return [
-        /*
-        |----------------------------------------------------------
-        | Model That uses trait Girover\Tree\Traits\Treeable
-        |----------------------------------------------------------
-        |
-        | example: App\Models\Family::class
-        */
-        'treeable_model' => App\Models\Tree::class,
-        .
-        .
-        .
-```
+```   
 
 And now you can use your model to deal with trees.
 
