@@ -99,13 +99,13 @@ Example: if images are stored in folder called ```images/avatars``` the configs 
 ## Tree
 
 To start building a tree or creating a new tree, it is very simple and thanks to [Eloquent](https://laravel.com/docs/8.x/eloquent) models from [Laravel](http://laravel.com).
-The model that represents trees in database should use trait: ```Girover\Tree\Traits\Treeable```
+The model that represents trees in database should use **trait**: ```Girover\Tree\Traits\Treeable```
 For example if your model is called ```Tree``` so it should looks like this:
 
 ```php
 namespace App\Models;
 
-use Girover\Tree\Traits\Treeable
+use Girover\Tree\Traits\Treeable;
 
 class Tree extends Model
 {
@@ -125,7 +125,23 @@ $tree = Tree::create(
     ]
 );
 ```
-***The model ```Girover\Tree\Models\Tree``` is corresponding the table 'trees' in database, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Family```, but then you must use trait ```Girover\Tree\Traits\Treeable``` in the model, and also change the model name in the ```config/tree.php```.***
+*** NOTE: The name of the model that represents trees in database must be provided in ```config/tree.php```. ***    
+
+```php
+    // config/tree.php
+    return [
+        /*
+        |----------------------------------------------------------
+        | Model That uses trait Girover\Tree\Traits\Treeable
+        |----------------------------------------------------------
+        |
+        | example: App\Models\Family::class
+        */
+        'treeable_model' => App\Models\Tree::class,
+        .
+        .
+        .
+```
 
 After creating the tree, you can start to add as many nodes as you want.    
 Let's start adding the First node, the **```Root```**, to the tree.
