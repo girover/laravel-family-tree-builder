@@ -98,14 +98,30 @@ Example: if images are stored in folder called ```images/avatars``` the configs 
 
 ## Tree
 
-To start building a tree or creating a new tree, it is very simple and thanks to [Eloquent](https://laravel.com/docs/8.x/eloquent) models from [Laravel](http://laravel.com). 
+To start building a tree or creating a new tree, it is very simple and thanks to [Eloquent](https://laravel.com/docs/8.x/eloquent) models from [Laravel](http://laravel.com).
+The model that represents trees in database should use trait: ```Girover\Tree\Traits\Treeable```
+For example if your model is called ```Tree``` so it should looks like this:
 
 ```php
-use Girover\Tree\Models\Tree;
+namespace App\Models;
+
+use Girover\Tree\Traits\Treeable
+
+class Tree extends Model
+{
+    use Treeable;
+}
+
+```
+And now you can use your model to deal with trees.
+
+```php
+use App\Models\Tree;
 
 $tree = Tree::create(
     [
-        'name' => 'my first tree',
+        'info' => 'info',
+        'another_info' => 'another info',
     ]
 );
 ```
