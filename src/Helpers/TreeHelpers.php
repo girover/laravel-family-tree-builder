@@ -27,20 +27,20 @@ class TreeHelpers{
      * database table name that contains nodes
      * @return string name of the table
      */
-    public static function nodeTable()
+    public static function nodeableTable()
     {
-        $model = static::nodeableModel();
-        return (new $model)->getTable();
+        // $model = static::nodeableModel();
+        return (new (static::nodeableModel()))->getTable();
     }
 
     /**
      * database table name that contains 'trees'
      * @return string name of the table
      */
-    public static function treeTable()
+    public static function treeableTable()
     {
-        $model = static::treeableModel();
-        return (new $model)->getTable();
+        // $model = static::treeableModel();
+        return (new (static::treeableModel()))->getTable();
     }
 
     // NEW
@@ -52,7 +52,7 @@ class TreeHelpers{
      */
     public static function photoPath()
     {
-        return public_path(rtrim(config('tree.photos_folder'), '/\\') . DIRECTORY_SEPARATOR);
+        return public_path(rtrim(config('tree.photos_folder'), '/\\')) . DIRECTORY_SEPARATOR;
     }
     // NEW
     /**

@@ -37,8 +37,7 @@ trait Nodeable
      */
     public function newEloquentBuilder($query)
     {
-        $eloquentBuilder = new NodeEloquentBuilder($query);
-        return $eloquentBuilder->leftJoin('nodes', 'nodes.nodeable_id', (new static)->getTable().'.'.$this->getKeyName());
+        return (new NodeEloquentBuilder($query))->leftJoin('nodes', 'nodes.nodeable_id', (new static)->getTable().'.'.$this->getKeyName());
     }
 
     /**
@@ -114,7 +113,7 @@ trait Nodeable
      */
     public function isNode()
     {
-        return $this->location ? true : false;
+        return ($this->location && $this->treeable_id && $this->nodeable_id && $this->node_id) ? true : false;
         // return $this->node() ? true : false;
     }
 
@@ -145,17 +144,13 @@ trait Nodeable
      * @param Illuminate\Database\Eloquent\Model
      * @return \Girover\Tree\Models\Tree
      */
-    public function getTree($tree_model)
+    public function getTree()
     {
         if (!$this->isNode()) {
             throw new TreeException("This model is not a node yet!", 1);
         }
 
-        if (!is_subclass_of($tree_model, 'Illuminate\Database\Eloquent\Model')){
-            throw new TreeException('The given parameter is not a model', 1);
-        }
-
-        return ($tree_model)::find($this->treeable_id);
+        return (TreeHelpers::treeableModel())::find($this->treeable_id);
     }
 
     /**
@@ -210,11 +205,11 @@ trait Nodeable
         }
 
         // Person cannot get married with himself
-        if ($this->id === $wife->id) {            
+        if ($this->id === $wife->getKey()) {            
             throw new TreeException('Person cannot get married with himself', 1);    
         }
         
-        return $this->wives()->attach($wife->id);
+        return $this->wives()->attach($wife->getKey());
     }
 
     // NEW
@@ -233,7 +228,7 @@ trait Nodeable
                 throw new TreeException("Man Can not be married with a man", 1);
             }
 
-            return (bool)$this->wives()->where('marriages.nodeable_wife_id', $wife->id)
+            return (bool)$this->wives()->where('marriages.nodeable_wife_id', $wife->getKey())
                                        ->count();
         }
 
@@ -241,7 +236,7 @@ trait Nodeable
             throw new TreeException("Woman Can not be married with a woman", 1);
         }
 
-        return (bool)$this->husband()->where('nodeable_husband_id', $wife->id)
+        return (bool)$this->husband()->where('nodeable_husband_id', $wife->getKey())
                                    ->count();
     }
 
@@ -262,7 +257,7 @@ trait Nodeable
         if ($this->isFemale()) {
             throw new TreeException("This is a woman, however only men are allowed to divorce", 1);
         }
-        return $this->wives()->where('nodeable_wife_id', $wife->id)->update(['divorced'=> true]);
+        return $this->wives()->where('nodeable_wife_id', $wife->getKey())->update(['divorced'=> true]);
     }
 
     /**
@@ -296,9 +291,9 @@ trait Nodeable
     //     return false;
     // }
     // NEW
-    public function setAvatar(string $avatar_name)
+    public function setPhoto(string $photo_name)
     {
-        $this->photo = $avatar_name;
+        $this->photo = $photo_name;
 
         return $this->save();
     }
@@ -766,6 +761,7 @@ trait Nodeable
     public function child(int $order)
     {
         $children = $this->children();
+
         if ($order < 1 || $order > $children->count()) {
             return null;
         }
@@ -855,7 +851,7 @@ trait Nodeable
     }
 
     /**
-     * Get all siblings those are younger than this node
+     * Get all siblings who are younger than this node
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
@@ -1106,15 +1102,18 @@ trait Nodeable
         try {
             DB::beginTransaction();
 
-            $nodeable = $this->createNodeable($data);
+            $nodeable = $this->createNodeable($data) ?? throw new TreeException("Failed to insert data", 1);
             
-            $node     = $this->createNode(['nodeable_id'=>$nodeable->id, 'treeable_id'=>$this->treeable_id, 'location'=>$location, 'gender'=>$gender]);
+            $node     = $this->createNode(['nodeable_id'=>$nodeable->getKey(), 'treeable_id'=>$this->treeable_id, 'location'=>$location, 'gender'=>$gender]);
 
-            if(!$nodeable || !$node){
-                throw new TreeException("Failed to insert data", 1);               
+            // if(!$nodeable || !$node){
+            if(!$node){
+                throw new TreeException("Failed to create the node", 1);               
             }
 
             DB::commit();
+
+            return true;
 
         } catch (\Throwable $th) {            
             DB::rollBack();
@@ -1126,11 +1125,14 @@ trait Nodeable
     public function createNodeable($data)
     {
         if ($data instanceof static) {
+
             if ($data->exists){
                 return $data;
             }
 
-            return $data->save();
+            $data->save();
+
+            return $data;
         }
 
         if (! is_array($data)) {
@@ -1400,7 +1402,7 @@ trait Nodeable
             // to prevent duplicated locations in same tree
             DB::update(Update::prependLocationsWithSeparator(), [$this->treeable_id]);
             // then prepend all locations with 'aaa'
-            DB::update(Update::prependLocationsWithFirstPossibleSegmetn(), [$this->treeable_id]);
+            DB::update(Update::prependLocationsWithFirstPossibleSegment(), [$this->treeable_id]);
 
             // create th new root node with given data
             $new_root = $this->createNewNode($data, Location::firstPossibleSegment());

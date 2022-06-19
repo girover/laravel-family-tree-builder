@@ -11,10 +11,10 @@ class Delete extends SqlStatements
      * @param int $location
      * @return string
      */
-    public static function nodeWithChildren($tree_id, $location)
+    public static function nodeWithChildren($treeable_id, $location)
     {
-        return "DELETE FROM `". static::table() ."` 
-                WHERE `tree_id` = ".$tree_id." 
+        return "DELETE FROM `".static::nodesTable()."`  
+                WHERE `treeable_id` = ".$treeable_id." 
                 AND `location` like '".$location."%'";
     }
 }

@@ -15,9 +15,10 @@ class Update extends SqlStatements
      */
     public static function prependLocationsWithSeparator()
     {
-        return 'UPDATE '. static::table() .
+        // return 'UPDATE '. static::table() .
+        return 'UPDATE `'.static::nodesTable().'` ' .
                ' SET `location` = CONCAT("'.Location::SEPARATOR.'", `location`)'
-               .'WHERE tree_id = ?';
+               .'WHERE treeable_id = ?';
     }
 
     /**
@@ -28,11 +29,11 @@ class Update extends SqlStatements
      * @param int $tree_id
      * @return string sql statement
      */
-    public static function prependLocationsWithFirstPossibleSegmetn()
+    public static function prependLocationsWithFirstPossibleSegment()
     {
-        return 'UPDATE '. static::table() .
+        return 'UPDATE `'.static::nodesTable().'` ' .
                ' SET `location` = CONCAT("'.Location::firstPossibleSegment().'", `location`)'
-               .'WHERE tree_id = ?';
+               .'WHERE treeable_id = ?';
     }
 
     /**
@@ -54,11 +55,11 @@ class Update extends SqlStatements
      * @param string $new_location
      * @return string
      */
-    public static function updateLocations($tree_id, $old_location, $new_location)
+    public static function updateLocations($treeable_id, $old_location, $new_location)
     {
-        return "UPDATE `". static::table() ."` 
+        return "UPDATE `".static::nodesTable()."` 
                 SET `location` = CONCAT('".$new_location."', SUBSTRING(`location` FROM ".(strlen($old_location) + 1).")) 
-                WHERE `tree_id` = ".$tree_id." 
+                WHERE `treeable_id` = ".$treeable_id." 
                 AND `location` like '".$old_location."%'";
     }
 }
