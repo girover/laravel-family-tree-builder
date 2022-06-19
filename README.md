@@ -125,7 +125,7 @@ $tree = Tree::create(
     ]
 );
 ```
-*** NOTE: The name of the model that represents trees in database must be provided in ```config/tree.php```. ***    
+***NOTE: The name of the model that represents trees in database must be provided in ```config/tree.php```.***    
 
 ```php
     // config/tree.php
