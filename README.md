@@ -113,18 +113,7 @@ class Tree extends Model
 }
 
 ```
-And now you can use your model to deal with trees.
 
-```php
-use App\Models\Tree;
-
-$tree = Tree::create(
-    [
-        'info' => 'info',
-        'another_info' => 'another info',
-    ]
-);
-```
 ***NOTE: The name of the model that represents trees in database must be provided in ```config/tree.php```.***    
 
 ```php
@@ -141,6 +130,19 @@ $tree = Tree::create(
         .
         .
         .
+```
+
+And now you can use your model to deal with trees.
+
+```php
+use App\Models\Tree;
+
+$tree = Tree::create(
+    [
+        'info' => 'info',
+        'another_info' => 'another info',
+    ]
+);
 ```
 
 After creating the tree, you can start to add as many nodes as you want.    
