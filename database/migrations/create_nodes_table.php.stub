@@ -25,10 +25,10 @@ class CreateNodesTable extends Migration
             $table->timestamps();
             
 
-            $table->index('tree_id');
+            $table->index('treeable_id');
             $table->index('location');
             $table->unique(['treeable_id', 'location']);
-            // $table->unique(['tree_id', 'location']);
+            $table->unique(['treeable_id', 'nodeable_id']);
         });
     }
 

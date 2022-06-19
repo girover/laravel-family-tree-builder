@@ -1093,7 +1093,7 @@ trait Nodeable
      * @throws \Girover\Tree\Exceptions\TreeException
      * @return \Girover\Tree\Models\Node
      */
-    protected function createNewNode($data, $location, $gender = 'm')
+    public function createNewNode($data, $location, $gender = 'm')
     {
         Location::validate($location);
 
@@ -1126,6 +1126,7 @@ trait Nodeable
     {
         if ($data instanceof static) {
 
+            // $data is a model and exists in database
             if ($data->exists){
                 return $data;
             }

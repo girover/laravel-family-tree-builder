@@ -2,8 +2,6 @@
 
 namespace Girover\Tree\Tests;
 
-use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Location;
 use Girover\Tree\Tests\Traits\Factoryable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
@@ -21,7 +19,7 @@ class NIsRootTest extends TestCase
     public function it_should_returns_true_when_applying_on_root_node()
     {
         // Create new Tree in database.
-        $tree = $this->createTree();
+        $tree = $this->createTreeable();
         // Create Root node for the created tree.
         $root = $tree->createRoot(['name'=>'majed']); 
 

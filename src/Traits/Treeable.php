@@ -4,6 +4,7 @@ namespace Girover\Tree\Traits;
 
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
+use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\Pointer;
 use Girover\Tree\TreeBuilder\HtmlTreeBuilder;

@@ -16,9 +16,11 @@ class NodeFactory extends Factory
     {
         // $this->model =  ModelService::nodeModel();
         return [
-            'name' => $this->faker->name(),
-            'location' => Location::firstPossibleSegment(),
-            'tree_id' => 1,
+            'name'        => $this->faker->name(),
+            'nodeable_id' => 1,
+            'treeable_id' => 1,
+            'location'    => Location::firstPossibleSegment(),
+            'gender'      => $this->faker->randomElement(['m','f']),
         ];
     }
 }

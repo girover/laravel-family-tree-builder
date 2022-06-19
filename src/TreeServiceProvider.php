@@ -24,7 +24,8 @@ class TreeServiceProvider extends PackageServiceProvider
             ->hasTranslations()
             ->hasMigrations(
                 // 'create_node_images_table',
-                'create_trees_table',
+                'create_treeables_table',
+                'create_nodeables_table',
                 'create_nodes_table',
                 'create_marriages_table'
             );
@@ -39,9 +40,9 @@ class TreeServiceProvider extends PackageServiceProvider
             ]);
 
             // to publish photos folder to storage folder
-            $this->publishes([
-                $this->package->basePath('/../resources/storage') => base_path("storage/app/public"),
-            ], "{$this->package->shortName()}-storage");
+            // $this->publishes([
+            //     $this->package->basePath('/../resources/storage') => base_path("storage/app/public"),
+            // ], "{$this->package->shortName()}-storage");
 
             // to publish photos folder to storage folder
             $this->publishes([
