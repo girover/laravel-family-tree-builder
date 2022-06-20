@@ -44,7 +44,7 @@ class NodeService
      * @return void
      * @throws Girover\Tree\Exceptions\TreeException
      */
-    protected function validateGender($gender)
+    public function validateGender($gender)
     {
         if ($gender !== 'm' && $gender !== 'f') {
             throw new TreeException("Invalid gender is provided", 1);            
@@ -200,5 +200,23 @@ class NodeService
         if (!$this->nodeable->isNode()) {
             throw new TreeException("This model is not a node yet!!!", 1);            
         }
+    }
+
+    /**
+     * To build a tree as Html from specific node
+     * 
+     * @return string html representing the tree starting from a node
+     * 
+     * @throws \Girover\Tree\Exceptions\TreeException
+     */
+    public function buildTreeFromANode()
+    {
+        $this->throwExceptionIfNotNode();
+
+        $tree = (TreeHelpers::treeableModel())::find($this->nodeable->treeable_id);
+        
+        $tree->pointer()->to($this->nodeable);
+
+        return $tree->draw();
     }
 }

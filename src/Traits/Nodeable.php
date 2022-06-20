@@ -31,6 +31,11 @@ trait Nodeable
      */
     protected $move_children_on_deleting = false;
 
+    /**
+     * Getting instance of NodeService to deal with nodeable models functionality
+     * 
+     * @return \Girover\Tree\Services\NodeService
+     */
     public function nodeService()
     {
         return $this->node_service ?? (new NodeService($this));
@@ -93,23 +98,14 @@ trait Nodeable
         //$this->fillable = array_merge($this->fillable, static::$fillable_cols);
     }
 
+    /**
+     * Local scop to ignore getting divorced wives
+     * 
+     * @return \Girover\Tree\Database\Eloquent\NodeEloquentBuilder
+     */
     public function scopeIgnoreDivorced($query)
     {
         return $query->where('divorced', false);
-    }
-
-    /**
-     * Determine if the provider gender
-     * is a valid gender
-     * @param string $gender
-     * @return void
-     * @throws Girover\Tree\Exceptions\TreeException
-     */
-    protected function validateGender($gender)
-    {
-        if ($gender !== 'm' && $gender !== 'f') {
-            throw new TreeException("Invalid gender is provided", 1);            
-        }
     }
 
     // NEW
@@ -578,7 +574,7 @@ trait Nodeable
      */
     protected function countSiblingsByGender($gender)
     {
-        $this->validateGender($gender);
+        $this->nodeService()->validateGender($gender);
 
         return static::tree($this->treeable_id)
                     ->locationNot($this->location)
@@ -677,7 +673,7 @@ trait Nodeable
      */
     protected function countDescendantsByGender($gender)
     {
-        $this->validateGender($gender);
+        $this->nodeService()->validateGender($gender);
 
         return $this->descendantsQuery()
                     ->where('gender', $gender)
@@ -1288,11 +1284,8 @@ trait Nodeable
             return $location;
         }
 
-        $node = static::tree($this->treeable_id)->location($location)->first();
-
-        if ($node === null) {
-            throw new TreeException("Error: The location `".$location."` not found in this tree.", 1);
-        }
+        $node = static::tree($this->treeable_id)->location($location)->first()
+                ?? throw new TreeException("Error: The location `".$location."` not found in this tree.", 1);
 
         return $node;
     }
@@ -1477,13 +1470,7 @@ trait Nodeable
      */
     public function toTree()
     {
-        $this->nodeService()->throwExceptionIfNotNode();
-
-        $tree = (TreeHelpers::treeableModel())::find($this->treeable_id);
-        
-        $tree->pointer()->to($this);
-
-        return $tree->draw();
+        return $this->nodeService()->buildTreeFromANode();
     }
 
     /**

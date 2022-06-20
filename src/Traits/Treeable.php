@@ -15,17 +15,15 @@ use Girover\Tree\TreeBuilder\HtmlTreeBuilder;
  */
 trait Treeable
 { 
-    public $tree_service;
     /**
-     * mass assignment fillable properties
-     *
-     * @var array
+     * @var \Girover\Tree\Services\TreeService
      */
-    // protected static $fillable_cols = [
-    //     'user_id',
-    //     'name',
-    // ];
+    public $tree_service;
+    
 
+    /**
+     * @var int treeable id in table 'nodes'
+     */
     protected $foreign_key = 'treeable_id';
 
     /**
@@ -40,6 +38,11 @@ trait Treeable
      */
     protected $nodes = null;
 
+    /**
+     * Getting instance of TreeService to deal with treeable functionality
+     * 
+     * @return \Girover\Tree\Services\TreeService
+     */
     public function treeService()
     {
         return $this->tree_service ?? (new TreeService($this));
@@ -288,13 +291,13 @@ trait Treeable
      * Move the pointer of the tree to a given node or location
      *
      * @param \Girover\Tree\Models\Node|string $location
-     * @return $this
+     * @return \Girover\Tree\Pointer
      */
     public function pointerTo($location)
     {
-        $this->pointer()->to($location);
+        return $this->pointer()->to($location);
 
-        return $this;
+        // return $this;
     }
     /**
      * Move the pointer of the tree to a given node or location
@@ -347,8 +350,7 @@ trait Treeable
      */
     public function draw()
     {
-        $tree_generator = new HtmlTreeBuilder($this);
-        return $tree_generator->draw();
+        return $this->treeService()->buildTree();
     }
 
 

@@ -162,7 +162,7 @@ class Pointer
         // if ($location instanceof ($this->model())) {
         if ($location instanceof (TreeHelpers::nodeableModel())) {
             
-            if ($this->tree->id !== $location->treeable_id) {
+            if ($this->tree->getKey() !== $location->treeable_id) {
                 throw new TreeException("Error a passed node to the method [". __METHOD__ ." ] don't belong the tree", 1);                
             }
 

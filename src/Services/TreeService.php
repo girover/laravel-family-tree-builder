@@ -6,6 +6,7 @@ use \Illuminate\Database\Eloquent\Model;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
+use Girover\Tree\TreeBuilder\HtmlTreeBuilder;
 
 class TreeService
 {
@@ -68,7 +69,20 @@ class TreeService
         
         $empty_nodeable = new (TreeHelpers::nodeableModel());
         $empty_nodeable->treeable_id = $this->treeable->getKey();
-        
+
         return $this->nodeService($empty_nodeable)->createNewNode($data, $location,'m');
+    }
+
+
+    /**
+     * Converting the tree to html to render in browser
+     * 
+     * @return string;
+     */
+    public function buildTree()
+    {
+        $tree_generator = new HtmlTreeBuilder($this->treeable);
+
+        return $tree_generator->draw();
     }
 }
