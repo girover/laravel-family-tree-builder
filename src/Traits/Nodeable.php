@@ -11,6 +11,7 @@ use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\Models\Node;
 use Girover\Tree\NodeRelocator;
+use Girover\Tree\Services\NodeService;
 use Illuminate\Support\Facades\DB;
 
 use function PHPUnit\Framework\isNull;
@@ -20,6 +21,7 @@ use function PHPUnit\Framework\isNull;
  */
 trait Nodeable
 {
+    public $node_service;
     /**
      * to control deleting children or not when deleting a node
      * false: delete node with its children
@@ -28,6 +30,11 @@ trait Nodeable
      * @var bool
      */
     protected $move_children_on_deleting = false;
+
+    public function nodeService()
+    {
+        return $this->node_service ?? (new NodeService($this));
+    }
 
     /**
      * {@inheritdoc}
@@ -272,24 +279,7 @@ trait Nodeable
     //     return $this->hasMany($model, 'node_id', 'id');
     // }
 
-    /**
-     * add photo to for node
-     * @param \Illuminate\Http\UploadedFile $photo
-     * @param string $name
-     * @return bool
-     */
-    // public function newPhoto($photo, $name = '')
-    // {
-    //     $new_name = Photos::newName($photo, $name);
-
-    //     if (Photos::store($photo, $new_name)) {
-    //         $this->photo = $new_name;
-            
-    //         return $this->save();
-    //     }
-
-    //     return false;
-    // }
+    
     // NEW
     public function setPhoto(string $photo_name)
     {
@@ -305,7 +295,7 @@ trait Nodeable
      */
     public function isRoot()
     {
-        $this->throwExceptionIfNotNode();
+        $this->nodeService()->throwExceptionIfNotNode();
 
         if (Location::isRoot($this->location)) {
             return true;
@@ -356,6 +346,7 @@ trait Nodeable
     {
         return (bool)static::tree($this->treeable_id)
                      ->locationREGEXP(Location::withSiblingsREGEXP($this->location))
+                     ->locationNot($this->location)
                      ->count();
     }
 
@@ -410,7 +401,7 @@ trait Nodeable
      */
     public function grandfather()
     {
-        $this->throwExceptionIfNotNode();
+        $this->nodeService()->throwExceptionIfNotNode();
 
         return static::tree($this->treeable_id)
                      ->location(Location::grandfather($this->location))
@@ -1084,71 +1075,6 @@ trait Nodeable
     }
 
     /**
-     * Create new node
-     *
-     * @param \Girover\Tree\Models\Node|array $data data for the new node
-     * @param string $location the location of the new [child|sibling|...]
-     * @param string $gender the gender of the person
-     * 
-     * @throws \Girover\Tree\Exceptions\TreeException
-     * @return \Girover\Tree\Models\Node
-     */
-    public function createNewNode($data, $location, $gender = 'm')
-    {
-        Location::validate($location);
-
-        $this->validateGender($gender);
-
-        try {
-            DB::beginTransaction();
-
-            $nodeable = $this->createNodeable($data) ?? throw new TreeException("Failed to insert data", 1);
-            
-            $node     = $this->createNode(['nodeable_id'=>$nodeable->getKey(), 'treeable_id'=>$this->treeable_id, 'location'=>$location, 'gender'=>$gender]);
-
-            // if(!$nodeable || !$node){
-            if(!$node){
-                throw new TreeException("Failed to create the node", 1);               
-            }
-
-            DB::commit();
-
-            return true;
-
-        } catch (\Throwable $th) {            
-            DB::rollBack();
-            throw $th;            
-        }
-    }
-
-    // NEW
-    public function createNodeable($data)
-    {
-        if ($data instanceof static) {
-
-            // $data is a model and exists in database
-            if ($data->exists){
-                return $data;
-            }
-
-            $data->save();
-
-            return $data;
-        }
-
-        if (! is_array($data)) {
-            throw new TreeException("Bad argument type. The argument passed to ".__METHOD__." must be an array or an instance of [".static::class."]. ".gettype($data)." is given", 1);
-        }
-
-        return static::create($data);
-    }
-
-    // NEW
-    public function createNode($data)
-    {
-        return Node::create($data);
-    }
-    /**
      * Create new sibling for this node
      * by default the new node is son.
      *
@@ -1158,19 +1084,7 @@ trait Nodeable
      */
     public function newSibling($data, $gender = 'm')
     {
-        if ($this->isRoot()) {
-            throw new TreeException("Cannot add sibling to the Root of the tree.", 1);
-        }
-
-        if ($this->hasSiblings()) {
-            $new_sibling_location = Location::generateNextLocation($this->lastSibling()->location);
-        } else {
-            $new_sibling_location = Location::generateNextLocation($this->location);
-        }
-
-        Location::validate($new_sibling_location);
-
-        return $this->createNewNode($data, $new_sibling_location, $gender);
+        return $this->nodeService()->newSibling($data, $gender);
     }
 
     /**
@@ -1240,7 +1154,7 @@ trait Nodeable
     {
         $new_child_location = $this->newChildLocation();
 
-        return $this->createNewNode($data, $new_child_location, $gender);
+        return $this->nodeService()->createNewNode($data, $new_child_location, $gender);
     }
 
     /**
@@ -1391,32 +1305,7 @@ trait Nodeable
      */
     public function createFather($data)
     {
-        if (! $this->isRoot()) {
-            throw new TreeException("Error: Can't make father for node:[ ".$this->location." ]. node should be root to make father for it.", 1);
-        }
-
-        DB::beginTransaction();
-
-        try {
-            // update all nodes locations in this tree.
-            // Firstly prepend all locations with separator '.'
-            // to prevent duplicated locations in same tree
-            DB::update(Update::prependLocationsWithSeparator(), [$this->treeable_id]);
-            // then prepend all locations with 'aaa'
-            DB::update(Update::prependLocationsWithFirstPossibleSegment(), [$this->treeable_id]);
-
-            // create th new root node with given data
-            $new_root = $this->createNewNode($data, Location::firstPossibleSegment());
-
-            DB::commit();
-
-            return $new_root;
-        } catch (\Throwable $th) {
-            // Rollback the database changes
-            DB::rollBack();
-
-            throw new TreeException("Error: ".$th->getMessage(), 1);
-        }
+        return $this->nodeService()->createFather($data);
     }
 
     /**
@@ -1588,7 +1477,7 @@ trait Nodeable
      */
     public function toTree()
     {
-        $this->throwExceptionIfNotNode();
+        $this->nodeService()->throwExceptionIfNotNode();
 
         $tree = (TreeHelpers::treeableModel())::find($this->treeable_id);
         
@@ -1626,18 +1515,5 @@ trait Nodeable
     public function node()
     {
         return $this->hasOne(Node::class, 'nodeable_id', $this->getKeyName())->first();
-    }
-    // NEW
-    /**
-     * Throw an exception when trying to get som of these
-     * methods if the nodeable model is not connected with a node yet
-     * 
-     * @throws Girover\Tree\Exceptions\TreeException
-     */
-    public function throwExceptionIfNotNode()
-    {
-        if (!$this->isNode()) {
-            throw new TreeException("This model is not a node yet!!!", 1);            
-        }
     }
 }

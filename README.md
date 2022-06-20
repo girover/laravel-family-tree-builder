@@ -177,10 +177,10 @@ After creating the Root in the tree, let's add first child for the Root.
 
     $first_child_data = ['name'=>'first child', 'birth_date'=>'2001-01-01'];
 
-    $tree->movePointerToRoot()->newChild($first_child_data ,'m'); // m = male
+    $tree->pointerToRoot()->newChild($first_child_data ,'m'); // m = male
 
     // Or you can do this instead
-    $tree->movePointerToRoot()->newSon($first_child_data);
+    $tree->pointerToRoot()->newSon($first_child_data);
 ```
 Now our tree consists of two nodes, the root and the first child of the root.   
 
@@ -194,8 +194,8 @@ You can call the following method on an object of Tree
 | 5   | `toTree()`                 | convert the tree to html to view it                   |                                               |
 | 6   | `emptyTree()`              | return an empty tree to view it                       |                                               |
 | 7   | `pointer()`                | To get the pointer inside the tree                    |                                               |
-| 8   | `movePointerToRoot()`      | To move the pointer to indicate to the root           |                                               |
-| 9   | `movePointerTo($location)` | To move the pointer to the given location             |                                               |
+| 8   | `pointerToRoot()`      | To move the pointer to indicate to the root           |                                               |
+| 9   | `pointerTo($location)` | To move the pointer to the given location             |                                               |
 | 10  | `goTo($location)`          | To move the pointer to the given location             |                                               |
 | 14  | `countGenerations()`       | To get how many generations this tree has             |                                               |
 | 15  | `nodesOnTop()`             | Get the newest generation members in the tree         |                                               |
@@ -352,65 +352,65 @@ To get all sisters of the node:
 ```php
     return $node->sisters();
 ```
-### <!-- getting the next(older) sibling of a node -->
+### <!-- getting the next(younger) sibling of a node -->
 To get the next sibling of the node. gets only one sibling.
 ```php
-    return $node->nextSibling();
+    return $node->youngerSibling();
 ```
-### <!-- getting all next(older) siblings of a node -->
+### <!-- getting all next(younger) siblings of a node -->
 To get all the next siblings of the node. siblings who are younger.
 ```php
-    return $node->nextSiblings();
+    return $node->youngerSiblings();
 ```
-### <!-- getting the next(older) brother of a node -->
+### <!-- getting the next(younger) brother of a node -->
 To get the next brother of the node. gets only one brother.
 ```php
-    return $node->nextBrother();
+    return $node->youngerBrother();
 ```
-### <!-- getting all next(older) brothers of a node -->
+### <!-- getting all next(younger) brothers of a node -->
 To get all the next brothers of the node. brothers who are younger.
 ```php
-    return $node->nextBrothers();
+    return $node->youngerBrothers();
 ```
-### <!-- getting the next(older) sister of a node -->
+### <!-- getting the next(younger) sister of a node -->
 To get the next sister of the node. gets only one sister.
 ```php
-    return $node->nextSister();
+    return $node->youngerSister();
 ```
-### <!-- getting all next(older) sisters of a node -->
+### <!-- getting all next(younger) sisters of a node -->
 To get all the next sisters of the node. sisters who are younger.
 ```php
-    return $node->nextSisters();
+    return $node->youngerSisters();
 ```
-### <!-- getting the previous(younger) sibling of a node -->
+### <!-- getting the previous(older) sibling of a node -->
 To get the previous sibling of the node. only one sibling.
 ```php
-    return $node->prevSibling();
+    return $node->olderSibling();
 ```
-### <!-- getting all previous(younger) siblings of a node -->
+### <!-- getting all previous(older) siblings of a node -->
 To get all the previous siblings of the node. siblings who are older.
 ```php
-    return $node->prevSiblings();
+    return $node->olderSiblings();
 ```
-### <!-- getting the previous(younger) brother of a node -->
+### <!-- getting the previous(older) brother of a node -->
 To get the previous brother of the node. only one brother.
 ```php
-    return $node->prevBrother();
+    return $node->olderBrother();
 ```
-### <!-- getting all previous(younger) brothers of a node -->
+### <!-- getting all previous(older) brothers of a node -->
 To get all the previous brothers of the node. brothers who are older.
 ```php
-    return $node->prevBrothers();
+    return $node->olderBrothers();
 ```
-### <!-- getting the previous(younger) sister of a node -->
+### <!-- getting the previous(older) sister of a node -->
 To get the previous sister of the node. only one sister.
 ```php
-    return $node->prevSister();
+    return $node->olderSister();
 ```
-### <!-- getting all previous(younger) sisters of a node -->
+### <!-- getting all previous(older) sisters of a node -->
 To get all the previous sisters of the node. sisters who are older.
 ```php
-    return $node->prevSisters();
+    return $node->olderSisters();
 ```
 ### <!-- getting the first sibling of a node -->
 To get the first sibling of the node.

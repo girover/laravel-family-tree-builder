@@ -7,13 +7,15 @@ use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\Pointer;
+use Girover\Tree\Services\TreeService;
 use Girover\Tree\TreeBuilder\HtmlTreeBuilder;
 
 /**
  *  The model `Tree` has to use this trait
  */
 trait Treeable
-{
+{ 
+    public $tree_service;
     /**
      * mass assignment fillable properties
      *
@@ -38,6 +40,11 @@ trait Treeable
      */
     protected $nodes = null;
 
+    public function treeService()
+    {
+        return $this->tree_service ?? (new TreeService($this));
+    }
+
     public static function bootTreeable()
     {
         
@@ -51,11 +58,6 @@ trait Treeable
     public function initializeTreeable()
     {
         // $this->fillable = array_merge($this->fillable, static::$fillable_cols);
-    }
-
-    public function nodeableModel()
-    {
-        return config('tree.nodeable_model');
     }
 
     /**
@@ -95,9 +97,9 @@ trait Treeable
      *
      * @return \Girover\Tree\Pointer|null
      */
-    public function movePointerToRoot()
+    public function pointerToRoot()
     {
-        return $this->pointer()->to(($this->nodeableModel())::tree($this->getKey())->first());
+        return $this->pointer()->to((TreeHelpers::nodeableModel())::tree($this->getKey())->first());
     }
 
     /**
@@ -107,7 +109,7 @@ trait Treeable
     */
     public function nodesQuery()
     {
-        return ($this->nodeableModel())::where($this->foreign_key, $this->getKey());
+        return (TreeHelpers::nodeableModel())::where($this->foreign_key, $this->getKey());
     }
 
     /**
@@ -163,7 +165,7 @@ trait Treeable
      */
     public function setMainNode($node) // Should Removes
     {
-        if ($node instanceof ($this->nodeableModel())) {
+        if ($node instanceof (TreeHelpers::nodeableModel())) {
             $this->main_node = $node->location;
             $this->save();
             return $node;
@@ -219,15 +221,7 @@ trait Treeable
      */
     public function createRoot($data = [])
     {
-        if (empty($data)) {
-            throw new TreeException("Error: no data are provided to create Root for the tree.", 1);
-        }
-        
-        if ($this->isEmptyTree()) {
-            return $this->nodes()->create(array_merge($data, [$this->foreign_key => $this->getKey(), 'location' => Location::generateRootLocation()]));
-        }
-        // The tree is not empty, e.i. There is already a Root for this tree.
-        throw new TreeException("Root for tree is already exists", 1);
+        return $this->treeService()->createRoot($data);
     }
 
     /**
@@ -246,7 +240,7 @@ trait Treeable
         if ($this->isEmptyTree()) {
             return $this->createRoot($data);
         }
-
+        
         return $this->pointer()->toRoot()->createFather($data);
     }
 
@@ -296,7 +290,7 @@ trait Treeable
      * @param \Girover\Tree\Models\Node|string $location
      * @return $this
      */
-    public function movePointerTo($location)
+    public function pointerTo($location)
     {
         $this->pointer()->to($location);
 
@@ -310,7 +304,7 @@ trait Treeable
      */
     public function goTo($location)
     {
-        return $this->movePointerTo($location);
+        return $this->pointerTo($location);
     }
 
     /**
