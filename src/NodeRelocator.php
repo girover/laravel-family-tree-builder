@@ -3,7 +3,8 @@
 namespace Girover\Tree;
 
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Helpers\DBHelper;
+use Girover\Tree\Helpers\TreeHelpers;
+use Girover\Tree\Models\Node;
 use Illuminate\Support\Facades\DB;
 
 class NodeRelocator
@@ -27,7 +28,7 @@ class NodeRelocator
         } catch (\Throwable $th) {
             DB::rollBack();
 
-            throw new TreeException("Could not move ".$node_to_move->name." after ".$target_node->name, 1);            
+            throw new TreeException("Could not move the node after this node: ".$th->getMessage(), 1);                      
         }
     }
     public static function moveBefore($node_to_move, $target_node)
@@ -50,7 +51,7 @@ class NodeRelocator
         } catch (\Throwable $th) {
             DB::rollBack();
 
-            throw new TreeException("Could not move ".$node_to_move->name." after ".$target_node->name, 1);            
+            throw new TreeException("Could not move the node before this node", 1);            
         }
     }
     /**
@@ -65,30 +66,29 @@ class NodeRelocator
         
         // get the node with all its siblings
         $siblings = $node_to_move->withSiblings();
-
         // Make temporarily location for the node that should be sended
         $new_sibling_location = static::newSiblingLocation($target_node, $siblings->last());
-
+        
         if ($node_to_move->location > $target_node->location) {
             $nodes_to_shift = $siblings->where('location', '>', $target_node->location)
-                                       ->where('location', '<=', $node_to_move->location);
+            ->where('location', '<=', $node_to_move->location);
             
             // add new node with new location to the end of the collection                          
-            $nodes_to_shift->push(static::temporarilyNode($node_to_move->tree_id, $new_sibling_location));
-
+            $nodes_to_shift->push(static::tempNodeable($node_to_move->treeable_id, $new_sibling_location));
+            
             $nodes_to_shift_reversed = $nodes_to_shift->reverse();
             static::shiftLocations($nodes_to_shift_reversed);
             $nodes_to_shift_reversed->first()->updateLocation($nodes_to_shift_reversed->last()->location);
-
+            
             return true;
         }
-
+        
         $nodes_to_shift = $siblings->where('location', '>=', $node_to_move->location)
-                                    ->where('location', '<=', $target_node->location);
+                                   ->where('location', '<=', $target_node->location);
 
         // add new node with new location to the beginning of the collection
-        $nodes_to_shift->prepend(static::temporarilyNode($node_to_move->tree_id, $new_sibling_location));
-        
+        $nodes_to_shift->prepend(static::tempNodeable($node_to_move->treeable_id, $new_sibling_location));
+
         static::shiftLocations($nodes_to_shift);
         $nodes_to_shift->first()->updateLocation($nodes_to_shift->last()->location);  
     }
@@ -114,7 +114,7 @@ class NodeRelocator
                                        ->where('location', '<=', $node_to_move->location);
             
             // add new node to the end of the collection                          
-            $nodes_to_shift->push(static::temporarilyNode($node_to_move->tree_id, $new_sibling_location));
+            $nodes_to_shift->push(static::tempNodeable($node_to_move->treeable_id, $new_sibling_location));
             
             $nodes_to_shift_reversed = $nodes_to_shift->reverse();
             static::shiftLocations($nodes_to_shift_reversed);
@@ -125,7 +125,7 @@ class NodeRelocator
                                     ->where('location', '<', $target_node->location);
 
         // add new node to the beginning of the collection
-        $nodes_to_shift->prepend(static::temporarilyNode($node_to_move->tree_id, $new_sibling_location));
+        $nodes_to_shift->prepend(static::tempNodeable($node_to_move->treeable_id, $new_sibling_location));
         
         static::shiftLocations($nodes_to_shift);
         $nodes_to_shift->first()->updateLocation($nodes_to_shift->last()->location); 
@@ -167,7 +167,7 @@ class NodeRelocator
      */
     public static function moveUpAfter($node_to_move, $target_node)
     {
-        $to_move_nodes_to_shift = $node_to_move->nextSiblings();
+        $to_move_nodes_to_shift = $node_to_move->youngerSiblings();
         $to_move_nodes_to_shift->prepend(clone $node_to_move);
 
         $new_sibling_location = static::newSiblingLocation($target_node, $target_node->lastSibling());
@@ -188,7 +188,7 @@ class NodeRelocator
      */
     public static function moveDownAfter($node_to_move, $target_node)
     {
-        $to_move_nodes_to_shift = $node_to_move->nextSiblings();
+        $to_move_nodes_to_shift = $node_to_move->youngerSiblings();
         $to_move_nodes_to_shift->prepend(clone $node_to_move);
         
         $new_sibling_location = static::newSiblingLocation($target_node, $target_node->lastSibling());
@@ -209,7 +209,7 @@ class NodeRelocator
      */
     public static function moveUpBefore($node_to_move, $target_node)
     {
-        $to_move_nodes_to_shift = $node_to_move->nextSiblings();
+        $to_move_nodes_to_shift = $node_to_move->youngerSibling();
         $to_move_nodes_to_shift->prepend(clone $node_to_move);
 
         $new_sibling_location = static::newSiblingLocation($target_node, $target_node->lastSibling());
@@ -230,7 +230,7 @@ class NodeRelocator
      */
     public static function moveDownBefore($node_to_move, $target_node)
     {
-        $to_move_nodes_to_shift = $node_to_move->nextSiblings();
+        $to_move_nodes_to_shift = $node_to_move->youngerSiblings();
         $to_move_nodes_to_shift->prepend(clone $node_to_move);;
         
         $new_sibling_location = static::newSiblingLocation($target_node, $target_node->lastSibling());
@@ -294,10 +294,10 @@ class NodeRelocator
      * @param string $location
      * @return \Girover\Tree\Models\Node
      */
-    public static function temporarilyNode($tree_id, $location)
+    public static function tempNodeable($treeable_id, $location)
     {
-        $temp_node = new (DBHelper::nodeModel());
-        $temp_node->tree_id = $tree_id;
+        $temp_node = new (TreeHelpers::nodeableModel());
+        $temp_node->treeable_id = $treeable_id;
         $temp_node->location = $location;
         
         return $temp_node;

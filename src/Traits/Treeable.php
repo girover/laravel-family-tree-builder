@@ -7,7 +7,7 @@ use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\Pointer;
-use Girover\Tree\Services\TreeService;
+use Girover\Tree\Services\treeableService;
 use Girover\Tree\TreeBuilder\HtmlTreeBuilder;
 
 /**
@@ -16,9 +16,9 @@ use Girover\Tree\TreeBuilder\HtmlTreeBuilder;
 trait Treeable
 { 
     /**
-     * @var \Girover\Tree\Services\TreeService
+     * @var \Girover\Tree\Services\treeableService
      */
-    public $tree_service;
+    public $treeable_service;
     
 
     /**
@@ -39,13 +39,13 @@ trait Treeable
     protected $nodes = null;
 
     /**
-     * Getting instance of TreeService to deal with treeable functionality
+     * Getting instance of treeableService to deal with treeable functionality
      * 
-     * @return \Girover\Tree\Services\TreeService
+     * @return \Girover\Tree\Services\treeableService
      */
-    public function treeService()
+    public function treeableService()
     {
-        return $this->tree_service ?? (new TreeService($this));
+        return $this->treeable_service ?? (new TreeableService($this));
     }
 
     public static function bootTreeable()
@@ -224,7 +224,7 @@ trait Treeable
      */
     public function createRoot($data = [])
     {
-        return $this->treeService()->createRoot($data);
+        return $this->treeableService()->createRoot($data);
     }
 
     /**
@@ -350,7 +350,7 @@ trait Treeable
      */
     public function draw()
     {
-        return $this->treeService()->buildTree();
+        return $this->treeableService()->buildTree();
     }
 
 

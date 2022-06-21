@@ -8,7 +8,7 @@ use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\TreeBuilder\HtmlTreeBuilder;
 
-class TreeService
+class TreeableService
 {
     /**
      * @var \Illuminate\Database\Eloquent\Model the treeable model
@@ -16,7 +16,7 @@ class TreeService
     public $treeable;
     
     /**
-     * @var Girover\Tree\Services\NodeService
+     * @var Girover\Tree\Services\NodeableService
      */
     protected $node_service;
     
@@ -31,15 +31,15 @@ class TreeService
     /**
      * getting instance of nodeable service class
      * 
-     * @return Girover\Tree\Services\NodeService
+     * @return Girover\Tree\Services\NodeableService
      */
-    public function nodeService($nodeable = null)
+    public function nodeableService($nodeable = null)
     {
         if (!$nodeable) {
-            return $this->node_service ?? (new NodeService());
+            return $this->node_service ?? (new NodeableService());
         }
 
-        return $this->node_service ?? (new NodeService($nodeable));
+        return $this->node_service ?? (new NodeableService($nodeable));
     }    
 
     /**
@@ -70,7 +70,7 @@ class TreeService
         $empty_nodeable = new (TreeHelpers::nodeableModel());
         $empty_nodeable->treeable_id = $this->treeable->getKey();
 
-        return $this->nodeService($empty_nodeable)->createNewNode($data, $location,'m');
+        return $this->nodeableService($empty_nodeable)->createNewNode($data, $location,'m');
     }
 
 
