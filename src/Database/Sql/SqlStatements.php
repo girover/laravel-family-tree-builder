@@ -2,8 +2,6 @@
 
 namespace Girover\Tree\Database\Sql;
 
-use Girover\Tree\Helpers\TreeHelpers;
-
 class SqlStatements
 {
     public static $counter = 1;

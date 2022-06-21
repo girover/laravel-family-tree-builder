@@ -2,7 +2,6 @@
 
 namespace Girover\Tree\Services;
 
-use Girover\Tree\Database\Sql\Update;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;

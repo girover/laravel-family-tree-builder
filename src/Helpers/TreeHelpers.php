@@ -43,7 +43,6 @@ class TreeHelpers{
         return (new (static::treeableModel()))->getTable();
     }
 
-    // NEW
     /**
      * Getting the path to the images folder
      * where the photos of nodes supposed to be stored

@@ -4,7 +4,6 @@ namespace Girover\Tree;
 
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Helpers\TreeHelpers;
-use Girover\Tree\Models\Node;
 use Illuminate\Support\Facades\DB;
 
 class NodeRelocator

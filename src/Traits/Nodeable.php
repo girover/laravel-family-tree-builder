@@ -3,7 +3,6 @@
 namespace Girover\Tree\Traits;
 
 use Girover\Tree\Database\Eloquent\NodeEloquentBuilder;
-use Girover\Tree\Database\Sql\Update;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
@@ -12,10 +11,6 @@ use Girover\Tree\Location;
 use Girover\Tree\Models\Node;
 use Girover\Tree\NodeRelocator;
 use Girover\Tree\Services\NodeableService;
-use Girover\Tree\Services\NodeService;
-use Illuminate\Support\Facades\DB;
-
-use function PHPUnit\Framework\isNull;
 
 /**
  *

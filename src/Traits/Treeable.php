@@ -2,13 +2,11 @@
 
 namespace Girover\Tree\Traits;
 
-use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\Pointer;
 use Girover\Tree\Services\treeableService;
-use Girover\Tree\TreeBuilder\HtmlTreeBuilder;
 
 /**
  *  The model `Tree` has to use this trait

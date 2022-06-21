@@ -2,8 +2,6 @@
 
 namespace Girover\Tree\Models;
 
-use Girover\Tree\Services\NodeService;
-use Girover\Tree\Traits\Nodeable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
