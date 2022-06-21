@@ -46,7 +46,7 @@ Every node in a tree is allowed to have 676 direct children.
 
 - Laravel 8+
 - PHP 8+
-- Mysql
+- Mysql 5.7+
 
 ## Installation
 
@@ -204,12 +204,12 @@ You can call the following method on an object of Tree
 
 ## Pointer
 
-A tree has a **Pointer** inside it, and this **Pointer** indicates to one node.    
+A tree has a **Pointer** inside it, and this **Pointer** points to one node.    
 Pointer can move through all nodes in the tree.     
-Because the Pointer indicates to a node inside the tree, so it can call all [methods of Model ```Node```](#node) .   
+Because the Pointer points to a node inside the tree, so it can call all [methods of Nodeable Trait Model](#node) .   
 To get the pointer you can do the following:
 ```php
-    use Girover\Tree\Models\Tree;
+    use App\Models\Tree;
 
     $tree    = Tree::find(1);
     $pointer = $tree->pointer();
@@ -218,11 +218,13 @@ And now you can use the pointer to make a lot of actions inside the tree, for ex
 Eg.
 To move the pointer to specific node:
 ```php
-    use Girover\Tree\Models\Node;
+    use App\Models\Tree;
+    use App\Models\Node;
 
-    $node    = Node::find(1);
+    $tree    = Tree::find(1);
+    $node    = Node::find(10);
 
-    $pointer->to($node);
+    $tree->pointer()->to($node);
 ```
 And now you can get the node data by calling the method ```node```
 ```php
@@ -249,13 +251,12 @@ This is because when a tree object is created, its **Pointer** indicates to ```n
 
 **Node** is a **person** in a tree and every node in the tree is connected with another one by using **Location mechanism**.    
 
-To retrieve a nodes you can use Eloquent model ```Girover\Tree\Models\Node```
+To retrieve a nodes you can use Eloquent model that uses trait ```Girover\Tree\Traits\Nodeable```
 ```php
-    use Girover\Tree\Models\Node;
+    use App\Models\Node;
 
     $node    = Node::find(1);
 ```
-***The model ```Girover\Tree\Models\Node``` is corresponding the table 'nodes' in database, but you are free to create your own model and name it as you like, to add more functionality or relationships. for example ```App\Models\Person```, but then you must use trait ```Girover\Tree\Traits\Nodeable``` in the model, and also change the model class name in the ```config/tree.php```.***
 
 
 ### Retrieving nodes
