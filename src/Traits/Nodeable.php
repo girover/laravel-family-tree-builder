@@ -74,7 +74,6 @@ trait Nodeable
         // Adding global scope o the model
         static::addGlobalScope(new OrderByLocationScope());
         static::addGlobalScope(new WivesEagerRelationScope());
-        // static::addGlobalScope(new ImagesEagerRelationScope());
 
         static::saving(function ($model) {
             // dd($model);

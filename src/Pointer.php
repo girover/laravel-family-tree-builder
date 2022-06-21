@@ -173,13 +173,7 @@ class Pointer
 
         Location::validate($location);
 
-        $node = $this->find($location);
-
-        if ($node === null) {
-            throw new TreeException("Error: Node with location '".$location."' Not Found in the tree [ ".$this->tree->name." ]", 1);
-        }
-
-        $this->node = $node;
+        $this->node = ($this->find($location)) ?? throw new TreeException("Error: Node with location '".$location."' Not Found in this tree", 1);
 
         return $this;
     }
@@ -281,11 +275,9 @@ class Pointer
      */
     public function indicatesToRoot()
     {
-        if (strpos($this->location(), Location::SEPARATOR) === false) {
-            return true;
-        }
-
-        return false;
+        return $this->indicatesToNull() 
+               ? false 
+               : ((strpos($this->location(), Location::SEPARATOR) === false) ? true : false);
     }
 
     /**
@@ -332,11 +324,10 @@ class Pointer
      */
     public function fatherLocation()
     {
-        if ($this->indicatesToRoot() || $this->node() === null) {
-            return null;
-        }
         // return father location of node that pointer is indicating to
-        return Location::father($this->location());
+        return ($this->indicatesToRoot() || $this->indicatesToNull())
+               ? null
+               : Location::father($this->location());
     }
 
     /**
@@ -346,11 +337,9 @@ class Pointer
      */
     public function self()
     {
-        if ($this->indicatesToRoot()) {
-            return $this->node->location;
-        }
-
-        return substr($this->location(), strrpos($this->location(), Location::SEPARATOR) + 1);
+        return $this->indicatesToRoot() 
+               ? $this->node->location 
+               : substr($this->location(), strrpos($this->location(), Location::SEPARATOR) + 1);
     }
 
     /**
