@@ -66,7 +66,7 @@ class TreeableService
 
         $location = Location::generateRootLocation();
         
-        $empty_nodeable = new (:nodeableModel());
+        $empty_nodeable = new (nodeableModel());
         $empty_nodeable->treeable_id = $this->treeable->getKey();
 
         return $this->nodeableService($empty_nodeable)->createNewNode($data, $location,'m');

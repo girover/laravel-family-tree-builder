@@ -36,7 +36,7 @@ class HtmlTreeBuilder implements TreeBuilderInterface
     }
 
     /**
-     * Attributes which must be rendered to node element in tree html
+     * Attributes which must be rendered to node element in html tree
      * 
      * @param \illuminate\Database\Eloquent\Model $nodeable
      * @return string
@@ -380,7 +380,6 @@ class HtmlTreeBuilder implements TreeBuilderInterface
      */
     public function draw()
     {
-
         // Determine if nodes of this tree are loaded before starting to draw it.
         // if no nodes are loaded And there are nodes in database, so load them.
         if ($this->nodes == null) {
