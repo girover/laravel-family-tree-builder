@@ -6,7 +6,6 @@ use Girover\Tree\Database\Eloquent\NodeEloquentBuilder;
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
-use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\Models\Node;
 use Girover\Tree\NodeRelocator;
@@ -152,7 +151,7 @@ trait Nodeable
             throw new TreeException("This model is not connected with a node yet!", 1);
         }
 
-        return (TreeHelpers::treeableModel())::find($this->treeable_id);
+        return (treeableModel())::find($this->treeable_id);
     }
 
     /**
@@ -1307,6 +1306,26 @@ trait Nodeable
     }
 
     /**
+     * Getting the node that this nodeable is connected with
+     * 
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function node()
+    {
+        return $this->hasOne(Node::class, 'nodeable_id', $this->getKeyName())->first();
+    }
+
+    /**
+     * getting the url of the photo of this node
+     * 
+     * @return string
+     */
+    public function photoURL()
+    {
+        return photoAsset($this);
+    }
+
+    /**
      * Generate Tree Html code from this node
      *
      * @return string html code for the tree from this node
@@ -1334,16 +1353,5 @@ trait Nodeable
     public function draw()
     {
         return $this->toTree();
-    }
-
-    // NEW
-    /**
-     * Getting the node that this nodeable is connected with
-     * 
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function node()
-    {
-        return $this->hasOne(Node::class, 'nodeable_id', $this->getKeyName())->first();
     }
 }

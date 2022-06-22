@@ -23,7 +23,6 @@ namespace Girover\Tree;
 use BadMethodCallException;
 use Girover\Tree\Database\Sql\Delete;
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Helpers\TreeHelpers;
 use Illuminate\Support\Facades\DB;
 
 class Pointer
@@ -71,17 +70,17 @@ class Pointer
      */
     public function __call($name, $args)
     {
-        if ($this->node() === null && method_exists(TreeHelpers::nodeableModel(), $name)) {
+        if ($this->node() === null && method_exists(nodeableModel(), $name)) {
             throw new TreeException("Pointer is not indicating to any node in Tree [".$this->tree->name."].", 1);
         }
 
-        if ($this->node() instanceof (TreeHelpers::nodeableModel())) {
-            if (method_exists(TreeHelpers::nodeableModel(), $name)) {
+        if ($this->node() instanceof (nodeableModel())) {
+            if (method_exists(nodeableModel(), $name)) {
                 return call_user_func([$this->node(), $name], ...$args);
             }
         }
 
-        throw new BadMethodCallException('Call undefined method [ '.$name.' ] on class: '.TreeHelpers::nodeableModel());
+        throw new BadMethodCallException('Call undefined method [ '.$name.' ] on class: '.nodeableModel());
     }
 
     /**
@@ -160,7 +159,7 @@ class Pointer
     public function to($location)
     {
         // if ($location instanceof ($this->model())) {
-        if ($location instanceof (TreeHelpers::nodeableModel())) {
+        if ($location instanceof (nodeableModel())) {
             
             if ($this->tree->getKey() !== $location->treeable_id) {
                 throw new TreeException("Error a passed node to the method [". __METHOD__ ." ] don't belong the tree", 1);                

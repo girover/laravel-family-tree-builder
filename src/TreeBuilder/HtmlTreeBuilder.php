@@ -3,7 +3,6 @@
 namespace Girover\Tree\TreeBuilder;
 
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\TreeBuilder\TreeBuilderInterface;
 use Illuminate\Support\Facades\Session;
@@ -37,6 +36,23 @@ class HtmlTreeBuilder implements TreeBuilderInterface
     }
 
     /**
+     * Attributes which must be rendered to node element in tree html
+     * 
+     * @param \illuminate\Database\Eloquent\Model $nodeable
+     * @return string
+     */
+    public function htmlNodeAttributes($nodeable)
+    {
+        $attributes = '';
+
+        foreach (config('tree.html_node_attributes') as $attribute) {
+            $attributes .= ' data-' . $attribute . '="' .$nodeable->{$attribute} . '" ';
+        }
+
+        return $attributes;
+    }
+
+    /**
      * Get Html for empty tree. when the user has no trees in database
      *
      * @return string
@@ -45,11 +61,11 @@ class HtmlTreeBuilder implements TreeBuilderInterface
     {
         return '<div id="tree" class="tree"><ul>'
                 . '<li>'
-                . '<a class="node" data-id=""  data-location="0" data-tree="" data-id="" data-name="" data-gender="" data-role="empty">
+                . '<a class="node" data-role="empty">
                         <div class="empty-node">
                         <div class="node-info-wrapper">
                             <div class="node-info">
-                                <div class="node-img"><img src="'. TreeHelpers::maleAsset() .'"></div>
+                                <div class="node-img"><img src="'. maleAsset() .'"></div>
                                 <div class="name">add new</div>                
                             </div>
                         </div>
@@ -268,11 +284,11 @@ class HtmlTreeBuilder implements TreeBuilderInterface
         } else {
             // Return Html For Undefined Wife
             return  '<div class="wives-group">'
-                      . '<a class="node empty" data-counter="'.$this->nodesCount++.'"  data-tree="" data-location="0" data-husband_location="'.$item->location.'" data-id="0" data-name="wife" data-f_name="wife" data-l_name="wife" data-m_name="wife" data-gender="2">
+                      . '<a class="node empty" data-counter="'.$this->nodesCount++.'" data-husband-location="'.$item->location.'">
                          <div class="female-node wife empty">
                             <div class="node-info-wrapper">
                                 <div class="node-info">
-                                    <div class="node-img"><img src="'. TreeHelpers::femaleAsset() .'"></div>
+                                    <div class="node-img"><img src="'. femaleAsset() .'"></div>
                                     <div class="name">'. __('add wife') .'</div>
                                     <div class="wife-number">0</div>
                                 </div>
@@ -299,12 +315,11 @@ class HtmlTreeBuilder implements TreeBuilderInterface
             // $photo = TreeHelpers::avatarPath() . $wife->photo;
             // $photo = (file_exists($photo) and ! is_dir($photo)) ? $wife->photo : $this->photoIcon($wife->gender);
 
-            $hText .= '<a class="node " data-id="'.$wife->id.'" data-counter="' . $this->nodesCount++ . '"
-                            data-tree="'.$wife->tree_id.'" data-location="'.$wife->location.'" data-id="'.$wife->id.'" data-name="'.$wife->name.'" data-f_name="'.$wife->f_name.'" data-l_name="'.$wife->l_name.'" data-m_name="'.$wife->m_name.'" data-birthdate="'.$wife->birth_date.'" data-gender="'.$wife->gender.'" data-role="wife">
+            $hText .= '<a class="node " data-counter="' . $this->nodesCount++ . '" '. $this->htmlNodeAttributes($wife) .' data-role="wife">
                          <div class="female-node wife-'.$id.'">
                             <div class="node-info-wrapper">
                                 <div class="node-info">
-                                    <div class="node-img"><img src="'.TreeHelpers::photoAsset($wife).'"></div>
+                                    <div class="node-img"><img src="'.$wife->photoURL().'"></div>
                                     <div class="name">'.$wife->name.'</div>
                                     <div class="wife-number">'.$id.'</div>
                                 </div>
@@ -340,13 +355,12 @@ class HtmlTreeBuilder implements TreeBuilderInterface
         $nodeCollapse = ($role === 'husband') ? '<div class="node-collapse down"><i class="fa fa-chevron-circle-up"></i></div>' : '';
 
         $html = ($role == 'wife') ? '<div class="wives-group">' : '';
-        $html .= '<a class="node '.$active_class.'" data-id="'.$node->id.'" data-counter="' . $this->nodesCount++ . '"
-                     data-tree="'.$node->tree_id.'" data-location="'.$node->location.'" data-id="'.$node->id.'" data-name="'.$node->name.'" data-f_name="'.$node->f_name.'" data-l_name="'.$node->l_name.'" data-m_name="'.$node->m_name.'" data-birthdate="'.$node->birth_date.'" data-gender="'.$node->gender.'" data-role="'.$role.'">
+        $html .= '<a class="node '.$active_class.'" data-counter="' . $this->nodesCount++ . '" data-role="'.$role.'" '.$this->htmlNodeAttributes($node).'>
                     '.$addFather.$showFather.$nodeCollapse.
                     '<div class="'.$node_class.' '.$role.'">	    
                         <div class="node-info-wrapper">
                             <div class="node-info">
-                                <div class="node-img"><img src="'.TreeHelpers::photoAsset($node).'"></div>
+                                <div class="node-img"><img src="'.$node->photoURL().'"></div>
                                 <div class="name">'.$node->name.'</div>
                                 '.(($role === 'wife') ? '<div class="wife-number">1</div>' : '').'
                             </div>

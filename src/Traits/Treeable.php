@@ -3,7 +3,6 @@
 namespace Girover\Tree\Traits;
 
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
-use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\Pointer;
 use Girover\Tree\Services\treeableService;
@@ -100,7 +99,7 @@ trait Treeable
      */
     public function pointerToRoot()
     {
-        return $this->pointer()->to((TreeHelpers::nodeableModel())::tree($this->getKey())->first());
+        return $this->pointer()->to((nodeableModel())::tree($this->getKey())->first());
     }
 
     /**
@@ -110,7 +109,7 @@ trait Treeable
     */
     public function nodesQuery()
     {
-        return (TreeHelpers::nodeableModel())::where($this->foreign_key, $this->getKey());
+        return (nodeableModel())::where($this->foreign_key, $this->getKey());
     }
 
     /**
@@ -166,7 +165,7 @@ trait Treeable
      */
     public function setMainNode($node) // Should Removes
     {
-        if ($node instanceof (TreeHelpers::nodeableModel())) {
+        if ($node instanceof (nodeableModel())) {
             $this->main_node = $node->location;
             $this->save();
             return $node;

@@ -49,6 +49,12 @@ class TreeServiceProvider extends PackageServiceProvider
                 $this->package->basePath('/../resources/storage') => public_path(),
             ], "{$this->package->shortName()}-avatars");
 
+            // to publish model Girover\Tree\Models\Node
+            // $this->publishes([
+            //     $this->package->basePath('Models/Nodeable.php') => app_path().'/Models/Nodeable.php',
+            //     $this->package->basePath('Models/Treeable.php') => app_path().'/Models/Treeable.php',
+            // ], "{$this->package->shortName()}-models");
+
         }
         // @tree($html) Blade directive to render the tree 
         Blade::directive('tree', function ($tree_html) {

@@ -6,7 +6,7 @@
         "laravel",
         "tree"
     ],
-    "homepage": "https://github.com/girover/tree",
+    "homepage": "https://github.com/girover/laravel-family-tree",
     "license": "MIT",
     "authors": [
         {
@@ -29,6 +29,9 @@
         "vimeo/psalm": "^4.8"
     },
     "autoload": {
+        "files": [
+            "./src/Helpers/Helpers.php"
+        ],
         "psr-4": {
             "Girover\\Tree\\": "src",
             "Girover\\Tree\\Database\\Factories\\": "database/factories"

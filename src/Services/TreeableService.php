@@ -4,7 +4,6 @@ namespace Girover\Tree\Services;
 
 use \Illuminate\Database\Eloquent\Model;
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\TreeBuilder\HtmlTreeBuilder;
 
@@ -53,8 +52,8 @@ class TreeableService
      */
     public function createRoot($data)
     {
-        if (! $data instanceof (TreeHelpers::nodeableModel()) && !is_array($data)) {
-            throw new TreeException("Bad argument: second argument must be of type: ".TreeHelpers::nodeableModel(). " OR an Array", 1);
+        if (! $data instanceof (nodeableModel()) && !is_array($data)) {
+            throw new TreeException("Bad argument: second argument must be of type: ".nodeableModel(). " OR an Array", 1);
         }
         if (empty($data)) {
             throw new TreeException("Error: no data are provided to create Root for the tree.", 1);
@@ -67,7 +66,7 @@ class TreeableService
 
         $location = Location::generateRootLocation();
         
-        $empty_nodeable = new (TreeHelpers::nodeableModel());
+        $empty_nodeable = new (:nodeableModel());
         $empty_nodeable->treeable_id = $this->treeable->getKey();
 
         return $this->nodeableService($empty_nodeable)->createNewNode($data, $location,'m');

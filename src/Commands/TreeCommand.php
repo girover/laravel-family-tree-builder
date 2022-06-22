@@ -20,6 +20,7 @@ class TreeCommand extends Command
         $this->runMigrate();
         $this->publishAssets();
         $this->publishAvatars();
+        // $this->publishModels();
         // $this->publishStorage();
         $this->publishTranslations();
         // $this->symbolicLink();
@@ -83,6 +84,12 @@ class TreeCommand extends Command
         $this->info('<fg=yellow>Publishing Translations....</>');
         return $this->treePublish('tree-translations');
     }
+
+    // public function publishModels()
+    // {
+    //     $this->info('<fg=yellow>Publishing Models Nodeable && Treeable ....</>');
+    //     return $this->treePublish('tree-models');
+    // }
 
     public function symbolicLink()
     {

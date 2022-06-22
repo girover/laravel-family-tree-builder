@@ -2,13 +2,13 @@
 
 namespace Girover\Tree\Database\Factories;
 
-use Girover\Tree\Tests\Models\NodeableModel;
+use Girover\Tree\Models\Nodeable;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 
-class NodeableModelFactory extends Factory
+class NodeableFactory extends Factory
 {
-    protected $model = NodeableModel::class;
+    protected $model = Nodeable::class;
 
     
     public function definition()

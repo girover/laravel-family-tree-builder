@@ -3,7 +3,6 @@
 namespace Girover\Tree\Services;
 
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Helpers\TreeHelpers;
 use Girover\Tree\Location;
 use Girover\Tree\Models\Node;
 use \Illuminate\Database\Eloquent\Model;
@@ -92,7 +91,7 @@ class NodeableService
     // NEW
     public function createNodeable($data)
     {
-        if ($data instanceof (TreeHelpers::nodeableModel())) {
+        if ($data instanceof (nodeableModel())) {
 
             // $data is a model and exists in database
             if ($data->exists){
@@ -105,10 +104,10 @@ class NodeableService
         }
 
         if (! is_array($data)) {
-            throw new TreeException("Bad argument type. The argument passed to ".__METHOD__." must be an array or an instance of [".TreeHelpers::nodeableModel()."]. ".gettype($data)." is given", 1);
+            throw new TreeException("Bad argument type. The argument passed to ".__METHOD__." must be an array or an instance of [".nodeableModel()."]. ".gettype($data)." is given", 1);
         }
 
-        return (TreeHelpers::nodeableModel())::create($data);
+        return (nodeableModel())::create($data);
     }
 
     /**
@@ -323,7 +322,7 @@ class NodeableService
     {
         $this->throwExceptionIfNotNode();
 
-        $tree = (TreeHelpers::treeableModel())::find($this->nodeable->treeable_id);
+        $tree = (treeableModel())::find($this->nodeable->treeable_id);
         
         $tree->pointer()->to($this->nodeable);
 
@@ -431,7 +430,7 @@ class NodeableService
             return $location;
         }
 
-        $node = (TreeHelpers::nodeableModel())::tree($this->nodeable->treeable_id)->location($location)->first()
+        $node = (nodeableModel())::tree($this->nodeable->treeable_id)->location($location)->first()
                 ?? throw new TreeException("Error: The location `".$location."` not found in this tree.", 1);
 
         return $node;

@@ -3,7 +3,6 @@
 namespace Girover\Tree;
 
 use Girover\Tree\Exceptions\TreeException;
-use Girover\Tree\Helpers\TreeHelpers;
 use Illuminate\Support\Facades\DB;
 
 class NodeRelocator
@@ -295,7 +294,7 @@ class NodeRelocator
      */
     public static function tempNodeable($treeable_id, $location)
     {
-        $temp_node = new (TreeHelpers::nodeableModel());
+        $temp_node = new (nodeableModel());
         $temp_node->treeable_id = $treeable_id;
         $temp_node->location = $location;
         
