@@ -18,8 +18,8 @@ class TreeCommand extends Command
         $this->publishConfigFile();
         $this->publishMigrations();
         $this->runMigrate();
-        $this->publishAssets();
-        $this->publishAvatars();
+        $this->publishAssets(); // Css, Js, Images from folder 'resources/dist'
+        // $this->publishAvatars();
         // $this->publishModels();
         // $this->publishStorage();
         $this->publishTranslations();

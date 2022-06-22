@@ -45,9 +45,14 @@ class TreeServiceProvider extends PackageServiceProvider
             // ], "{$this->package->shortName()}-storage");
 
             // to publish photos folder to storage folder
-            $this->publishes([
-                $this->package->basePath('/../resources/storage') => public_path(),
-            ], "{$this->package->shortName()}-avatars");
+            // $this->publishes([
+            //     $this->package->basePath('/../resources/storage') => public_path(),
+            // ], "{$this->package->shortName()}-avatars");
+
+            // to publish photos folder to public folder
+            // $this->publishes([
+            //     $this->package->basePath('/../resources/storage') => public_path(),
+            // ], "{$this->package->shortName()}-avatars");
 
             // to publish model Girover\Tree\Models\Node
             // $this->publishes([
