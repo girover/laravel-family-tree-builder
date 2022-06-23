@@ -186,7 +186,7 @@ After creating the Root in the tree, let's add first child for the Root.
 Now our tree consists of two nodes, the root and the first child of the root.   
 
 You can call the following method on an object of Tree 
-| #   | function                   | Description                                           | Params                                        |
+| #   | Method                   | Description                                           | Params                                        |
 | --- | -------------------------- | ----------------------------------------------------- | --------------------------------------------- |
 | 1   | `createRoot($data)`        | create root in the tree.                              | ```$data``` is array of root info             |
 | 2   | `newRoot($data)`           | makes new root for the tree.                          | ```$data``` is array of info for the new root |
