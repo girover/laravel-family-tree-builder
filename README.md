@@ -926,14 +926,14 @@ To get the count of detached nodeable models, use the helper function ```countDe
 
 ## Rendering trees
 
-To show a tree in the browser you can use one of these methods ```toHtml```, ```toTree``` or ```draw``` on an object of model ```Girover\Tree\Models\Tree```
+To show a tree in the browser you can use one of these methods ```toHtml```, ```toTree``` or ```draw``` on an object of the Treeable model eg. ```App\Models\Tree```
 ```php
     <?php
 
     namespace App\Http\Controllers;
 
     use Illuminate\Http\Request;
-    use Girover\Tree\Models\Tree;
+    use App\Models\Tree;
 
     class TreeController extends Controller
     {
@@ -964,15 +964,15 @@ And now inside your blade file you can render the tree by using custom blade dir
         {!! $treeHTML !!}
     </div>
 ```
-**Note** the above example will render the entire tree, but if you want to render a part of tree starting from a specific node you can use the **Pinter** to do that:
+**Note** the above example will render the entire tree, but if you want to render a subtree starting from a specific node you can use the **Pinter** to do that:
 ```php
     <?php
 
     namespace App\Http\Controllers;
 
     use Illuminate\Http\Request;
-    use Girover\Tree\Models\Tree;
-    use Girover\Tree\Models\Node;
+    use App\Models\Tree;
+    use App\Models\Node;
 
     class TreeController extends Controller
     {
@@ -980,39 +980,39 @@ And now inside your blade file you can render the tree by using custom blade dir
         {
             $tree     = Tree::find(1);
 
-            $girover     = Node::find(11);
+            $person     = Node::find(11);
 
-            $treeHTML = $tree->pointer()->to($girover)->toHtml();
+            $treeHTML = $tree->pointer()->to($person)->toHtml();
             // OR
-            $treeHTML = $tree->pointer()->to($girover)->toTree();
+            $treeHTML = $tree->pointer()->to($person)->toTree();
             // OR
-            $treeHTML = $tree->pointer()->to($girover)->draw();
+            $treeHTML = $tree->pointer()->to($person)->draw();
 
             return view('tree.index')->with('treeHTML', $treeHTML);
         }
     }
 ```
 
-You can also use a node model to do the same by using one of these methods ```toHtml```, ```toTree``` or ```draw``` on an object of model ```Girover\Tree\Models\Node```:
+You can also use a node model to do the same by using one of these methods ```toHtml```, ```toTree``` or ```draw``` on an object of the nodeable model eg. ```App\Models\Node```:
 ```php
     <?php
 
     namespace App\Http\Controllers;
 
     use Illuminate\Http\Request;
-    use Girover\Tree\Models\Node;
+    use App\Models\Node;
 
     class TreeController extends Controller
     {
         public function index()
         {
-            $girover  = Node::find(11);
+            $person  = Node::find(11);
 
-            $treeHTML = $girover->toHtml();
+            $treeHTML = $person->toHtml();
             // OR
-            $treeHTML = $girover->toTree();
+            $treeHTML = $person->toTree();
             // OR
-            $treeHTML = $girover->draw();
+            $treeHTML = $person->draw();
 
             return view('tree.index')->with('treeHTML', $treeHTML);
         }
@@ -1029,7 +1029,7 @@ If your nodeable models have an attribute called ```is_died``` which has values 
     {
         $this->app->singleton('nodeCssClasses',function($app){
             return function($nodeable){
-                return ($nodeable->is_died) ? ' is-died ' :'';
+                return ($nodeable->is_died) ? 'is-died' :'';
             };
         });
     }
