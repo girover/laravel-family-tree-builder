@@ -28,6 +28,7 @@
        - [Attaching and Detaching nodes](#attaching-and-detaching) 
     - [Helpers](#helpers)
     - [Rendering Trees](#rendering-trees)
+    - [Customizing node style](#customizing-node-style)
   - [Testing](#testing)
   - [Changelog](#changelog)
   - [Contributing](#contributing)
@@ -1017,7 +1018,24 @@ You can also use a node model to do the same by using one of these methods ```to
         }
     }
 ```
+### Customizing node style
+If you want to add some css class to the nodes that have specific roles, then you can bind a custom function called ```nodeCssClass``` to the Service Container. This function must return a callable function which accept one argument represents nodeable model.   
+Let's take an example.   
+If your nodeable models have an attribute called ```is_died``` which has values ```true``` or ```false```, then you want to add a css class called ```is-died``` to the nodes to style the nodes that have this value as ```true```.   
 
+```php
+    // AppServiceProvider
+    public function boot()
+    {
+        $this->app->singleton('nodeCssClasses',function($app){
+            return function($nodeable){
+                return ($nodeable->is_died) ? ' is-died ' :'';
+            };
+        });
+    }
+```
+So every nodeable model that has **true** as **is_died** will get css class called **is-died**.   
+Now you can write your won css to style classes **is-died** as you like.   
 
 ## Testing
 

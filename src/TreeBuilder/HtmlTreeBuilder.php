@@ -26,6 +26,11 @@ class HtmlTreeBuilder implements TreeBuilderInterface
     public $nodesCount = 1;
 
     /**
+     * @var closure uses to get custom css class name for specific nodeables.
+     */
+    public $node_css_classes;
+
+    /**
      * instantiate a tree generator
      * 
      * @param \Illuminate\Database\Eloquent\Model $tree
@@ -33,6 +38,27 @@ class HtmlTreeBuilder implements TreeBuilderInterface
      */
     public function __construct(Model $tree) {
         $this->tree = $tree;
+
+        $this->node_css_classes = app()->has('nodeCssClasses') ? app()->make('nodeCssClasses') : null;
+    }
+
+    /**
+     * To add custom classes from the developer
+     * depending on nodeable attributes
+     * to add css classes to node element in the html tree
+     * 
+     * To active this, developer should bind closure to variable called nodeCssClasses
+     * in AppServiceProvider boot method.
+     * 
+     * @param \Illuminate\Database\Eloquent\Model $nodeable
+     * 
+     * @return string css classes to add to node element in the html tree
+     */
+    public function nodeCssClasses($nodeable)
+    {
+        return $this->node_css_classes
+                ? ($this->node_css_classes)($nodeable)
+                : '';
     }
 
     /**
@@ -315,7 +341,7 @@ class HtmlTreeBuilder implements TreeBuilderInterface
             // $photo = TreeHelpers::avatarPath() . $wife->photo;
             // $photo = (file_exists($photo) and ! is_dir($photo)) ? $wife->photo : $this->photoIcon($wife->gender);
 
-            $hText .= '<a class="node " data-counter="' . $this->nodesCount++ . '" '. $this->htmlNodeAttributes($wife) .' data-role="wife">
+            $hText .= '<a class="node '.$this->nodeCssClasses($wife).'" data-counter="' . $this->nodesCount++ . '" '. $this->htmlNodeAttributes($wife) .' data-role="wife">
                          <div class="female-node wife-'.$id.'">
                             <div class="node-info-wrapper">
                                 <div class="node-info">
@@ -355,7 +381,7 @@ class HtmlTreeBuilder implements TreeBuilderInterface
         $nodeCollapse = ($role === 'husband') ? '<div class="node-collapse down"><i class="fa fa-chevron-circle-up"></i></div>' : '';
 
         $html = ($role == 'wife') ? '<div class="wives-group">' : '';
-        $html .= '<a class="node '.$active_class.'" data-counter="' . $this->nodesCount++ . '" data-role="'.$role.'" '.$this->htmlNodeAttributes($node).'>
+        $html .= '<a class="node '.$active_class.' '.$this->nodeCssClasses($node).'" data-counter="' . $this->nodesCount++ . '" data-role="'.$role.'" '.$this->htmlNodeAttributes($node).'>
                     '.$addFather.$showFather.$nodeCollapse.
                     '<div class="'.$node_class.' '.$role.'">	    
                         <div class="node-info-wrapper">
