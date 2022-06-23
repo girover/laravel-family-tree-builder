@@ -1019,7 +1019,7 @@ You can also use a node model to do the same by using one of these methods ```to
     }
 ```
 ### Customizing node style
-If you want to add some css classes to the nodes that have specific role, then you can bind a custom function called ```nodeCssClass``` to the **Service Container**. This function must return a callable function which accept one argument represents nodeable model.   
+If you want to add some css classes to the nodes that have specific role, then you can bind a custom function called ```nodeCssClass``` to the **Service Container**. This function must return a callable function which accept one argument represents nodeable model. And this callable function must return css classes names as string.   
 Let's take an example.   
 If your nodeable models have an attribute called ```is_died``` which has values ```true``` or ```false```, then you want to add a css class called ```is-died``` to the nodes that have this value as ```true``` to give them more style.   
 
