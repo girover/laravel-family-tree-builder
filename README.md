@@ -844,7 +844,7 @@ for example:
     $tree->pointer()->toHtml();
 ```   
 
-## Attaching and Detaching nodes
+## Attaching and Detaching
 When creating nodeable models by using methods ```create``` or ```save```, the created model will not be attached with any node in any tree.   
 
 ```php
