@@ -16,7 +16,7 @@
   - [Assets](#assets)
   - [Images](#images)
   - [Usage](#usage)
-    - [Treeable Model](#treeables-model)
+    - [Treeable Model](#treeable-model)
     - [Pointer](#pointer)
     - [Nodeable Model](#nodeable-model)
        - [Retrieving nodes](#retrieving-nodes)
