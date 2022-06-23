@@ -16,9 +16,9 @@
   - [Assets](#assets)
   - [Images](#images)
   - [Usage](#usage)
-    - [Tree](#tree)
+    - [Treeable Model](#treeables-model)
     - [Pointer](#pointer)
-    - [Node](#node)
+    - [Nodeable Model](#nodeable-model)
        - [Retrieving nodes](#retrieving-nodes)
        - [Adding nodes](#adding-nodes)
        - [Deleting nodes](#deleting-nodes)   
@@ -125,7 +125,7 @@ The second model represents nodes in these trees, and it must use trait:
         .
         .
 ```
-## Tree
+## Treeable Model
 
 To start building a tree or creating a new tree, it is very simple and thanks to [Eloquent](https://laravel.com/docs/8.x/eloquent) models from [Laravel](http://laravel.com).   
 The model that represents trees in database should use **trait**: ```\Girover\Tree\Traits\Treeable```
@@ -238,15 +238,15 @@ And now you can get the node data by calling the method ```node```
 Note that we called method ```node``` after we had called the method ```to($node)```.   
 This is because when a tree object is created, its **Pointer** indicates to ```null```.
 
-## Node
+## Nodeable Model
  - [What is a node](#what-is-a-node)
  - [Retrieving nodes](#retrieving-nodes)
  - [Adding nodes](#adding-nodes)
- - [Updating nodes](#updating-nodes)
  - [Deleting nodes](#deleting-nodes)   
  - [Checking nodes](#checking-nodes)   
  - [Relationships](#relationships)   
- - [Relocating nodes](#relocating-nodes)   
+ - [Relocating nodes](#relocating-nodes) 
+ - [Attaching and Detaching nodes](#attaching-and-detaching)   
 
 ### What is a node
 
