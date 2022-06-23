@@ -67,23 +67,23 @@ this command will take care of the following tasks:
  - Publishing Config file ```config\tree.php``` to the config folder of your Laravel application.   
  - Publishing migration files to folder ```Database\migrations``` in your application.   
  - Migrate the published migrations.   
- - Publishing Assets (CSS, JS) to the public folder in your application and they will be placed in ```public\vendor\tree```.    
- - Copying Photos folder for nodes to the public folder in your application   ```public\vendor\tree\images```    
+ - Publishing Assets **(css, js, images)** to the public folder in your application and they will be placed in ```public\vendor\tree```.     
  - Publishing JSON Translation files to the ```resources\lang\vendor\tree```   
 ## Assets
 
-After publishing assets (CSS, JS), they will be placed in `public` folder 
+After publishing assets (css, js, images), they will be placed in `public` folder 
 of the project in a folder called `vendor/tree`.
 You are free to move any of these assets to other directories.    
 
-You should add the CSS file ```public/vendor/tree/css/tree.css``` to your blade file to get the tree styled.
+You should add the CSS file ```vendor/tree/css/tree.css``` to your blade file to get the tree styled.
 
 ## Images
-Every node in tree has an avatar photo. Male and Female Icons by default will be stored in the 
-```public/vendor/tree/images```. however you are free to choose another folder for the images, but
+Every node in tree has an avatar photo. Male and Female Icons by default will be stored in the public folder under  
+```vendor/tree/images```.   
+however you are free to choose another folder for the images of nodes, but
 you must provide it in the ```config\tree.php``` file.
 ```php
-    'photos_folder' => 'vendor/tree/images',
+    'photos_folder' => 'path/to/your/images',
 ```
 So your images folder should be in the **```public```** folder.
 Example: if images are stored in folder called ```images/avatars``` the configs must be:  
@@ -95,9 +95,9 @@ Example: if images are stored in folder called ```images/avatars``` the configs 
 
 # Usage
 To start building family trees, you must have two models. The first one represents trees in database and it must use the trait:    
-```Girover\Tree\Traits\Treeable```   
+```\Girover\Tree\Traits\Treeable```   
 The second model represents nodes in these trees, and it must use trait:   
-```Girover\Tree\Traits\nodeable```   
+```\Girover\Tree\Traits\nodeable```   
 ***NOTE: The names of the models that represents trees and nodes in database must be provided in ```config/tree.php```.***    
 
 ```php
@@ -105,7 +105,7 @@ The second model represents nodes in these trees, and it must use trait:
     return [
         /*
         |----------------------------------------------------------
-        | Model That uses trait Girover\Tree\Traits\Treeable
+        | Model That uses trait \Girover\Tree\Traits\Treeable
         |----------------------------------------------------------
         |
         | example: App\Models\Family::class
@@ -113,7 +113,7 @@ The second model represents nodes in these trees, and it must use trait:
         'treeable_model' => App\Models\Family::class,
         /*
         |----------------------------------------------------------
-        | Model That uses trait Girover\Tree\Traits\Nodeable
+        | Model That uses trait \Girover\Tree\Traits\Nodeable
         |----------------------------------------------------------
         |
         | example: App\Models\Person::class
@@ -126,7 +126,7 @@ The second model represents nodes in these trees, and it must use trait:
 ## Tree
 
 To start building a tree or creating a new tree, it is very simple and thanks to [Eloquent](https://laravel.com/docs/8.x/eloquent) models from [Laravel](http://laravel.com).   
-The model that represents trees in database should use **trait**: ```Girover\Tree\Traits\Treeable```
+The model that represents trees in database should use **trait**: ```\Girover\Tree\Traits\Treeable```
 For example if your model is called ```Tree``` so it should looks like this:
 
 ```php
@@ -162,7 +162,7 @@ Let's start adding the First node, the **```Root```**, to the tree.
     $tree->createRoot($data);
 ```
 **What if you want to make a new Root?**   
-In this case you can use the method **```newRoot```** to create new Root, and the previously created Root will become a child of the new created Root.
+In this case you can use the method **```newRoot```**, and the previously created Root will become a child of the new created Root.
 ```php
     $new_root_data = ['name'=>'new_root', 'birth_date'=>'2001-01-01'];
 
@@ -194,19 +194,18 @@ You can call the following method on an object of Tree
 | 6   | `emptyTree()`              | return an empty tree to view it                       |                                               |
 | 7   | `pointer()`                | To get the pointer inside the tree                    |                                               |
 | 8   | `pointerToRoot()`      | To move the pointer to indicate to the root           |                                               |
-| 9   | `pointerTo($location)` | To move the pointer to the given location             |                                               |
-| 10  | `goTo($location)`          | To move the pointer to the given location             |                                               |
+| 9   | `pointerTo($nodeable)` | To move the pointer to the given node             |                                               |
+| 10  | `goTo($nodeable)`          | To move the pointer to the given node             |                                               |
 | 14  | `countGenerations()`       | To get how many generations this tree has             |                                               |
 | 15  | `nodesOnTop()`             | Get the newest generation members in the tree         |                                               |
 | 16  | `mainNode()`               | Get the main node in the tree                         |                                               |
-| 17  | `setMainNode($node)`       | Set the given node as main node in the tree           |                                               |
 
 
 ## Pointer
 
 A tree has a **Pointer** inside it, and this **Pointer** points to one node.    
 Pointer can move through all nodes in the tree.     
-Because the Pointer points to a node inside the tree, so it can call all [methods of Nodeable Trait Model](#node) .   
+Because the Pointer points to a **node** inside the tree, so it can call all [methods of model that uses Nodeable Trait](#node) .   
 To get the pointer you can do the following:
 ```php
     use App\Models\Tree;
@@ -229,9 +228,9 @@ To move the pointer to specific node:
 And now you can get the node data by calling the method ```node```
 ```php
     $node = $pointer->node();
-    echo $node->location;
-    echo $node->name;
-    echo $node->gender;
+    echo $node->attribute_1;
+    echo $node->attribute_2;
+    echo $node->attribute_3;
 ```
 
 Note that we called method ```node``` after we had called the method ```to($node)```.   
@@ -355,62 +354,62 @@ To get all sisters of the node:
 ### <!-- getting the next(younger) sibling of a node -->
 To get the next sibling of the node. gets only one sibling.
 ```php
-    return $node->youngerSibling();
+    return $node->nextSibling();
 ```
 ### <!-- getting all next(younger) siblings of a node -->
 To get all the next siblings of the node. siblings who are younger.
 ```php
-    return $node->youngerSiblings();
+    return $node->nextSiblings();
 ```
 ### <!-- getting the next(younger) brother of a node -->
 To get the next brother of the node. gets only one brother.
 ```php
-    return $node->youngerBrother();
+    return $node->nextBrother();
 ```
 ### <!-- getting all next(younger) brothers of a node -->
 To get all the next brothers of the node. brothers who are younger.
 ```php
-    return $node->youngerBrothers();
+    return $node->nextBrothers();
 ```
 ### <!-- getting the next(younger) sister of a node -->
 To get the next sister of the node. gets only one sister.
 ```php
-    return $node->youngerSister();
+    return $node->nextSister();
 ```
 ### <!-- getting all next(younger) sisters of a node -->
 To get all the next sisters of the node. sisters who are younger.
 ```php
-    return $node->youngerSisters();
+    return $node->nextSisters();
 ```
 ### <!-- getting the previous(older) sibling of a node -->
 To get the previous sibling of the node. only one sibling.
 ```php
-    return $node->olderSibling();
+    return $node->prevSibling();
 ```
 ### <!-- getting all previous(older) siblings of a node -->
 To get all the previous siblings of the node. siblings who are older.
 ```php
-    return $node->olderSiblings();
+    return $node->prevSiblings();
 ```
 ### <!-- getting the previous(older) brother of a node -->
 To get the previous brother of the node. only one brother.
 ```php
-    return $node->olderBrother();
+    return $node->prevBrother();
 ```
 ### <!-- getting all previous(older) brothers of a node -->
 To get all the previous brothers of the node. brothers who are older.
 ```php
-    return $node->olderBrothers();
+    return $node->prevBrothers();
 ```
 ### <!-- getting the previous(older) sister of a node -->
 To get the previous sister of the node. only one sister.
 ```php
-    return $node->olderSister();
+    return $node->prevSister();
 ```
 ### <!-- getting all previous(older) sisters of a node -->
 To get all the previous sisters of the node. sisters who are older.
 ```php
-    return $node->olderSisters();
+    return $node->prevSisters();
 ```
 ### <!-- getting the first sibling of a node -->
 To get the first sibling of the node.

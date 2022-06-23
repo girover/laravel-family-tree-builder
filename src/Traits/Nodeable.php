@@ -796,7 +796,7 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node
      */
-    public function youngerSibling()
+    public function nextSibling()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
@@ -808,7 +808,7 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function youngerSiblings()
+    public function nextSiblings()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
@@ -820,7 +820,7 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node
      */
-    public function youngerBrother()
+    public function nextBrother()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
@@ -833,7 +833,7 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function youngerBrothers()
+    public function nextBrothers()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
@@ -846,7 +846,7 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node
      */
-    public function youngerSister()
+    public function nextSister()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
@@ -859,7 +859,7 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function youngerSisters()
+    public function nextSisters()
     {
         return $this->siblingsQuery()
                     ->locationAfter($this->location)
@@ -872,7 +872,7 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node
      */
-    public function olderSibling()
+    public function prevSibling()
     {
         return $this->siblingsQuery()
                      ->withoutGlobalScope(OrderByLocationScope::class)
@@ -886,7 +886,7 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function olderSiblings()
+    public function prevSiblings()
     {
         return $this->siblingsQuery()
                     ->locationBefore($this->location)
@@ -898,7 +898,7 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node
      */
-    public function olderBrother()
+    public function prevBrother()
     {
         return $this->siblingsQuery()
                     ->withoutGlobalScope(OrderByLocationScope::class)
@@ -913,7 +913,7 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function olderBrothers()
+    public function prevBrothers()
     {
         return $this->siblingsQuery()
                     ->locationBefore($this->location)
@@ -926,7 +926,7 @@ trait Nodeable
      *
      * @return \Girover\Tree\Models\Node 
      */
-    public function olderSister()
+    public function prevSister()
     {
         return $this->siblingsQuery()
                     ->withoutGlobalScope(OrderByLocationScope::class)
@@ -941,7 +941,7 @@ trait Nodeable
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function olderSisters()
+    public function prevSisters()
     {
         return $this->siblingsQuery()
                     ->locationBefore($this->location)
