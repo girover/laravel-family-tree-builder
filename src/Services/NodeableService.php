@@ -363,7 +363,7 @@ class NodeableService
      */
     public function moveTo($location)
     { 
-        $nodeable = $this->nodeable->getNodeOrThrowException($location);
+        $nodeable = $this->getNodeOrThrowException($location);
         // Not allowed to add children to female nodes.
         if ($nodeable->isFemale()) {
             throw new TreeException("Error: Not allowed to add children to female nodes.", 1);
@@ -391,6 +391,7 @@ class NodeableService
     public function moveChildrenTo($location = null)
     {
         $node = $this->getNodeOrThrowException($location);
+
         // Not allowed to add children to female nodes.
         if ($node->isFemale()) {
             throw new TreeException("Error: Not allowed to add children to female nodes.", 1);
@@ -410,7 +411,7 @@ class NodeableService
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();            
-            throw new TreeException("An error occurred during moving children", 1);            
+            throw new TreeException($th->getMessage(), 1);            
         }
 
         return $this;
@@ -426,14 +427,12 @@ class NodeableService
      */
     protected function getNodeOrThrowException($location)
     {
-        if ($location instanceof (get_class($this->nodeable))) {
+        if ($location instanceof (nodeableModel())) {
             return $location;
         }
 
-        $node = (nodeableModel())::tree($this->nodeable->treeable_id)->location($location)->first()
+        return  (nodeableModel())::tree($this->nodeable->treeable_id)->location($location)->first()
                 ?? throw new TreeException("Error: The location `".$location."` not found in this tree.", 1);
-
-        return $node;
     }
 
     /**

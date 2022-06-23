@@ -29,7 +29,7 @@ trait Nodeable
      *
      * @var bool
      */
-    protected $move_children_on_deleting = false;
+    protected $on_delete_shift_children = false;
 
     /**
      * Getting instance of NodeableService to deal with nodeable models functionality
@@ -76,9 +76,9 @@ trait Nodeable
         // When model is deleted
         static::deleted(function ($node) {
 
-            // if move_children_on_deleting property is false
+            // if on_delete_shift_children property is false
             // then delete all children of the deleted node, otherwise delete only the node
-            if ($node->move_children_on_deleting === false) {
+            if ($node->on_delete_shift_children === false) {
                 return $node->deleteChildren();
             }
 
@@ -1273,9 +1273,9 @@ trait Nodeable
      * 
      * @return \Girover\Tree\Models\Node
      */
-    public function moveChildren()
+    public function onDeleteMoveChildren()
     {
-        $this->move_children_on_deleting = true;
+        $this->on_delete_shift_children = true;
 
         return $this;
     }

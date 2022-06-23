@@ -1,31 +1,8 @@
-
-newSon() changes to addSon()
-newDaughter() changes to addDaughter()
-newChild() changes to addChild()
-newSibling() changes to addSibling()
-newBrother() changes to addBrother()
-newSister() changes to addSister()
-
-firstChild() changes to oldestChild()
-lastChild() changes to youngestChild()
-firstSibling() changes to oldestSibling()
-lastSibling() changes to youngestSibling()
-firstBrother() changes to oldestBrother()
-lastBrother() changes to youngestBrother()
-firstSister() changes to oldestSister()
-lastSister() changes to youngestSister()
-
-isMarriedWith($wife) to hasWife()
+Deleting nodeables and nodes
 --------------------------------------------------
 $node->toggleGender()
 --------------------------------------------------
-make node younger or older from a given node
-$node->moveAfter($another_node)
-$node->sendAfter($another_node)
-$node->After($another_node)
-$node->moveBefore($another_node)
-$node->bringBefore($another_node)
-$node->Before($another_node)
+
 --------------------------------------------------
 $node->moveTo($node||$location)
 $node->moveChildrenTo($node||$location)

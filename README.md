@@ -21,7 +21,6 @@
     - [Node](#node)
        - [Retrieving nodes](#retrieving-nodes)
        - [Adding nodes](#adding-nodes)
-       - [Updating nodes](#updating-nodes)
        - [Deleting nodes](#deleting-nodes)   
        - [Checking nodes](#checking-nodes)   
        - [Relationships](#relationships)   
@@ -451,6 +450,9 @@ If the node is not a ```root```, ```Girover\Tree\Exceptions\TreeException``` wil
 ```php
     $data = ['name' => $name, 'birth_date' => $birth_date];
     $node->createFather($data);
+    // OR
+    $tree = Tree::find(1);
+    $tree->pointerToRoot()->createFather($data);
 ```
 
 ### <!-- Creating new sibling for a node -->
@@ -499,11 +501,7 @@ To create new daughter for the node:
     
     // or you can use the newChild method
     $node->newChild($data, 'f');
-```
-
-### Updating nodes
-The field ```location``` in ```nodes``` table in database is responsible for connecting nodes with each others. Therefor you do not have to update this field using the default ```update``` method from Laravel Eloquent model, because you may come to destroy the whole tree by updating location of only one node.   
-And the same thing for the field ```tree_id```. other fields you are free to update what you want.
+```    
 
 ### <!-- Updating: to make node as main node -->
 To make the node as the main node in its tree.   
@@ -516,37 +514,38 @@ To make the node as the main node in its tree.
 ### <!-- Deleting: to delete a node -->
 To delete a node.
 ```php
-    use \Girover\Tree\Models\Node;
+    use App\Models\Person;
 
-    $node = Node::find(10)->delete();
+    $node = Person::find(10)->delete();
 ```
 **note:** The node will be deleted with all its descendants.   
 But if you want just to delete the node and not its descendants,   
 then you can move its descendants before deleting the node.
 ```php
-    use \Girover\Tree\Models\Node;
+    use App\Models\Person;
 
-    $node = Node::find(10);
-    $another_node = Node::find(30);
+    $node = Person::find(10);
+    $another_node = Person::find(30);
 
-    $node->moveChildrenTo($another_node)->delete();
+    $node->moveChildrenTo($another_node);
+    $node->delete();
 ```
 Or you can directly move children to the father of deleted node by 
-using ```moveChildren``` method without passing any node as parameter.
+using ```onDeleteMoveChildren``` method without passing any node as parameter.
 ```php
-    use \Girover\Tree\Models\Node;
+    use App\Models\Person;
 
-    $node = Node::find(10);
+    $node = Person::find(10);
 
-    $node->moveChildren()->delete();
+    $node->onDeleteMoveChildren()->delete();
 ```
 
 ### <!-- Deleting: to delete all children of a node -->
 To delete all children of a node:
 ```php
-    use \Girover\Tree\Models\Node;
+    use App\Models\Person;
 
-    $node = Node::find(10);
+    $node = Person::find(10);
 
     return $node->deleteChildren(); // number of deleted nodes
 ```
@@ -565,10 +564,10 @@ To determine if the node is root in the tree
 ### <!-- Determining is Ancestor of -->
 To determine if the node is ancestor of another node:
 ```php
-    use Girover\Tree\Models\Node;
+    use App\Models\Person;
 
-    $node = Node::find(1);
-    $another_node = Node::find(2);
+    $node = Person::find(1);
+    $another_node = Person::find(2);
 
     return $node->isAncestorOf($another_node); // returns true OR false
 ```
@@ -576,10 +575,10 @@ To determine if the node is ancestor of another node:
 ### <!-- Determining is father of -->
 To determine if the node is father of another node:
 ```php
-    use Girover\Tree\Models\Node;
+    use App\Models\Person;
 
-    $node = Node::find(1);
-    $another_node = Node::find(2);
+    $node = Person::find(1);
+    $another_node = Person::find(2);
 
     return $node->isFatherOf($another_node); // returns true OR false
 ```
@@ -594,10 +593,10 @@ Determine if the node has children
 ### <!-- Determining is child of -->
 To determine if the node is child of another node:
 ```php
-    use Girover\Tree\Models\Node;
+    use App\Models\Person;
 
-    $node = Node::find(1);
-    $another_node = Node::find(2);
+    $node = Person::find(1);
+    $another_node = Person::find(2);
     
     return $node->isChildOf($another_node); // returns true OR false
 ```
@@ -611,21 +610,13 @@ Determine if the node has siblings
 ### <!-- Determining is sibling of -->
 To determine if the node is sibling of another node:
 ```php
-    use Girover\Tree\Models\Node;
+    use App\Models\Person;
 
-    $node = Node::find(1);
-    $another_node = Node::find(2);
+    $node = Person::find(1);
+    $another_node = Person::find(2);
     
     return $node->isSiblingOf($another_node); // returns true OR false
 ```
-
-### <!-- Determining is the main node -->
-To check if the node is the main node in its tree.
-```php
-    $node->isMainNode(); // returns true or false
-```
-
-
 
 ### <!-- counting children of a node -->
 To count the children of the node:
@@ -732,14 +723,14 @@ To divorce a wife
 When trying to do this with a female node a ```Girover\Tree\Exceptions\TreeException``` will be thrown. so if ```$husband``` is a woman Exception will be thrown.
 
 ### <!-- Relations to upload photo for a node -->
-To add uploaded photo to the node:
+To set uploaded photo to the node:
 ```php
     <?php
 
     namespace App\Http\Controllers;
 
     use Illuminate\Http\Request;
-    use Girover\Tree\Models\Node;
+    use App\Models\Node;
 
     class PersonController extends Controller
     {
@@ -748,7 +739,7 @@ To add uploaded photo to the node:
             $person     = Node::find($request->person_id);
             $photo      = $request->file('photo');
 
-            $person->newPhoto($photo, 'new name');
+            $person->setPhoto($photo, 'new name');
 
             return view('persons.index')->with('success', 'photo was added');
         }
