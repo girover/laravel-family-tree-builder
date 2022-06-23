@@ -451,6 +451,18 @@ class NodeableService
     }
 
     /**
+     * To detach a node from a tree
+     * it will delete the node from nodes table,
+     * but nodeable will still exist.
+     * 
+     * @return bool
+     */
+    public function detachFromTree()
+    {
+        return DB::delete($this->deleteNodeWithChildrenSql());
+    }
+
+    /**
      * Sql UPDATE statement to add first possible segment
      * 'aaa'|'000' to the beginning of all locations in the given tree
      * NOTE: this method doesn't add '.' to the segment
@@ -486,6 +498,20 @@ class NodeableService
     {
         return " UPDATE `nodes` 
                 SET `location` = CONCAT('".$new_location."', SUBSTRING(`location` FROM ".(strlen($this->nodeable->location) + 1).")) 
+                WHERE `treeable_id` = ".$this->nodeable->treeable_id." 
+                AND `location` like '".$this->nodeable->location."%' ";
+    }
+
+    /**
+     * To delete nodes with its children from database
+     *
+     * @param int $tree_id
+     * @param int $location
+     * @return string
+     */
+    public function deleteNodeWithChildrenSql()
+    {
+        return " DELETE FROM `nodes`   
                 WHERE `treeable_id` = ".$this->nodeable->treeable_id." 
                 AND `location` like '".$this->nodeable->location."%' ";
     }

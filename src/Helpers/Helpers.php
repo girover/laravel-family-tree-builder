@@ -3,6 +3,9 @@
 /**
  * Function for getting the model that represents nodeable models
  */
+
+use Illuminate\Support\Facades\DB;
+
 if (! function_exists('nodeableModel')) {
     function nodeableModel()
     {
@@ -122,5 +125,31 @@ if (! function_exists('photoAsset')) {
         return (file_exists($photo_path) and ! is_dir($photo_path)) 
                 ? asset($photo_asset.$nodeable_model->photo) 
                 : asset($photo_asset.photoIcon($nodeable_model->gender));
+    }
+}
+
+/**
+ * to get all nodeable models which are not attached with any node
+ * in any tree yet.
+ * 
+ * @return \Illuminate\Database\Eloquent\Collection
+ */
+if (! function_exists('detachedNodeables')) {
+    function detachedNodeables()
+    {
+        return (nodeableModel())::whereNull('location')->get();
+    }
+}
+
+/**
+ * to get the count of nodeable models which are not attached with any node
+ * in any tree yet.
+ * 
+ * @return int
+ */
+if (! function_exists('countDetachedNodeables')) {
+    function countDetachedNodeables()
+    {
+        return (nodeableModel())::whereNull('location')->count();
     }
 }

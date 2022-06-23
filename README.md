@@ -25,7 +25,9 @@
        - [Checking nodes](#checking-nodes)   
        - [Relationships](#relationships)   
        - [Relocating nodes](#relocating-nodes) 
-    - [Drawing A Tree](#drawing-a-tree)
+       - [Attaching and Detaching nodes](#attaching-and-detaching) 
+    - [Helpers](#helpers)
+    - [Rendering Trees](#rendering-trees)
   - [Testing](#testing)
   - [Changelog](#changelog)
   - [Contributing](#contributing)
@@ -672,7 +674,7 @@ To count all female descendants of the node:
     return $node->countFemaleDescendants();
 ```
 
-### Relations
+### Relationships
 
 ### <!-- Relations: getting all wives of a node -->
 
@@ -840,9 +842,88 @@ for example:
     .
     .
     $tree->pointer()->toHtml();
+```   
+
+## Attaching and Detaching nodes
+When creating nodeable models by using methods ```create``` or ```save```, the created model will not be attached with any node in any tree.   
+
+```php
+    use App\Models\Person;
+
+    $adam = Person::create(['name'=>'Adam', 'birth_date'=>'0000-00-00']);
+    
+    $eva = new Person;
+    $eva->name = 'Eva';
+    $eva->birth_date = '0000-00-00';
+    $eva->save();
+
+```
+Both Adam and Eva will be created in database table, but they will not be a node yet in any tree.  
+To make Adam as a node in a tree you can use all nodeable methods like:   
+
+```php
+    use App\Models\Person;
+
+    $adam = Person::where('name', 'adam')->first();
+
+    $person = Person::find(1);
+
+    $person->newSon($adam);
+    //or
+    $person->createFather($adam); // only if $person is a root in the tree 
+    //or
+    $person->newBrother($adam); // only if $person is not a root in the tree  
+    //or
+    .
+    .
+    .
+
+```
+### detaching
+When deleting nodeable models they will be deleted from database table, but what if you need to delete(detach) them from a tree while keeping them in database.   
+Let's look at the following code:
+
+```php
+    use App\Models\Person;
+
+    $person = Person::find(100);
+    $person->delete();    
+```
+In the code above, the person will be deleted from database with all its descendants.   
+
+But we need only to delete it from a tree not from database. Look at this code:
+
+```php
+    use App\Models\Person;
+
+    $person = Person::find(100);
+    $person->detachFromTree(); 
+
+```
+Now the person still exists in database, but it is not a node in any tree anymore.
+
+## Helpers
+
+To get all detached nodeable models, you can use the helper function ```detachedNodeables```.   
+This will return instance of ```\Illuminate\Database\Eloquent\collection``` with all detached nodeable models.
+
+```php
+    <?php
+
+    $detached = detachedNodeables();
+
 ```
 
-## Rendering a tree
+To get the count of detached nodeable models, use the helper function ```countDetachedNodeables```.  
+
+```php
+    <?php
+
+    $count_detached = countDetachedNodeables();
+
+```
+
+## Rendering trees
 
 To show a tree in the browser you can use one of these methods ```toHtml```, ```toTree``` or ```draw``` on an object of model ```Girover\Tree\Models\Tree```
 ```php

@@ -1,4 +1,7 @@
 Deleting nodeables and nodes
+
+$node->detachFromTree() // This will not delete nodeable model, but node model with 
+                        // its descendants node
 --------------------------------------------------
 $node->toggleGender()
 --------------------------------------------------

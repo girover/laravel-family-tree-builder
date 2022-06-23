@@ -1326,6 +1326,21 @@ trait Nodeable
     }
 
     /**
+     * To detach a node from a tree
+     * it will delete the node from nodes table,
+     * but nodeable will still exist.
+     * 
+     * @return bool
+     */
+    public function detachFromTree()
+    {
+        if(!$this->node())
+            throw new TreeException("This nodeable model is not attached to any node in any tree.", 1);
+        
+        $this->nodeableService()->detachFromTree();
+    }
+
+    /**
      * Generate Tree Html code from this node
      *
      * @return string html code for the tree from this node
