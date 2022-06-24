@@ -26,14 +26,14 @@ class HtmlTreeBuilder implements TreeBuilderInterface
     public $nodesCount = 1;
 
     /**
-     * @var closure uses to get custom css class name for specific nodeables.
+     * @var callable uses to get custom css class name for specific nodeables.
      */
-    public $node_css_classes;
+    protected $node_css_classes;
 
     /**
-     * @var closure uses to get custom attributes for nodeables.
+     * @var callable uses to get custom attributes for nodeables.
      */
-    public $node_html_attributes;
+    protected $node_html_attributes;
 
     /**
      * instantiate a tree generator
@@ -44,7 +44,8 @@ class HtmlTreeBuilder implements TreeBuilderInterface
     public function __construct(Model $tree) {
         $this->tree = $tree;
 
-        $this->node_css_classes = app()->has('nodeCssClasses') ? app()->make('nodeCssClasses') : null;
+        $this->node_css_classes     = app()->has('nodeCssClasses') ? app()->make('nodeCssClasses') : null;
+        $this->node_html_attributes = app()->has('nodeHtmlAttributes') ? app()->make('nodeHtmlAttributes') : null;
     }
 
     /**
@@ -342,7 +343,7 @@ class HtmlTreeBuilder implements TreeBuilderInterface
             // $photo = TreeHelpers::avatarPath() . $wife->photo;
             // $photo = (file_exists($photo) and ! is_dir($photo)) ? $wife->photo : $this->photoIcon($wife->gender);
 
-            $hText .= '<a class="node '.$this->nodeCssClasses($wife).'" data-counter="' . $this->nodesCount++ . '" '. $this->nodeHtmlAttributes($wife) .' data-role="wife">
+            $hText .= '<a class="node '.$this->nodeCssClasses($wife).'" data-role="wife" data-counter="' . $this->nodesCount++ . '" '. $this->nodeHtmlAttributes($wife) .'>
                          <div class="female-node wife-'.$id.'">
                             <div class="node-info-wrapper">
                                 <div class="node-info">
