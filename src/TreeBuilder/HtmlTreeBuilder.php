@@ -31,6 +31,11 @@ class HtmlTreeBuilder implements TreeBuilderInterface
     public $node_css_classes;
 
     /**
+     * @var closure uses to get custom attributes for nodeables.
+     */
+    public $node_html_attributes;
+
+    /**
      * instantiate a tree generator
      * 
      * @param \Illuminate\Database\Eloquent\Model $tree
@@ -67,15 +72,11 @@ class HtmlTreeBuilder implements TreeBuilderInterface
      * @param \illuminate\Database\Eloquent\Model $nodeable
      * @return string
      */
-    public function htmlNodeAttributes($nodeable)
+    public function nodeHtmlAttributes($nodeable)
     {
-        $attributes = '';
-
-        foreach (config('tree.html_node_attributes') as $attribute) {
-            $attributes .= ' data-' . $attribute . '="' .$nodeable->{$attribute} . '" ';
-        }
-
-        return $attributes;
+        return $this->node_html_attributes
+                ? ($this->node_html_attributes)($nodeable)
+                : '';
     }
 
     /**
@@ -341,7 +342,7 @@ class HtmlTreeBuilder implements TreeBuilderInterface
             // $photo = TreeHelpers::avatarPath() . $wife->photo;
             // $photo = (file_exists($photo) and ! is_dir($photo)) ? $wife->photo : $this->photoIcon($wife->gender);
 
-            $hText .= '<a class="node '.$this->nodeCssClasses($wife).'" data-counter="' . $this->nodesCount++ . '" '. $this->htmlNodeAttributes($wife) .' data-role="wife">
+            $hText .= '<a class="node '.$this->nodeCssClasses($wife).'" data-counter="' . $this->nodesCount++ . '" '. $this->nodeHtmlAttributes($wife) .' data-role="wife">
                          <div class="female-node wife-'.$id.'">
                             <div class="node-info-wrapper">
                                 <div class="node-info">
@@ -381,7 +382,7 @@ class HtmlTreeBuilder implements TreeBuilderInterface
         $nodeCollapse = ($role === 'husband') ? '<div class="node-collapse down"><i class="fa fa-chevron-circle-up"></i></div>' : '';
 
         $html = ($role == 'wife') ? '<div class="wives-group">' : '';
-        $html .= '<a class="node '.$active_class.' '.$this->nodeCssClasses($node).'" data-counter="' . $this->nodesCount++ . '" data-role="'.$role.'" '.$this->htmlNodeAttributes($node).'>
+        $html .= '<a class="node '.$active_class.' '.$this->nodeCssClasses($node).'" data-counter="' . $this->nodesCount++ . '" data-role="'.$role.'" '.$this->nodeHtmlAttributes($node).'>
                     '.$addFather.$showFather.$nodeCollapse.
                     '<div class="'.$node_class.' '.$role.'">	    
                         <div class="node-info-wrapper">

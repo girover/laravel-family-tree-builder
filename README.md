@@ -1019,6 +1019,27 @@ You can also use a node model to do the same by using one of these methods ```to
     }
 ```
 ### Customizing node style
+If you want to add some html attributes to the nodes, then you can bind a custom function called ```nodeHtmlAttributes``` to the **Service Container**. This function must return a callable function which accept one argument represents nodeable model. And this callable function must return html attributes with their values as string.   
+Let's take an example.   
+If your nodeable models have fields ```id, name, gender, is_died``` , then you want to add them as html attributes to the nodes to style or to control nodes.   
+
+```php
+    // AppServiceProvider
+    public function boot()
+    {
+        $this->app->singleton('nodeHtmlAttributes',function($app){
+            return function($nodeable){
+                return ' data-id="'.$nodeable->id.'" data-name="'.$nodeable->name.'" data-gender="'.            $nodeable->gender.'" ';
+            };
+        });
+    }
+```
+Now all node elements will have these attributes like:
+```html
+    <a class="node" data-it="1" data-name="name" data-gender="1">...</a>
+```
+ 
+
 If you want to add some css classes to the nodes that have specific role, then you can bind a custom function called ```nodeCssClass``` to the **Service Container**. This function must return a callable function which accept one argument represents nodeable model. And this callable function must return css classes names as string.   
 Let's take an example.   
 If your nodeable models have an attribute called ```is_died``` which has values ```true``` or ```false```, then you want to add a css class called ```is-died``` to the nodes that have this value as ```true``` to give them more style.   
@@ -1033,9 +1054,12 @@ If your nodeable models have an attribute called ```is_died``` which has values 
             };
         });
     }
+``` 
+
+Now all nodeables that have ```is_died``` to true will be like:
+```html
+    <a class="node is-died">...</a>
 ```
-So every nodeable model that has **true** as **is_died** will get css class called **is-died**.   
-Now you can write your won css to style classes **is-died** as you like.   
 
 ## Testing
 

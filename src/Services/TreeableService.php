@@ -80,7 +80,11 @@ class TreeableService
      */
     public function buildTree()
     {
-        $tree_generator = new HtmlTreeBuilder($this->treeable);
+        if (app()->has('TreeBuilderInterface')) {
+            $tree_generator = app()->makeWith('TreeBuilderInterface', [$this->treeable]);
+        }else{
+            $tree_generator = new HtmlTreeBuilder($this->treeable);
+        }
 
         return $tree_generator->draw();
     }
