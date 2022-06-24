@@ -1029,14 +1029,14 @@ If your nodeable models have fields ```id, name, gender, is_died``` , then you w
     {
         $this->app->singleton('nodeHtmlAttributes',function($app){
             return function($nodeable){
-                return ' data-id="'.$nodeable->id.'" data-name="'.$nodeable->name.'" data-gender="'.            $nodeable->gender.'" ';
+                return " data-id='{$nodeable->id}' data-name='{$nodeable->name}' data-gender='{$nodeable->gender}'";
             };
         });
     }
 ```
 Now all node elements will have these attributes like:
 ```html
-    <a class="node" data-it="1" data-name="name" data-gender="1">...</a>
+    <a class="node" data-id='1' data-name='name' data-gender='1'>...</a>
 ```
  
 
