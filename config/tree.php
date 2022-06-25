@@ -28,19 +28,4 @@
         |        path-to-project/public/vendor/tree/images
         */
         'photos_folder' => 'vendor/tree/images',
-
-        /*
-        |--------------------------------------------------------------------------
-        | html element with class 'node' will has these attributes
-        |--------------------------------------------------------------------------
-        | <a class="node" data-id="value" data-name="value" data-gender="value">
-        |
-        | html_node_attributes = [
-        |                       'id', 'name', 'father_name','birth_date'                   
-        |                    ]
-        | Note : all these attributes must be attributes of nodeable model
-        */
-        'html_node_attributes' => [
-            
-        ],
     ];
