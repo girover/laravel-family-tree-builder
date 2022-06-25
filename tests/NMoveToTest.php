@@ -20,13 +20,13 @@ class NMoveToTest extends TestCase
     /** @test */
     public function it_can_move_node_to_be_child_of_another_node()
     {
-        // create new node in database table
-        $node = $this->createNode();
+        $tree = $this->createTreeable();
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
 
-        $son1 = $node->newSon($this->makeNode()->toArray());
-        $son2 = $node->newSon($this->makeNode()->toArray());
+        $son1 = $root->newSon($this->makeNodeable()->toArray());
+        $son2 = $root->newSon($this->makeNodeable()->toArray());
 
-        $this->assertTrue($son1->tree_id === $son2->tree_id);
+        $this->assertTrue($son1->treeable_id === $son2->treeable_id);
         $this->assertTrue(Location::areSiblings($son1->location, $son2->location));
         
         // Make son1 as son of son2

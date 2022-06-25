@@ -19,20 +19,27 @@ class NFatherTest extends TestCase
     /** @test */
     public function it_can_get_father_of_node()
     {
+        $tree = $this->createTreeable();
         // create new node in database table
-        $node = $this->createMaleNode(['location'=>'aa.bb']);
-        $son  = $this->createMaleNode(['location'=>'aa.bb.aa']);
+        $nodeable = $this->createNodeable();
+        $root = $tree->createRoot($nodeable);
 
-        $father = $son->father();
+        $son  = $root->newSon(['name'=>'son', 'father_name'=>'sonfathername', 'birth_date'=>'1111-11-11']);
         
-        $this->assertTrue($node->id === $father->id);
+        
+        $father = $son->father();
+        $this->assertTrue(Location::areFatherAndChild($father->location, $son->location));
+        // $this->assertTrue($node->id === $father->id);
     }
     /** @test */
     public function it_throws_TreeException_when_trying_to_get_father_of_the_root()
     {
         $this->expectException(TreeException::class);
+
+        $tree = $this->createTreeable();
         // create new node in database table
-        $root = $this->createMaleNode(['location'=>'aa']);
+        $nodeable = $this->createNodeable();
+        $root = $tree->createRoot($nodeable);
 
         $root->father();
     }

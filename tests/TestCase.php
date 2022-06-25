@@ -2,8 +2,8 @@
 
 namespace Girover\Tree\Tests;
 
-use Girover\Tree\Tests\Models\NodeableModel;
-use Girover\Tree\Tests\Models\TreeableModel;
+use Girover\Tree\Models\Nodeable;
+use Girover\Tree\Models\Treeable;
 use Girover\Tree\TreeServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
@@ -29,8 +29,8 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
-        config()->set('tree.treeable_model', TreeableModel::class);
-        config()->set('tree.nodeable_model', NodeableModel::class);
+        config()->set('tree.treeable_model', Treeable::class);
+        config()->set('tree.nodeable_model', Nodeable::class);
         // config()->set('database.default', 'mysql');
         $this->configureDatabase();
         // $this->migrateTables();

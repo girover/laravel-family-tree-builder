@@ -19,34 +19,42 @@ class NNewSonTest extends TestCase
     /** @test */
     public function it_can_create_new_son_for_node()
     {
-        // create new node in database table
-        $node = $this->createNode();
-
-        $son = $node->newSon($this->makeNode()->toArray());
-        $this->assertDatabaseHas('nodes', ['name'=>$son->name]);
+        $tree = $this->createTreeable();
         
-        $this->assertTrue(Location::areFatherAndChild($node->location, $son->location));
-        $this->assertTrue($node->tree_id === $son->tree_id);
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
+        
+        $son  = $root->newSon($this->makeNodeable()->toArray());
+
+        $this->assertDatabaseHas('nodeables', ['name'=>$son->name]);        
+        $this->assertTrue(Location::areFatherAndChild($root->location, $son->location));
+        $this->assertTrue($root->treeable_id === $son->treeable_id);
     }
 
     /** @test */
     public function it_can_not_create_new_son_for_node_if_no_data_are_provided()
     {
         $this->expectException(TreeException::class);
-        // create new node in database table
-        $father = $this->createNode();
+        
+        $tree = $this->createTreeable();
+        
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
 
-        $father->newSon([]);
+        $root->newSon([]);
     }
 
     /** @test */
-    public function it_can_not_create_new_son_for_node_if_no_name_is_provided()
+    public function it_should_not_create_new_son_for_a_female_node()
     {
         $this->expectException(TreeException::class);
-        // create new node in database table
-        $father = $this->createNode();
-        // no name is provided in data array
-        $son_data  = ['f_name'=>'father name']; 
-        $father->newSon($son_data);      
+        
+        $tree = $this->createTreeable();
+        
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
+
+        $female = $root->newDaughter($this->makeNodeable()->toArray());
+
+        $this->assertTrue($female->isFemale());
+
+        $female->newSon($this->makeNodeable()->toArray());
     }
 }

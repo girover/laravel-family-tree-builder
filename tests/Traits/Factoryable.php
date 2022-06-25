@@ -2,8 +2,8 @@
 
 namespace Girover\Tree\Tests\Traits;
 
-use Girover\Tree\Tests\Models\TreeableModel;
-use Girover\Tree\Tests\Models\NodeableModel;
+use Girover\Tree\Models\Treeable;
+use Girover\Tree\Models\Nodeable;
 use Girover\Tree\Models\Node;
 
 /**
@@ -13,19 +13,19 @@ trait Factoryable
 {
     public function createTreeable()
     { 
-        return TreeableModel::factory()->create();
+        return Treeable::factory()->create();
     }
     public function makeTreeable()
     {
-        return TreeableModel::factory()->make();
+        return Treeable::factory()->make();
     }
     public function createNodeable()
     { 
-        return NodeableModel::factory()->create();
+        return Nodeable::factory()->create();
     }
     public function makeNodeable()
     {
-        return NodeableModel::factory()->make();
+        return Nodeable::factory()->make();
     }
     public function createNode($data = [])
     {

@@ -17,18 +17,21 @@ class NNewBrotherTest extends TestCase
      * testing newBrother method
      * --------------------------------------------
      */
+
     /** @test */
     public function it_can_create_new_brother_for_node()
     {
-        // create new node in database table
-        $root = $this->createNode();
-
-        $son = $root->newSon($this->makeNode()->toArray());
-        $brother = $son->newBrother($this->makeNode()->toArray());
-        $this->assertDatabaseHas('nodes', ['name'=>$brother->name]);
+        $tree = $this->createTreeable();
         
-        $this->assertTrue($root->tree_id === $brother->tree_id);
-        $this->assertTrue(Location::areSiblings($son->location, $brother->location));
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
+        
+        $node  = $root->newSon($this->makeNodeable()->toArray());
+        
+        $brother = $node->newBrother($this->makeNodeable()->toArray());
+
+        $this->assertDatabaseHas('nodeables', ['name'=>$brother->name]);        
+        $this->assertTrue($root->treeable_id === $brother->treeable_id);
+        $this->assertTrue(Location::areSiblings($node->location, $brother->location));
     }
 
     /** @test */
@@ -36,28 +39,24 @@ class NNewBrotherTest extends TestCase
     {
         $this->expectException(TreeException::class);
         // create new node in database table
-        $node = $this->createNode();
+        $tree = $this->createTreeable();
+        
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
 
-        $brother = $node->newBrother($this->makeNode()->toArray());
+        $root->newBrother($this->makeNode()->toArray());
     }
 
     /** @test */
     public function it_can_not_create_new_brother_for_node_if_no_data_are_provided()
     {
         $this->expectException(TreeException::class);
-        $root = $this->createNode();
+        
+        $tree = $this->createTreeable();
+        
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
 
-        $son = $root->newSon($this->makeNode()->toArray());
+        $son = $root->newSon($this->makeNodeable()->toArray());
+
         $son->newBrother([]);
-    }
-
-    // /** @test */
-    public function it_can_not_create_new_brother_for_node_if_no_name_is_provided()
-    {
-        $this->expectException(TreeException::class);
-        $root = $this->createNode();
-
-        $son = $root->newSon($this->makeNode()->toArray());
-        $son->newBrother(['f_name'=>'father name']);     
-    }   
+    }  
 }

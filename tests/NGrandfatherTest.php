@@ -19,12 +19,19 @@ class NGrandfatherTest extends TestCase
     /** @test */
     public function it_can_get_grandfather_of_node()
     {
+        $tree = $this->createTreeable();
         // create new node in database table
-        $root = $this->createMaleNode(['location'=>'aa']);
-        $grandson  = $this->createMaleNode(['location'=>'aa.bb.cc']);
-
-        $grandfather = $grandson->grandfather();
+        $nodeable = $this->createNodeable();
+        $root = $tree->createRoot($nodeable);
         
-        $this->assertTrue($root->id === $grandfather->id);
+        $nodeable = $this->createNodeable();
+        $son  = $root->newSon($nodeable);
+        
+        $nodeable = $this->createNodeable();
+        $grand_son = $son->newSon($nodeable);
+
+        $grand_father = $grand_son->grandFather();
+        
+        $this->assertTrue($root->getKey() === $grand_father->getKey());
     }
 }

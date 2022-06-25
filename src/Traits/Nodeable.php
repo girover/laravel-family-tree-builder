@@ -1070,6 +1070,10 @@ trait Nodeable
      */
     public function newChild($data, $gender = 'm')
     {
+        if ($this->isFemale()) {
+            throw new TreeException("No child can be created for female nodes", 1);
+            
+        }
         return $this->nodeableService()->newChild(...func_get_args());
     }
 

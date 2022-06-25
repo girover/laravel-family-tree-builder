@@ -11,43 +11,52 @@ class NNewDaughterTest extends TestCase
 {
     use DatabaseTransactions, Factoryable;
 
-   
+
     /**
      * -------------------------------------------
-     * testing newDaughter method
+     * testing newBrother method
      * --------------------------------------------
      */
+
     /** @test */
     public function it_can_create_new_daughter_for_node()
     {
-        // create new node in database table
-        $node = $this->createNode();
-
-        $daughter = $node->newDaughter($this->makeNode()->toArray());
-        $this->assertDatabaseHas('nodes', ['name'=>$daughter->name]);
+        $tree = $this->createTreeable();
         
-        $this->assertTrue(Location::areFatherAndChild($node->location, $daughter->location));
-        $this->assertTrue($node->tree_id === $daughter->tree_id);
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
+        
+        $node  = $root->newSon($this->makeNodeable()->toArray());
+        
+        $daughter = $root->newDaughter($this->makeNodeable()->toArray());
+
+        $this->assertDatabaseHas('nodeables', ['name'=>$daughter->name]);        
+        $this->assertTrue($root->treeable_id === $daughter->treeable_id);
+        $this->assertTrue(Location::areSiblings($node->location, $daughter->location));
+    }
+
+    /** @test */
+    public function it_should_not_create_new_daughter_for_a_female_node()
+    {
+        $this->expectException(TreeException::class);
+        // create new node in database table
+        $tree = $this->createTreeable();
+        
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
+
+        $female = $root->newDaughter($this->makeNodeable()->toArray());
+
+        $female->newDaughter($this->makeNodeable()->toArray());
     }
 
     /** @test */
     public function it_can_not_create_new_daughter_for_node_if_no_data_are_provided()
     {
         $this->expectException(TreeException::class);
-        // create new node in database table
-        $father = $this->createNode();
+        
+        $tree = $this->createTreeable();
+        
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
 
-        $father->newDaughter([]);
-    }
-
-    /** @test */
-    public function it_can_not_create_new_daughter_for_node_if_no_name_is_provided()
-    {
-        $this->expectException(TreeException::class);
-        // create new node in database table
-        $father = $this->createNode();
-        // no name is provided in data array
-        $daughter_data  = ['f_name'=>'father name']; 
-        $father->newSon($daughter_data);      
-    }
+        $root->newDaughter([]);
+    }  
 }

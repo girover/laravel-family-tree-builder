@@ -7,6 +7,7 @@ use Girover\Tree\Location;
 use Girover\Tree\Models\Node;
 use \Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class NodeableService
 {
@@ -80,7 +81,15 @@ class NodeableService
 
             DB::commit();
 
-            return true;
+            // To join node attributes with nodeable attributes
+            $node_columns =Schema::getColumnListing('nodes');
+            foreach ($node_columns as $column) {
+                if($column != 'created_at' && $column != 'updated_at'){
+                    $nodeable->{$column}=$node->{$column};
+                }
+            }
+
+            return $nodeable;
 
         } catch (\Throwable $th) {            
             DB::rollBack();
@@ -107,6 +116,9 @@ class NodeableService
             throw new TreeException("Bad argument type. The argument passed to ".__METHOD__." must be an array or an instance of [".nodeableModel()."]. ".gettype($data)." is given", 1);
         }
 
+        if (empty($data)) {
+            throw new TreeException("No data are provided for creating the nodeable", 1);
+        }
         return (nodeableModel())::create($data);
     }
 
@@ -121,8 +133,6 @@ class NodeableService
     {
         return Node::create($data);
     }
-
-
 
     /**
      * Create father for the root node in the tree
@@ -243,6 +253,9 @@ class NodeableService
      */
     public function getMarriedWith($wife)
     {
+        if (! $wife instanceof (nodeableModel())) {
+            throw new TreeException("Argument must be instance of ".(nodeableModel())::class.".", 1);
+        }
         if (! $wife->exists) {
             throw new TreeException("This wife is not saved in database. First save it", 1);
         }

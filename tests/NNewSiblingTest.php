@@ -20,76 +20,78 @@ class NNewSiblingTest extends TestCase
     /** @test */
     public function it_can_create_new_sibling_for_node()
     {
-        // create new node in database table
-        $root = $this->createNode();
-
-        $son = $root->newSon($this->makeNode()->toArray());
-        $brother = $son->newSibling($this->makeNode()->toArray());
-        $this->assertDatabaseHas('nodes', ['name'=>$brother->name]);
+        $tree = $this->createTreeable();
         
-        $this->assertTrue($root->tree_id === $brother->tree_id);
-        $this->assertTrue(Location::areSiblings($son->location, $brother->location));
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
+        
+        $node  = $root->newSon($this->makeNodeable()->toArray());
+        
+        $sibling = $node->newSibling($this->makeNodeable()->toArray(), 'm');
+
+        $this->assertDatabaseHas('nodeables', ['name'=>$sibling->name]);        
+        $this->assertTrue($root->treeable_id === $sibling->treeable_id);
+        $this->assertTrue(Location::areSiblings($node->location, $sibling->location));
     }
 
     /** @test */
-    public function it_will_create_new_male_sibling_for_node_when_no_gender_provided()
+    public function it_will_create_new_male_sibling_when_no_gender_provided()
     {
-        // create new node in database table
-        $node = $this->createNode();
-
-        $son = $node->newChild($this->makeNode()->toArray());
-        $sibling = $node->newChild($this->makeNode()->toArray());
-        $this->assertDatabaseHas('nodes', ['name'=>$son->name]);
+        $tree = $this->createTreeable();
         
-        $this->assertTrue(Location::areSiblings($son->location, $sibling->location));
-        $this->assertTrue($son->tree_id === $sibling->tree_id);
-        $this->assertTrue($sibling->gender === 'm');
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
+        
+        $node  = $root->newSon($this->makeNodeable()->toArray());
+        
+        $sibling = $node->newSibling($this->makeNodeable()->toArray());
+
+        $this->assertDatabaseHas('nodeables', ['name'=>$sibling->name]);        
+        $this->assertTrue($root->treeable_id === $sibling->treeable_id);
+        $this->assertTrue(Location::areSiblings($node->location, $sibling->location));
+        $this->assertTrue($sibling->isMale());
     }
 
     /** @test */
-    public function it_will_create_new_female_sibling_for_node_when_no_female_gender_provided()
+    public function it_will_create_new_female_sibling_when_female_gender_provided()
     {
-        // create new node in database table
-        $node = $this->createNode();
-
-        $child = $node->newChild($this->makeNode()->toArray());
-        $sibling = $child->newSibling($this->makeNode()->toArray(), 'f');
+        $tree = $this->createTreeable();
         
-        $this->assertTrue(Location::areSiblings($child->location, $sibling->location));
-        $this->assertTrue($child->tree_id === $sibling->tree_id);
-        $this->assertTrue($sibling->gender === 'f');
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
+        
+        $node  = $root->newSon($this->makeNodeable()->toArray());
+        
+        $sibling = $node->newSibling($this->makeNodeable()->toArray(), 'f');
+
+        $this->assertDatabaseHas('nodeables', ['name'=>$sibling->name]);        
+        $this->assertTrue($root->treeable_id === $sibling->treeable_id);
+        $this->assertTrue(Location::areSiblings($node->location, $sibling->location));
+        $this->assertTrue($sibling->isFemale());
     }
 
     /** @test */
     public function it_can_not_create_sibling_for_node_if_wrong_gender_provided()
     {
         $this->expectException(TreeException::class);
-        // create new node in database table
-        $node = $this->createNode();
 
-        $child = $node->newChild($this->makeNode()->toArray());
-        $child->newSibling($this->makeNode()->toArray(), 'wrong-gender-here');
+        $tree = $this->createTreeable();
+        
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
+        
+        $node  = $root->newSon($this->makeNodeable()->toArray());
+        
+        $node->newSibling($this->makeNodeable()->toArray(), 'g');
     }
 
     /** @test */
     public function it_can_not_create_new_sibling_for_node_if_no_data_are_provided()
     {
         $this->expectException(TreeException::class);
-        // create new node in database table
-        $root = $this->createNode();
-        $child = $root->newChild($this->makeNode()->toArray());
+        
+        $tree = $this->createTreeable();
+        
+        $root = $tree->createRoot($this->makeNodeable()->toArray());
+        
+        $child  = $root->newSon($this->makeNodeable()->toArray());
+
         $child->newSibling([]);
     }
-
-    /** @test */
-    public function it_can_not_create_new_sibling_for_node_if_no_name_is_provided()
-    {
-        $this->expectException(TreeException::class);
-        // create new node in database table
-        $father = $this->createNode();
-        $son = $father->newChild($this->makeNode()->toArray());
-        // no name is provided in data array
-        $sibling_data  = ['f_name'=>'father name']; 
-        $son->newSibling($sibling_data);      
-    }    
 }

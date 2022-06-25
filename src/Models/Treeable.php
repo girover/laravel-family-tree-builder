@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Girover\Tree\Models;
 
 use Girover\Tree\Traits\Treeable as TreeableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,8 +11,6 @@ class Treeable extends Model
     // use SoftDeletes;
     use TreeableTrait, HasFactory;
 
-    // protected $fillable = ['user_id','name', 'basic_node'];
-    // protected $fillable = ['treeable_id'];
     protected $guarded = [];
 
 

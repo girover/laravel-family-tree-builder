@@ -1,8 +1,10 @@
+
+Nodeable can not get married with his sister, mother, aunt, daughter, grandmother, granddaughter
+--------------------------------------------------
 Deleting nodeables and nodes
 
 $node->detachFromTree() // This will not delete nodeable model, but node model with 
                         // its descendants node
---------------------------------------------------
 $node->toggleGender()
 --------------------------------------------------
 
