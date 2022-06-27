@@ -177,7 +177,7 @@ class HtmlTreeBuilder implements TreeBuilderInterface
      * Get the node that is saved in nodes array and equal to the given location as argument
      *
      * @param string $location
-     * @return \Girover\Tree\Models\Node
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function getLoadedNode($location)
     {
@@ -275,7 +275,7 @@ class HtmlTreeBuilder implements TreeBuilderInterface
     /**
      * Get Html Code for the given node as husband node
      *
-     * @param \Girover\Tree\Models\Node $node
+     * @param \Illuminate\Database\Eloquent\Model $node nodeable model
      * @param string $classes
      *
      * @return string
@@ -288,7 +288,7 @@ class HtmlTreeBuilder implements TreeBuilderInterface
     /**
      * Get Html Code for the given node as Child node
      *
-     * @param \Girover\Tree\Models\Node $node
+     * @param \Illuminate\Database\Eloquent\Model $node
      * @return string
      */
     protected function getChildHtml($node)
@@ -363,7 +363,7 @@ class HtmlTreeBuilder implements TreeBuilderInterface
     /**
      * return html for one node
      *
-     * @param \Girover\Tree\ModelsNode $item
+     * @param \Illuminate\Database\Eloquent\Model $node
      * @param string $role
      * @param array  $wives
      * @return string
@@ -376,14 +376,14 @@ class HtmlTreeBuilder implements TreeBuilderInterface
 
         $node_class = ($node->gender == 'm') ? 'male-node' : 'female-node';
         
-        $active_class = ((Session::get('activeNode') == $node->id) and ($role != 'wife')) ? 'active-node' : '';
+        // $active_class = ((Session::get('activeNode') == $node->id) and ($role != 'wife')) ? 'active-node' : '';
         
         $addFather = ((strpos($node->location, Location::SEPARATOR) === false) and ($role != 'wife')) ? '<div id="add-father" data-location="'.$node->location.'" data-toggle="modal" data-target="#addChildModal" alt="add Father"><i class="fa fa-plus"></i></div>' : '';
         $showFather = (($node->location == $this->tree->pointer()->location()) and ($role != 'wife') and (strpos($node->location, Location::SEPARATOR) > 0)) ? '<div id="show-father" data-location="'.$node->location.'"  title="show Father"><i class="fa fa-arrow-up"></i></div>' : '';
         $nodeCollapse = ($role === 'husband') ? '<div class="node-collapse down"><i class="fa fa-chevron-circle-up"></i></div>' : '';
 
         $html = ($role == 'wife') ? '<div class="wives-group">' : '';
-        $html .= '<a class="node '.$active_class.' '.$this->nodeCssClasses($node).'" data-counter="' . $this->nodesCount++ . '" data-role="'.$role.'" '.$this->nodeHtmlAttributes($node).'>
+        $html .= '<a class="node '.$this->nodeCssClasses($node).'" data-counter="' . $this->nodesCount++ . '" data-role="'.$role.'" '.$this->nodeHtmlAttributes($node).'>
                     '.$addFather.$showFather.$nodeCollapse.
                     '<div class="'.$node_class.' '.$role.'">	    
                         <div class="node-info-wrapper">

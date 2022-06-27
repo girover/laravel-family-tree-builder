@@ -12,6 +12,6 @@ class SqlStatements
      */
     public static function nodesTable()
     {
-        return "nodes";
+        return "tree_nodes";
     }
 }

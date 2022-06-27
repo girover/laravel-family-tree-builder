@@ -2,9 +2,7 @@
 
 namespace Girover\Tree\Tests;
 
-use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Location;
-use Girover\Tree\Models\Node;
 use Girover\Tree\Tests\Traits\Factoryable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 

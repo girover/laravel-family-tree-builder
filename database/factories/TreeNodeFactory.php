@@ -3,13 +3,13 @@
 namespace Girover\Tree\Database\Factories;
 
 use Girover\Tree\Location;
-use Girover\Tree\Models\Node;
+use Girover\Tree\Models\TreeNode;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 
-class NodeFactory extends Factory
+class TreeNodeFactory extends Factory
 {
-    protected $model = Node::class;
+    protected $model = TreeNode::class;
 
     
     public function definition()

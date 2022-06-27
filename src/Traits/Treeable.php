@@ -149,7 +149,7 @@ trait Treeable
     /**
      * Get the main node in the current tree
      *
-     * @return \Girover\Tree\Models\Node
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function mainNode() // Should Removes
     {
@@ -160,8 +160,8 @@ trait Treeable
 
     /**
      * set the node that has the given location to be main node in this tree
-     * @param \Girover\Tree\Models\Node|string $node
-     * @return \Girover\Tree\Models\Node|false
+     * @param \Illuminate\Database\Eloquent\Model|string $node
+     * @return \Illuminate\Database\Eloquent\Model|false
      */
     public function setMainNode($node) // Should Removes
     {
@@ -204,7 +204,7 @@ trait Treeable
 
     /**
      * Get the root node of this tree from the database
-     * @return \Girover\Tree\Models\Node
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function root()
     {
@@ -215,7 +215,7 @@ trait Treeable
      * Create the root for this tree.
      *
      * @param array $data data of the root node
-     * @return \Girover\Tree\Models\Node
+     * @return \Illuminate\Database\Eloquent\Model
      *
      * @throws \Girover\Tree\Exceptions\TreeException
      */
@@ -229,7 +229,7 @@ trait Treeable
      * the current root child of the new root
      *
      * @param array $data
-     * @return \Girover\Tree\Models\Node|null
+     * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function newRoot($data = [])
     {
@@ -287,7 +287,7 @@ trait Treeable
     /**
      * Move the pointer of the tree to a given node or location
      *
-     * @param \Girover\Tree\Models\Node|string $location
+     * @param \Illuminate\Database\Eloquent\Model|string $location
      * @return \Girover\Tree\Pointer
      */
     public function pointerTo($location)
@@ -299,7 +299,7 @@ trait Treeable
     /**
      * Move the pointer of the tree to a given node or location
      *
-     * @param \Girover\Tree\Models\Node|string $location
+     * @param \Illuminate\Database\Eloquent\Model|string $location
      * @return $this
      */
     public function goTo($location)

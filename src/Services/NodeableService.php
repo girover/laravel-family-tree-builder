@@ -4,7 +4,7 @@ namespace Girover\Tree\Services;
 
 use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\Location;
-use Girover\Tree\Models\Node;
+use Girover\Tree\Models\TreeNode;
 use \Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -59,7 +59,7 @@ class NodeableService
      * @param string $gender the gender of the person
      * 
      * @throws \Girover\Tree\Exceptions\TreeException
-     * @return \Girover\Tree\Models\Node
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function createNewNode($data, $location, $gender = 'm')
     {
@@ -82,7 +82,7 @@ class NodeableService
             DB::commit();
 
             // To join node attributes with nodeable attributes
-            $node_columns =Schema::getColumnListing('nodes');
+            $node_columns =Schema::getColumnListing('tree_nodes');
             foreach ($node_columns as $column) {
                 if($column != 'created_at' && $column != 'updated_at'){
                     $nodeable->{$column}=$node->{$column};
@@ -131,7 +131,7 @@ class NodeableService
      */
     public function createNode($data)
     {
-        return Node::create($data);
+        return TreeNode::create($data);
     }
 
     /**
@@ -177,7 +177,7 @@ class NodeableService
      *
      * @param array|static data for the new child
      * @param string $gender 'm'|'f'
-     * @return \Girover\Tree\Models\Node|null
+     * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function newChild($data, $gender = 'm')
     {
@@ -202,18 +202,11 @@ class NodeableService
     /**
      * Generating location for new child for this node.
      * 
-     * @param \Girover\Tree\Models\Node
+     * @param \Illuminate\Database\Eloquent\Model
      * @return string
      */
     protected function newChildLocationFor($node)
-    {
-        // $last_child = $node->lastChild();
-
-        // if ($last_child == null) {
-        //     return Location::firstChild($node->location);
-        // } 
-
-        // return Location::generateNextLocation($last_child->location);   
+    {  
         return ($last_child = $node->lastChild())
                ? Location::generateNextLocation($last_child->location)
                : Location::firstChild($node->location);    
@@ -225,7 +218,7 @@ class NodeableService
      *
      * @param array|static data for the new sibling
      * @param string gender of the new sibling
-     * @return \Girover\Tree\Models\Node|null
+     * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function newSibling($data, $gender = 'm')
     {
@@ -247,7 +240,7 @@ class NodeableService
     /**
      * assign a wife to this node
      *
-     * @param \Girover\Tree\Models\Node $wife
+     * @param \Illuminate\Database\Eloquent\Model $wife
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -347,8 +340,8 @@ class NodeableService
      * to be child of the given location
      * Both nodes should belong to same tree
      *
-     * @param \Girover\Tree\Models\Node $node: location or node to move node to it
-     * @return \Girover\Tree\Models\Node
+     * @param \Illuminate\Database\Eloquent\Model $node
+     * @return \Illuminate\Database\Eloquent\Model
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     protected function makeAsChildOf($node)
@@ -370,8 +363,9 @@ class NodeableService
      * to be child of the given location
      * Both nodes should belong to same tree
      *
-     * @param \Girover\Tree\Models\Node|string $location: location or node to move node to it
-     * @return \Girover\Tree\Models\Node
+     * @param \Illuminate\Database\Eloquent\Model|string $location: location or node to move node to it
+     * 
+     * @return \Illuminate\Database\Eloquent\Model
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function moveTo($location)
@@ -398,8 +392,8 @@ class NodeableService
      * Move all children of the node to be children of
      * the given node or the node that has the given location.
      *
-     * @param \Girover\Tree\Models\Node|string $location
-     * @return \Girover\Tree\Models\Node
+     * @param \Illuminate\Database\Eloquent\Model|string $location
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function moveChildrenTo($location = null)
     {
@@ -434,8 +428,8 @@ class NodeableService
      * To get a node from a location
      * Or to check if the given parameter is a node then return it
      * 
-     * @param \Girover\Tree\Models\Node|string $location
-     * @return \Girover\Tree\Models\Node
+     * @param \Illuminate\Database\Eloquent\Model|string $location
+     * @return \Illuminate\Database\Eloquent\Model
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     protected function getNodeOrThrowException($location)
@@ -458,14 +452,14 @@ class NodeableService
     public function prependLocationsWithSeparatorSql()
     {
         // return 'UPDATE '. static::table() .
-        return ' UPDATE `nodes` '.
+        return ' UPDATE `tree_nodes` '.
                ' SET `location` = CONCAT("'.Location::SEPARATOR.'", `location`)'.
                ' WHERE treeable_id = ? ';
     }
 
     /**
      * To detach a node from a tree
-     * it will delete the node from nodes table,
+     * it will delete the node from tree_nodes table,
      * but nodeable will still exist.
      * 
      * @return bool
@@ -485,13 +479,13 @@ class NodeableService
      */
     public function prependLocationsWithFirstPossibleSegmentSql()
     {
-        return ' UPDATE `nodes`' .
+        return ' UPDATE `tree_nodes`' .
                ' SET `location` = CONCAT("'.Location::firstPossibleSegment().'", `location`)'.
                ' WHERE treeable_id = ? ';
     }
 
     /**
-     * Sql statement for updating location column in the nodes table.
+     * Sql statement for updating location column in the tree_nodes table.
      * Find all locations that start with $old_location
      * and concat them with $new_location to beginning of old location.
      *
@@ -500,7 +494,7 @@ class NodeableService
      *
      * @example replace 'aa.ff' with 'bb.ss'
      *
-     *          UPDATE `nodes`
+     *          UPDATE `tree_nodes`
      *          SET `location` = CONCAT('bb.ss', SUBSTRING(`location`, FROM 6))
      *          WHERE `tree_id` = 2
      *          AND `location` like 'aa.ff%' ;
@@ -509,7 +503,7 @@ class NodeableService
      */
     public function updateLocationsSql($new_location)
     {
-        return " UPDATE `nodes` 
+        return " UPDATE `tree_nodes` 
                 SET `location` = CONCAT('".$new_location."', SUBSTRING(`location` FROM ".(strlen($this->nodeable->location) + 1).")) 
                 WHERE `treeable_id` = ".$this->nodeable->treeable_id." 
                 AND `location` like '".$this->nodeable->location."%' ";
@@ -524,7 +518,7 @@ class NodeableService
      */
     public function deleteNodeWithChildrenSql()
     {
-        return " DELETE FROM `nodes`   
+        return " DELETE FROM `tree_nodes`   
                 WHERE `treeable_id` = ".$this->nodeable->treeable_id." 
                 AND `location` like '".$this->nodeable->location."%' ";
     }

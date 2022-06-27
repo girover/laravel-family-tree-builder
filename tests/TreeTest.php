@@ -49,7 +49,7 @@ class TreeTest extends TestCase
         // Create Root node for the created tree.
         $root = $tree->createRoot($this->makeNodeable()->toArray());
 
-        $this->assertDatabaseHas('nodes', [
+        $this->assertDatabaseHas('tree_nodes', [
             'treeable_id'=>$tree->id,
             'location'=>$root->location,
         ]);
@@ -113,7 +113,7 @@ class TreeTest extends TestCase
         $this->assertDatabaseHas('treeables', ['id'=>$tree->getKey()]);
         // Create Root node for the created tree.
         $root = $tree->createRoot($this->makeNodeable()->toArray());
-        $this->assertDatabaseHas('nodes', ['treeable_id'=>$tree->id, 'location'=>$root->location]);
+        $this->assertDatabaseHas('tree_nodes', ['treeable_id'=>$tree->id, 'location'=>$root->location]);
         // Trying to create root with no data provided
         $new_root = $tree->newRoot([]);
         $this->assertNull($new_root);        

@@ -7,7 +7,7 @@ use Girover\Tree\Exceptions\TreeException;
 use Girover\Tree\GlobalScopes\OrderByLocationScope;
 use Girover\Tree\GlobalScopes\WivesEagerRelationScope;
 use Girover\Tree\Location;
-use Girover\Tree\Models\Node;
+use Girover\Tree\Models\TreeNode;
 use Girover\Tree\NodeRelocator;
 use Girover\Tree\Services\NodeableService;
 
@@ -49,7 +49,7 @@ trait Nodeable
      */
     public function newEloquentBuilder($query)
     {
-        return (new NodeEloquentBuilder($query))->leftJoin('nodes', 'nodes.nodeable_id', (new static)->getTable().'.'.$this->getKeyName());
+        return (new NodeEloquentBuilder($query))->leftJoin('tree_nodes', 'tree_nodes.nodeable_id', (new static)->getTable().'.'.$this->getKeyName());
     }
 
     /**
@@ -181,7 +181,7 @@ trait Nodeable
     /**
      * assign a wife to this node
      *
-     * @param \Girover\Tree\Models\Node $wife
+     * @param \Illuminate\Database\Eloquent\Model $wife
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -1115,8 +1115,8 @@ trait Nodeable
      * to be child of the given location
      * Both nodes should belong to same tree
      *
-     * @param \Girover\Tree\Models\Node|string $location: location or node to move node to it
-     * @return \Girover\Tree\Models\Node
+     * @param \Illuminate\Database\Eloquent\Model|string $location: location or node to move node to it
+     * @return \Illuminate\Database\Eloquent\Model
      * @throws \Girover\Tree\Exceptions\TreeException
      */
     public function moveTo($location)
@@ -1316,7 +1316,7 @@ trait Nodeable
      */
     public function node()
     {
-        return $this->hasOne(Node::class, 'nodeable_id', $this->getKeyName())->first();
+        return $this->hasOne(TreeNode::class, 'nodeable_id', $this->getKeyName())->first();
     }
 
     /**

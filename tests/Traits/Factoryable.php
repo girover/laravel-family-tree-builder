@@ -4,7 +4,7 @@ namespace Girover\Tree\Tests\Traits;
 
 use Girover\Tree\Models\Treeable;
 use Girover\Tree\Models\Nodeable;
-use Girover\Tree\Models\Node;
+use Girover\Tree\Models\TreeNode;
 
 /**
  * 
@@ -29,28 +29,28 @@ trait Factoryable
     }
     public function createNode($data = [])
     {
-        return Node::factory()->create($data);
+        return TreeNode::factory()->create($data);
     }
     public function makeNode($data = [])
     {
-        return Node::factory()->make($data);
+        return TreeNode::factory()->make($data);
     }
     public function createMaleNode($data = [])
     {
         $data['gender'] = 'm';
-        return Node::factory()->create($data);
+        return TreeNode::factory()->create($data);
     }
     public function createFemaleNode($data = [])
     {
         $data['gender'] = 'f';
-        return Node::factory()->create($data);
+        return TreeNode::factory()->create($data);
     }
     public function makeMaleNode()
     {
-        return Node::factory()->make(['gender'=>'m']);
+        return TreeNode::factory()->make(['gender'=>'m']);
     }
     public function makeFemaleNode()
     {
-        return Node::factory()->make(['gender'=>'f']);
+        return TreeNode::factory()->make(['gender'=>'f']);
     }
 }

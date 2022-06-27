@@ -13,7 +13,7 @@ class CreateNodesTable extends Migration
      */
     public function up()
     {
-        Schema::create('nodes', function (Blueprint $table) {
+        Schema::create('tree_nodes', function (Blueprint $table) {
             $table->id('node_id'); // unsigned big integer
             // $table->bigInteger('tree_id')->unsigned();
             $table->bigInteger('nodeable_id')->unsigned();
@@ -39,6 +39,6 @@ class CreateNodesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('nodes');
+        Schema::dropIfExists('tree_nodes');
     }
 }
