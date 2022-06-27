@@ -1,5 +1,9 @@
 
 Nodeable can not get married with his sister, mother, aunt, daughter, grandmother, granddaughter
+
+--------------------------------------------------
+nodeable that is not yet a node, can not create nodes.
+
 --------------------------------------------------
 Deleting nodeables and nodes
 
