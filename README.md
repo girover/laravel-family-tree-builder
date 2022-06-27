@@ -756,7 +756,7 @@ To set uploaded photo to the node:
 to move an existing node to be child of another node.   
 **Note** this will move the node with its children.
 ```php
-    use \Girover\Tree\Models\Node;
+    use App\Models\Node;
 
     $node = Node::find(10);
     $another_node = Node::find(30);
@@ -768,17 +768,13 @@ to move an existing node to be child of another node.
 To move children of a node to be children of another node  
 you can do this:
 ```php
-    use \Girover\Tree\Models\Node;
+    use App\Models\Node;
 
     $node = Node::find(10);
     $another_node = Node::find(30);
 
     $node->moveChildrenTo($another_node);
 
-    // OR
-    $location = 'aa.fd';
-
-    $node->moveChildrenTo($location);
 ```
 
 **Note:** When trying to move node1 to node2, if node2 is descendant of node1 
@@ -789,7 +785,7 @@ The same exception will be thrown if node2 is a female node.
 To move a node after another node
 you can do this:
 ```php
-    use \Girover\Tree\Models\Node;
+    use App\Models\Node;
 
     $node = Node::find(10);
     $another_node = Node::find(30);
@@ -801,7 +797,7 @@ you can do this:
 To move a node before another node
 you can do this:
 ```php
-    use \Girover\Tree\Models\Node;
+    use App\Models\Node;
 
     $node = Node::find(10);
     $another_node = Node::find(30);
@@ -851,29 +847,29 @@ When creating nodeable models by using methods ```create``` or ```save```, the c
 ```php
     use App\Models\Person;
 
-    $adam = Person::create(['name'=>'Adam', 'birth_date'=>'0000-00-00']);
+    $person = Person::create(['name'=>'Person', 'birth_date'=>'2000-01-01']);
     
-    $eva = new Person;
-    $eva->name = 'Eva';
-    $eva->birth_date = '0000-00-00';
-    $eva->save();
+    $another_person = new Person;
+    $another_person->name = 'Another';
+    $another_person->birth_date = '2000-01-01';
+    $another_person->save();
 
 ```
-Both Adam and Eva will be created in database table, but they will not be a node yet in any tree.  
+Both $person and $another_person will be created in database table, but they will not be a node yet in any tree.  
 To make Adam as a node in a tree you can use all nodeable methods like:   
 
 ```php
     use App\Models\Person;
 
-    $adam = Person::where('name', 'adam')->first();
+    $new_person = Person::where('name', 'new person')->first();
 
     $person = Person::find(1);
 
-    $person->newSon($adam);
+    $person->newSon($new_person);
     //or
-    $person->createFather($adam); // only if $person is a root in the tree 
+    $person->createFather($new_person); // only if $person is a root in the tree 
     //or
-    $person->newBrother($adam); // only if $person is not a root in the tree  
+    $person->newBrother($new_person); // only if $person is not a root in the tree  
     //or
     .
     .
@@ -1019,7 +1015,7 @@ You can also use a node model to do the same by using one of these methods ```to
     }
 ```
 ### Customizing node style
-If you want to add some html attributes to the nodes, then you can bind a custom function called ```nodeHtmlAttributes``` to the **Service Container**. This function must return a callable function which accept one argument represents nodeable model. And this callable function must return html attributes with their values as string.   
+If you want to add some html attributes to the nodes, then you can bind a custom function called ```nodeHtmlAttributes``` to the **Service Container**. This function must return a callable function which accept one argument represents nodeable model. And this callable function must return html attributes with their values as one string.   
 Let's take an example.   
 If your nodeable models have fields ```id, name, gender, is_died``` , then you want to add them as html attributes to the nodes to style or to control nodes.   
 
@@ -1029,14 +1025,14 @@ If your nodeable models have fields ```id, name, gender, is_died``` , then you w
     {
         $this->app->singleton('nodeHtmlAttributes',function($app){
             return function($nodeable){
-                return " data-id='{$nodeable->id}' data-name='{$nodeable->name}' data-gender='{$nodeable->gender}'";
+                return " data-id='{$nodeable->id}' data-name='{$nodeable->name}' data-gender='{$nodeable->gender}' data-is-died='{$nodeable->is_died}' ";
             };
         });
     }
 ```
 Now all node elements will have these attributes like:
 ```html
-    <a class="node" data-id='1' data-name='name' data-gender='1'>...</a>
+    <a class="node" data-id='1' data-name='name' data-gender='1' data-is-died='0'>...</a>
 ```
  
 
