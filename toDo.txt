@@ -1,5 +1,6 @@
 
 Nodeable can not get married with his sister, mother, aunt, daughter, grandmother, granddaughter
+aa.aa.aa ----->>    aa.aa.ab
 
 --------------------------------------------------
 nodeable that is not yet a node, can not create nodes.

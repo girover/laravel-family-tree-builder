@@ -56,42 +56,51 @@ class NGetMarriedWithTest extends TestCase
         $man->getMarriedWith($man2);
     }
 
-    // /** @test 4 */
-    // public function it_throws_TreeException_if_female_tries_to_get_married()
-    // {
-    //     $this->expectException(TreeException::class);
-    //     // create new node in database table
-    //     $man   = $this->createFemaleNode(['location'=>'ss.dd']);
-    //     $woman = $this->createFemaleNode();
+    /** @test 4 */
+    public function it_throws_TreeException_if_female_tries_to_get_married()
+    {
+        $this->expectException(TreeException::class);
 
-    //     // wrong date is provided
-    //     $man->getMarriedWith($woman);
-    // }
+        $tree   = $this->createTreeable();
+        $root   = $tree->createRoot($this->makeNodeable()->toArray());
+        // create new node in database table
+        $man   = $root->newSon($this->makeNodeable()->toArray());
+        $woman = $root->newDaughter($this->makeNodeable()->toArray());
 
-    // /** @test 5 */
-    // public function it_can_not_get_married_with_one_who_already_married_with()
-    // {
-    //     $this->expectException(TreeException::class);
-    //     // create new node in database table
-    //     $man   = $this->createNode();
-    //     $woman = $this->createFemaleNode(['location'=>'aa.aa']);
+        // wrong date is provided
+        $woman->getMarriedWith($man);
+    }
 
-    //     //Getting married with woman
-    //     $man->getMarriedWith($woman);
-    //     //trying to get married with same woman
-    //     $man->getMarriedWith($woman);
-    // }
+    /** @test 5 */
+    public function it_can_not_get_married_with_one_who_already_married_with()
+    {
+        $this->expectException(TreeException::class);
 
-    // /** @test 6 */
-    // public function it_throws_TreeException_when_trying_getting_married_with_himself()
-    // {
-    //     $this->expectException(TreeException::class);
-    //     // create new node in database table
-    //     $man   = $this->createNode();
+        $tree   = $this->createTreeable();
+        $root   = $tree->createRoot($this->makeNodeable()->toArray());
+        // create new node in database table
+        $man   = $root->newSon($this->makeNodeable()->toArray());
+        $woman = $root->newDaughter($this->makeNodeable()->toArray());
 
-    //     //Getting married with woman
-    //     $man->getMarriedWith($man);
-    // }
+        //Getting married with woman
+        $man->getMarriedWith($woman);
+        //trying to get married with same woman
+        $man->getMarriedWith($woman);
+    }
+
+    /** @test 6 */
+    public function it_throws_TreeException_when_trying_getting_married_with_himself()
+    {
+        $this->expectException(TreeException::class);
+        // create new node in database table
+        $tree   = $this->createTreeable();
+        $root   = $tree->createRoot($this->makeNodeable()->toArray());
+        // create new node in database table
+        $man   = $root->newSon($this->makeNodeable()->toArray());
+
+        //Getting married with woman
+        $man->getMarriedWith($man);
+    }
 
     // /** @test 7 */
     // public function it_can_save_marriage_info_in_database_if_provided()

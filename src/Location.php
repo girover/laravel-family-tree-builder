@@ -87,7 +87,7 @@ class Location
      */
     public static function rootREGEXP()
     {
-        // ^[a-z]{3}$    it means that the location does not has separator.
+        // ^[a-z]{2}$    it means that the location does not has separator.
         // and the length has to the length of segment as defined
         return '^'.static::segmentREGEXP().'$';
     }

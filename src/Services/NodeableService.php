@@ -264,11 +264,12 @@ class NodeableService
         }
 
         // Person already married with the given woman
-        $mar = !$this->nodeable->wives()
+        $mar = $this->nodeable->wives()
                               ->where('nodeable_wife_id', $wife->getKey())
                               ->where('nodeable_husband_id', $this->nodeable->getKey())
-                              ->first() ?? throw new TreeException("These two nodes are already married!!", 1);
-        
+                              ->first() ? throw new TreeException("These two nodes are already married!!", 1)
+                                        : false;
+
         // Person cannot get married with himself
         if ($this->nodeable->getKey() === $wife->getKey()) {            
             throw new TreeException('Person cannot get married with himself', 1);    

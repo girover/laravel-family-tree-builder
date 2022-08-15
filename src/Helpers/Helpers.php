@@ -153,3 +153,25 @@ if (! function_exists('countDetachedNodeables')) {
         return (nodeableModel())::whereNull('location')->count();
     }
 }
+
+/**
+ * To get all methods from a class or trait.
+ * @param string $class the class name.
+ * @param bool $sort To sort the array of methods or not.
+ * @return array
+ */
+if (! function_exists('allMethods')) {
+    function allMethods($class, $sort = false)
+    {
+        $methods = [];
+        $r = new ReflectionClass($class);
+        foreach ($r->getMethods() as $method) {
+            array_push($methods, $method->name);
+        }
+        if ($sort) {
+            sort($methods);
+        }
+
+        return ['Methods count'=>count($methods), 'Methods'=>$methods];
+    }
+}
